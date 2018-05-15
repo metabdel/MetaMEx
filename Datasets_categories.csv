@@ -1,0 +1,15 @@
+Category,Label,Definition and cut-off
+Muscle,VAL / BIB / SOL / N.A,Vastus Lateralis / Biceps Brachii / Soleus / Not Available
+Sex,M / F / U,Male / Female / Unknown or mixed
+Age,YNG / MDL / ELD,Young <35  Middle age >60 Elderly
+Fitness,SED,Sedentary: no formal exercise training
+Fitness,ACT,"Active: >150min moderate-to-difficult exercise/week, above average VO2max"
+Fitness,ATH,"Athlete: formal and regular exercise training, excellent VO2max"
+Health status,HLY,"Healthy: BMI<25, no diagnosed disease"
+Health status,OBE,Overweight/Obese: BMI>25 but no diabetes diagnosis
+Health status,T2D,Type 2 diabetes: BMI<25 + diagnosis of T2D
+Health status,MTS,"Metabolic Syndrome: any combination of T2D, overweight, dyslipidaemia"
+Health status,CKD,Chronic Kidney Disease
+Health status,COP,Chronic Obstructive Pulmonary Disease
+Acute Biopsy extraction,IMM / REC,"Immediate (<30min after exercise), Recovery (3-6h after exercise)"
+Exercise type,CON / ECC / MIX,Concentric / Eccentric / Mixed
