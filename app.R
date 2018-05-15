@@ -12,6 +12,7 @@ library(gridExtra)
 library(readr)
 
 # Load the different datasets, all in csv format
+# Each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
 Stats_AA <- read_csv("Acute_Aerobic_Merged_Stats_SYMBOL.csv", col_names = TRUE,
                      col_types = cols(.default= col_number(), X1 = col_character()))
 Stats_AA <- data.frame(Stats_AA, row.names = 1)
@@ -38,39 +39,29 @@ Stats_IN <- data.frame(Stats_IN, row.names = 1)
 
 
 # Make a list of the different studies in each file
-AA_names <- colnames(Stats_AA[grepl('logFC', colnames(Stats_AA))])
-AA_names <- gsub("logFC_","",AA_names)
-AA_names <- gsub("_.*","",AA_names)
-AA_names <- sort(AA_names[!duplicated(AA_names)])
+AA_names <- sub('.*GSE', 'GSE', colnames(Stats_AA)) #select study names 'GSEXXXXX'
+AA_names <- sort(unique(sub('_.*', '', AA_names)))  #delete study info after '_', take unique and sort
 
-AR_names <- colnames(Stats_AR[grepl('logFC', colnames(Stats_AR))])
-AR_names <- gsub("logFC_","",AR_names)
-AR_names <- gsub("_.*","",AR_names)
-AR_names <- sort(AR_names[!duplicated(AR_names)])
+AR_names <- sub('.*GSE', 'GSE', colnames(Stats_AR))
+AR_names <- sort(unique(sub('_.*', '', AR_names)))
 
-TA_names <- colnames(Stats_TA[grepl('logFC', colnames(Stats_TA))])
-TA_names <- gsub("logFC_","",TA_names)
-TA_names <- gsub("_.*","",TA_names)
-TA_names <- sort(TA_names[!duplicated(TA_names)])
+TA_names <- sub('.*GSE', 'GSE', colnames(Stats_TA))
+TA_names <- sort(unique(sub('_.*', '', TA_names)))
 
-TR_names <- colnames(Stats_TR[grepl('logFC', colnames(Stats_TR))])
-TR_names <- gsub("logFC_","",TR_names)
-TR_names <- gsub("_.*","",TR_names)
-TR_names <- sort(TR_names[!duplicated(TR_names)])
+TR_names <- sub('.*GSE', 'GSE', colnames(Stats_TR))
+TR_names <- sort(unique(sub('_.*', '', TR_names)))
 
-TC_names <- colnames(Stats_TC[grepl('logFC', colnames(Stats_TC))])
-TC_names <- gsub("logFC_","",TC_names)
-TC_names <- gsub("_.*","",TC_names)
-TC_names <- sort(TC_names[!duplicated(TC_names)])
+TC_names <- sub('.*GSE', 'GSE', colnames(Stats_TC))
+TC_names <- sort(unique(sub('_.*', '', TC_names)))
 
-IN_names <- colnames(Stats_IN[grepl('logFC', colnames(Stats_IN))])
-IN_names <- gsub("logFC_","",IN_names)
-IN_names <- gsub("_.*","",IN_names)
-IN_names <- sort(IN_names[!duplicated(IN_names)])
+IN_names <- sub('.*GSE', 'GSE', colnames(Stats_IN))
+IN_names <- sort(unique(sub('_.*', '', IN_names)))
+
 
 # Load the table describing the legend of the tables
 annotation <- read_csv("Datasets_categories.csv", col_names = TRUE,
                        col_types=cols(.default= col_character()))
+
 
 # Set up the different categories to be selected
 muscle_choice <- c("Vastus Lateralis" = "_VAL_",
@@ -98,12 +89,14 @@ disease_choice <- c("Healthy" = "HLY",
                    "Chronic Kidney Disease" = "CKD",
                    "Chronic Obstructive Pulmonary Disease" = "COP")
 
+
 # Set up the graphical parameters for the forest plots
 own <- fpTxtGp()
 own$ticks$cex <- 0.8 #tick labels
 own$xlab$cex <- 1
 own$label$cex <- 0.9
 own$summary$cex <- 1.2
+
 
 # sanitize errors
 options(shiny.sanitize.errors=T)
@@ -230,12 +223,12 @@ server <- function(input, output, session) {
   observe({ updateCheckboxGroupInput(session, 'IN_studies',  choices = IN_names,        selected = if (input$IN_all) IN_names, inline=TRUE)})
 
   
-#- Make image outputs ----------------------------------------
+#- Make image outputs ------------------------------------------------------------
   output$image1 <- renderImage({ list(src='Nico-Macrophage-bike-R.png',  height="95%") }, deleteFile = FALSE)
   output$image2 <- renderImage({ list(src='Nico-Macrophage-weight-L.png', width="90%") }, deleteFile = FALSE)
 
   
-#- make annotation table for legend ----------------------------------------
+#- make annotation table for legend ----------------------------------------------
   output$Annotation <- renderTable(spacing='xs',{ annotation })
   
   
