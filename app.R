@@ -11,43 +11,31 @@ library(grid)
 library(gridExtra)
 library(readr)
 
-# Set up the graphical parameters for the forest plots
-own <- fpTxtGp()
-own$ticks$cex <- 0.8 #tick labels
-own$xlab$cex <- 1
-own$label$cex <- 0.9
-own$summary$cex <- 1.2
-
 # Load the different datasets, all in csv format
-header   <- read_delim("Acute_Aerobic_Merged_Stats_SYMBOL.csv", n_max = 1, delim = ",")
-Stats_AA <- read_delim('Acute_Aerobic_Merged_Stats_SYMBOL.csv', delim = ",",
-                      col_types=paste(c('c', rep('n', (ncol(header)-1))), collapse=""))
+Stats_AA <- read_csv("Acute_Aerobic_Merged_Stats_SYMBOL.csv", col_names = TRUE,
+                     col_types = cols(.default= col_number(), X1 = col_character()))
 Stats_AA <- data.frame(Stats_AA, row.names = 1)
 
-header <- read_delim("Acute_Resistance_Merged_Stats_SYMBOL.csv", n_max = 1, delim = ",")
-Stats_AR <- read_delim('Acute_Resistance_Merged_Stats_SYMBOL.csv', delim = ",",
-                       col_types=paste(c('c', rep('n', (ncol(header)-1))), collapse=""))
+Stats_AR <- read_csv("Acute_Resistance_Merged_Stats_SYMBOL.csv", col_names = TRUE,
+                     col_types = cols(.default= col_number(), X1 = col_character()))
 Stats_AR <- data.frame(Stats_AR, row.names = 1)
 
-header <- read_delim("Training_Aerobic_Merged_Stats_SYMBOL.csv", n_max = 1, delim = ",")
-Stats_TA  <- read_delim('Training_Aerobic_Merged_Stats_SYMBOL.csv', delim = ",",
-                        col_types=paste(c('c', rep('n', (ncol(header)-1))), collapse=""))
+Stats_TA <- read_csv("Training_Aerobic_Merged_Stats_SYMBOL.csv", col_names = TRUE,
+                     col_types = cols(.default= col_number(), X1 = col_character()))
 Stats_TA <- data.frame(Stats_TA, row.names = 1)
 
-header <- read_delim("Training_Resistance_Merged_Stats_SYMBOL.csv", n_max = 1, delim = ",")
-Stats_TR  <- read_delim('Training_Resistance_Merged_Stats_SYMBOL.csv', delim = ",",
-                        col_types=paste(c('c', rep('n', (ncol(header)-1))), collapse=""))
+Stats_TR <- read_csv("Training_Resistance_Merged_Stats_SYMBOL.csv", col_names = TRUE,
+                     col_types = cols(.default= col_number(), X1 = col_character()))
 Stats_TR <- data.frame(Stats_TR, row.names = 1)
 
-header <- read_delim("Training_Combined_Merged_Stats_SYMBOL.csv", n_max = 1, delim = ",")
-Stats_TC  <- read_delim('Training_Combined_Merged_Stats_SYMBOL.csv', delim = ",",
-                        col_types=paste(c('c', rep('n', (ncol(header)-1))), collapse=""))
+Stats_TC <- read_csv("Training_Combined_Merged_Stats_SYMBOL.csv", col_names = TRUE,
+                     col_types = cols(.default= col_number(), X1 = col_character()))
 Stats_TC <- data.frame(Stats_TC, row.names = 1)
 
-header   <- read_delim("Inactivity_Merged_Stats_SYMBOL.csv", n_max = 1, delim = ",")
-Stats_IN  <- read_delim('Inactivity_Merged_Stats_SYMBOL.csv', delim = ",",
-                        col_types=paste(c('c', rep('n', (ncol(header)-1))), collapse=""))
+Stats_IN <- read_csv("Inactivity_Merged_Stats_SYMBOL.csv", col_names = TRUE,
+                     col_types = cols(.default= col_number(), X1 = col_character()))
 Stats_IN <- data.frame(Stats_IN, row.names = 1)
+
 
 # Make a list of the different studies in each file
 AA_names <- colnames(Stats_AA[grepl('logFC', colnames(Stats_AA))])
@@ -81,7 +69,8 @@ IN_names <- gsub("_.*","",IN_names)
 IN_names <- sort(IN_names[!duplicated(IN_names)])
 
 # Load the table describing the legend of the tables
-annotation <- read_delim("Datasets_categories.csv", delim = ",")
+annotation <- read_csv("Datasets_categories.csv", col_names = TRUE,
+                       col_types=cols(.default= col_character()))
 
 # Set up the different categories to be selected
 muscle_choice <- c("Vastus Lateralis" = "_VAL_",
@@ -109,20 +98,28 @@ disease_choice <- c("Healthy" = "HLY",
                    "Chronic Kidney Disease" = "CKD",
                    "Chronic Obstructive Pulmonary Disease" = "COP")
 
+# Set up the graphical parameters for the forest plots
+own <- fpTxtGp()
+own$ticks$cex <- 0.8 #tick labels
+own$xlab$cex <- 1
+own$label$cex <- 0.9
+own$summary$cex <- 1.2
+
 # sanitize errors
 options(shiny.sanitize.errors=T)
 
 
+##########################################################################################################################
 # Set up the UI using fluid rows #########################################################################################
 ui <- fluidPage(theme = "bootstrap.css",
 
   fluidRow(style="background-color:#EA8A35;;color:white;",
     column(2, imageOutput('image1', height="160px")),
     column(9, h1(tags$b("MetaMEx")),
-              h3("Transcriptomic meta-analysis of skeletal muscle response to exercise."),
-              h4(a("Nicolas J. Pillon,", href="www.nicopillon.com", style="color:#ffeb3d;"),
-                 a("Anna Krook,", href="https://ki.se/en/people/annkro", style="color:#ffeb3d;"),
-                 a("Juleen R. Zierath.", href="https://ki.se/en/people/julzie", style="color:#ffeb3d;")))),
+              h3("Transcriptomic meta-analysis of skeletal muscle response to exercise"),
+              h4(a("Nicolas J. Pillon,", href="https://nicopillon.com", style="color:#ffeb3d;", target="_blank"),
+                 a("Anna Krook,", href="https://ki.se/en/people/annkro", style="color:#ffeb3d;", target="_blank"),
+                 a("Juleen R. Zierath", href="https://ki.se/en/people/julzie", style="color:#ffeb3d;", target="_blank")))),
 
   fluidRow(style="background-color:#F3BB8A;padding:1%",
     column(12, "Use MetaMEx to test the behavior of a gene in skeletal muscle during exercise and inactivity. Type the official gene symbol and select your population of interest.")),
@@ -208,16 +205,16 @@ ui <- fluidPage(theme = "bootstrap.css",
                h5("MetaMEx was created by", a("Nicolas J. Pillon", href="http://nicopillon.com", style="color:#ffeb3d;", target="_blank"),
                   "and illustrated by", a("Csil", href="http://misshue.net", style="color:#ffeb3d;", target="_blank"),
                   "under the Creative Commons Attribution-NonCommercial 4.0 International",
-                  a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", style="color:#ffeb3d;")))
+                  a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", style="color:#ffeb3d;", target="_blank")))
   )
 )
 
 
-# Define server logic ----
+####################################################################################################################
+# Define server logic ##############################################################################################
 server <- function(input, output, session) {
 
-###############################################
-# Make all checkboxes selected by default
+#- Make all checkboxes selected by default ----------------------------------------
   observe({ updateCheckboxGroupInput(session, 'muscle',      choices = muscle_choice,   selected = if (input$bar_muscle) muscle_choice)})
   observe({ updateCheckboxGroupInput(session, 'sex',         choices = sex_choice,      selected = if (input$bar_sex) sex_choice)})
   observe({ updateCheckboxGroupInput(session, 'age',         choices = age_choice,      selected = if (input$bar_age) age_choice)})
@@ -232,15 +229,19 @@ server <- function(input, output, session) {
   observe({ updateCheckboxGroupInput(session, 'TC_studies',  choices = TC_names,        selected = if (input$TC_all) TC_names, inline=TRUE)})
   observe({ updateCheckboxGroupInput(session, 'IN_studies',  choices = IN_names,        selected = if (input$IN_all) IN_names, inline=TRUE)})
 
-###############################################
-# Image outputs  
-  output$image1 <- renderImage({list(src='Nico-Macrophage-bike-R.png', height="95%")}, deleteFile = FALSE)
-  output$image2 <- renderImage({list(src='Nico-Macrophage-weight-L.png', width="90%")}, deleteFile = FALSE)
   
-###############################################
-# Reactive functions to select data
+#- Make image outputs ----------------------------------------
+  output$image1 <- renderImage({ list(src='Nico-Macrophage-bike-R.png',  height="95%") }, deleteFile = FALSE)
+  output$image2 <- renderImage({ list(src='Nico-Macrophage-weight-L.png', width="90%") }, deleteFile = FALSE)
+
+  
+#- make annotation table for legend ----------------------------------------
+  output$Annotation <- renderTable(spacing='xs',{ annotation })
+  
+  
+#- Make reactive functions to select data ----------------------------------------
   AA_data <- reactive({    
-    # Select gene name and calculate paramenters on filtered data
+    # Select gene name and calculate parameters on filtered data
     genename   <- toupper(input$genename)
     data <- Stats_AA[genename,]
     data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
@@ -310,7 +311,7 @@ server <- function(input, output, session) {
 })
   
   AR_data <- reactive({    
-    # Select gene name and calculate paramenters on filtered data
+    # Select gene name and calculate parameters on filtered data
     genename   <- toupper(input$genename)
     data <- Stats_AR[genename,]
     data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
@@ -380,7 +381,7 @@ server <- function(input, output, session) {
   })
   
   TA_data <- reactive({    
-    # Select gene name and calculate paramenters on filtered data
+    # Select gene name and calculate parameters on filtered data
     genename   <- toupper(input$genename)
     data <- Stats_TA[genename,]
     data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
@@ -440,7 +441,7 @@ server <- function(input, output, session) {
   }) 
   
   TR_data <- reactive({    
-    # Select gene name and calculate paramenters on filtered data
+    # Select gene name and calculate parameters on filtered data
     genename   <- toupper(input$genename)
     data <- Stats_TR[genename,]
     data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
@@ -500,7 +501,7 @@ server <- function(input, output, session) {
   })
   
   TC_data <- reactive({    
-    # Select gene name and calculate paramenters on filtered data
+    # Select gene name and calculate parameters on filtered data
     genename   <- toupper(input$genename)
     data <- Stats_TC[genename,]
     data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
@@ -560,7 +561,7 @@ server <- function(input, output, session) {
   })
   
   IN_data <- reactive({    
-    # Select gene name and calculate paramenters on filtered data
+    # Select gene name and calculate parameters on filtered data
     genename   <- toupper(input$genename)
     data <- Stats_IN[genename,]
     data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
@@ -620,13 +621,16 @@ server <- function(input, output, session) {
     
 })
   
-  
-###############################################
-# Forest plot for acute aerobic
+################################################################################################
+# Make forest plot from selected data in reactives #############################################
+
+#- Forest plot for acute aerobic--------------
   plotInputAA <- function(){
+    # get the selected data for acute aerobic
     data <- AA_data()
+    # add a column with the names of the studies included in the analysis
     data$study <- c(gsub("logFC_","", rownames(data[1:nrow(data)-1,])), "Acute Aerobic score (REML)")
-    # forest plot
+    # make forest plot
     tabledata <- data.frame(mean = c(NA , data[,1]), 
                             lower= c(NA , data[,3]),
                             upper= c(NA , data[,4]))
@@ -640,7 +644,7 @@ server <- function(input, output, session) {
                col=fpColors(box="orange2",line="orange3", summary="orange3"))
   }
   output$Acute_A <- renderPlot({
-    #Validate selection criteria
+  #Validate selection criteria:
     validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
     validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
     validate(need(input$age!="",         "Please select at least one group in the age category")) 
@@ -650,15 +654,18 @@ server <- function(input, output, session) {
     validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
     validate(need(input$AA_studies!="",  "Please select at least one group in the study list")) 
     validate(need(!is.null(AA_data()),   "Impossible to find datasets for the selected criteria"))
+  #Plot the forest plot:
     plotInputAA()
   })
   
-  ###############################################
-  # forest plot for acute resistance
+
+#- forest plot for acute resistance ----------------------------
   plotInputAR <- function(){
+    # get the selected data for acute resistance
     data <- AR_data()
+    # add a column with the names of the studies included in the analysis
     data$study <- c(gsub("logFC_","", rownames(data[1:nrow(data)-1,])), "Acute Resistance score (REML)")
-    # forest plot
+    # make forest plot
     tabledata <- data.frame(mean = c(NA , data[,1]), 
                             lower= c(NA , data[,3]),
                             upper= c(NA , data[,4]))
@@ -672,7 +679,7 @@ server <- function(input, output, session) {
                col=fpColors(box="orangered2",line="orangered3", summary="orangered3"))
   }
   output$Acute_R <- renderPlot({
-    #Validate selection criteria
+  #Validate selection criteria:
     validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
     validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
     validate(need(input$age!="",         "Please select at least one group in the age category")) 
@@ -682,15 +689,18 @@ server <- function(input, output, session) {
     validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
     validate(need(input$AR_studies!="",  "Please select at least one group in the study list"))
     validate(need(!is.null(AR_data()),   "Impossible to find datasets for the selected criteria"))
+  #Plot the forest plot:
     plotInputAR()
   })
   
-  ###############################################
-  # forest plot for training aerobic
+
+#- forest plot for training aerobic ----------------------------
   plotInputTA <- function(){
+    # get the selected data for training aerobic
     data <- TA_data()
+    # add a column with the names of the studies included in the analysis
     data$study <- c(gsub("logFC_","", rownames(data[1:nrow(data)-1,])), "Training Aerobic score (REML)")
-    # forest plot
+    # make forest plot
     tabledata <- data.frame(mean = c(NA , data[,1]), 
                             lower= c(NA , data[,3]),
                             upper= c(NA , data[,4]))
@@ -704,7 +714,7 @@ server <- function(input, output, session) {
                col=fpColors(box="dodgerblue3",line="dodgerblue4", summary="dodgerblue4"))
   }
     output$Training_A <- renderPlot({
-      #Validate selection criteria
+    #Validate selection criteria:
       validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
       validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
       validate(need(input$age!="",         "Please select at least one group in the age category")) 
@@ -714,15 +724,18 @@ server <- function(input, output, session) {
       validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
       validate(need(input$TA_studies!="",  "Please select at least one group in the study list")) 
       validate(need(!is.null(TA_data()),   "Impossible to find datasets for the selected criteria"))
-    plotInputTA()
+   #Plot the forest plot:
+      plotInputTA()
   })
   
-  ###############################################
-  # forest plot for training resistance
+    
+#- forest plot for training resistance ----------------------------
   plotInputTR <- function(){
+    # get the selected data for training resistance
     data <- TR_data()
+    # add a column with the names of the studies included in the analysis
     data$study <- c(gsub("logFC_","", rownames(data[1:nrow(data)-1,])), "Training Resistance score (REML)")
-    # forest plot
+    # make forest plot
     tabledata <- data.frame(mean = c(NA , data[,1]), 
                             lower= c(NA , data[,3]),
                             upper= c(NA , data[,4]))
@@ -736,7 +749,7 @@ server <- function(input, output, session) {
                col=fpColors(box="green3",line="green4", summary="green4"))
   }
   output$Training_R <- renderPlot({
-    #Validate selection criteria
+  #Validate selection criteria:
     validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
     validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
     validate(need(input$age!="",         "Please select at least one group in the age category")) 
@@ -746,15 +759,18 @@ server <- function(input, output, session) {
     validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
     validate(need(input$TR_studies!="",  "Please select at least one group in the study list")) 
     validate(need(!is.null(TR_data()),   "Impossible to find datasets for the selected criteria"))
-  plotInputTR()
+  #Plot the forest plot:
+    plotInputTR()
 })
 
-  ###############################################
-  # forest plot for training combined
+  
+#- forest plot for training combined ----------------------------
   plotInputTC <- function(){
+    # get the selected data for training combined
     data <- TC_data()
+    # add a column with the names of the studies included in the analysis
     data$study <- c(gsub("logFC_","", rownames(data[1:nrow(data)-1,])), "Training Combined score (REML)")
-    # forest plot
+    # make forest plot
     tabledata <- data.frame(mean = c(NA , data[,1]), 
                             lower= c(NA , data[,3]),
                             upper= c(NA , data[,4]))
@@ -768,7 +784,7 @@ server <- function(input, output, session) {
                col=fpColors(box="aquamarine3",line="aquamarine4", summary="aquamarine4"))
   }
   output$Training_C <- renderPlot({
-    #Validate selection criteria
+  #Validate selection criteria:
     validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
     validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
     validate(need(input$age!="",         "Please select at least one group in the age category")) 
@@ -778,15 +794,18 @@ server <- function(input, output, session) {
     validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
     validate(need(input$TC_studies!="",  "Please select at least one group in the study list"))
     validate(need(!is.null(TC_data()),   "Impossible to find datasets for the selected criteria"))
+  #Plot the forest plot:
     plotInputTC()
   })
-  
-  ###############################################
-  # forest plot for Inactivity
+
+    
+#- forest plot for Inactivity ----------------------------
   plotInputIN <- function(){
+    # get the selected data for inactivity
     data <- IN_data()
+    # add a column with the names of the studies included in the analysis
     data$study <- c(gsub("logFC_","", rownames(data[1:nrow(data)-1,])), "Physical Inactivity score (REML)")
-    # forest plot
+    # make forest plot
     tabledata <- data.frame(mean = c(NA , data[,1]), 
                             lower= c(NA , data[,3]),
                             upper= c(NA , data[,4]))
@@ -800,7 +819,7 @@ server <- function(input, output, session) {
                col=fpColors(box="maroon3",line="maroon4", summary="maroon4"))
   }
   output$Inact <- renderPlot({
-    #Validate selection criteria
+  #Validate selection criteria:
     validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
     validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
     validate(need(input$age!="",         "Please select at least one group in the age category")) 
@@ -810,12 +829,13 @@ server <- function(input, output, session) {
     validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
     validate(need(input$IN_studies!="",  "Please select at least one group in the study list")) 
     validate(need(!is.null(IN_data()),   "Impossible to find datasets for the selected criteria"))
+  #Plot the forest plot:
     plotInputIN()
   })
   
   
-  ###############################################
-  # Data download
+###########################################################################################################
+# Make button to download data
   output$downloadData <- downloadHandler(
     filename = function() { paste(input$genename, "_MetaMEx.xlsx", sep="") },
     content = function(file) {
@@ -830,9 +850,8 @@ server <- function(input, output, session) {
       write.xlsx(dataset, file, row.names=F)
     })
 
-  
-  ###########################################################################################################
-  #save as PDF report
+###########################################################################################################
+# Make button to save as PDF
   output$downloadReport = downloadHandler(
     filename = function() { paste(input$genename, "_MetaMEx.pdf", sep="") },
     content = function(file) {
@@ -841,12 +860,18 @@ server <- function(input, output, session) {
                       c(3,4),c(3,4),c(3,4),
                       c(5,6))
       margin = theme(plot.margin = unit(c(2,2,2,2), "cm"))
-      if(!is.null(AA_data())) { AA <- grid.grabExpr(print(plotInputAA()))} else {AA <- textGrob("Acute Aerobic:\nNo data available for the selected criteria")}
-      if(!is.null(AR_data())) { AR <- grid.grabExpr(print(plotInputAR()))} else {AR <- textGrob("Acute Resistance:\nNo data available for the selected criteria")}
-      if(!is.null(TA_data())) { TA <- grid.grabExpr(print(plotInputTA()))} else {TA <- textGrob("Training Aerobic:\nNo data available for the selected criteria")}
-      if(!is.null(TR_data())) { TR <- grid.grabExpr(print(plotInputTR()))} else {TR <- textGrob("Training Resistance:\nNo data available for the selected criteria")}
-      if(!is.null(TC_data())) { TC <- grid.grabExpr(print(plotInputTC()))} else {TC <- textGrob("Training Combined:\nNo data available for the selected criteria")}
-      if(!is.null(IN_data())) { IN <- grid.grabExpr(print(plotInputIN()))} else {IN <- textGrob("Physical Inactivity:\nNo data available for the selected criteria")}
+      if(!is.null(AA_data())) { AA <- grid.grabExpr(print(plotInputAA()))} 
+        else {AA <- textGrob("Acute Aerobic:\nNo data available for the selected criteria")}
+      if(!is.null(AR_data())) { AR <- grid.grabExpr(print(plotInputAR()))}
+        else {AR <- textGrob("Acute Resistance:\nNo data available for the selected criteria")}
+      if(!is.null(TA_data())) { TA <- grid.grabExpr(print(plotInputTA()))}
+        else {TA <- textGrob("Training Aerobic:\nNo data available for the selected criteria")}
+      if(!is.null(TR_data())) { TR <- grid.grabExpr(print(plotInputTR()))}
+        else {TR <- textGrob("Training Resistance:\nNo data available for the selected criteria")}
+      if(!is.null(TC_data())) { TC <- grid.grabExpr(print(plotInputTC()))}
+        else {TC <- textGrob("Training Combined:\nNo data available for the selected criteria")}
+      if(!is.null(IN_data())) { IN <- grid.grabExpr(print(plotInputIN()))}
+        else {IN <- textGrob("Physical Inactivity:\nNo data available for the selected criteria")}
       
       pdf(file, onefile = TRUE, width=16, height=22.6)
       grid.arrange(AA, AR, TA, TR, TC, IN,
@@ -858,11 +883,7 @@ server <- function(input, output, session) {
   })
   
   
-  ###############################################
-  # Annotation table
-  output$Annotation <- renderTable(spacing='xs',{
-    annotation
-  })
+
   
 
 }
