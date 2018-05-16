@@ -48,8 +48,10 @@ AR_names <- sort(unique(sub('_.*', '', AR_names)))
 TA_names <- sub('.*GSE', 'GSE', colnames(Stats_TA))
 TA_names <- sort(unique(sub('_.*', '', TA_names)))
 
-TR_names <- sub('.*GSE', 'GSE', colnames(Stats_TR))
-TR_names <- sort(unique(sub('_.*', '', TR_names)))
+TR_names <- colnames(Stats_TR[grepl('logFC', colnames(Stats_TR))])
+TR_names <- gsub("logFC_","",TR_names)
+TR_names <- gsub("_.*","",TR_names)
+TR_names <- sort(TR_names[!duplicated(TR_names)])
 
 TC_names <- sub('.*GSE', 'GSE', colnames(Stats_TC))
 TC_names <- sort(unique(sub('_.*', '', TC_names)))
@@ -57,10 +59,10 @@ TC_names <- sort(unique(sub('_.*', '', TC_names)))
 IN_names <- sub('.*GSE', 'GSE', colnames(Stats_IN))
 IN_names <- sort(unique(sub('_.*', '', IN_names)))
 
-
+TR_names
 # Load the table describing the legend of the tables
 annotation <- read_csv("Datasets_categories.csv", col_names = TRUE,
-                       col_types=cols(.default= col_character()))
+                       col_types=cols(.default = col_character()))
 
 
 # Set up the different categories to be selected
@@ -104,15 +106,15 @@ options(shiny.sanitize.errors=T)
 
 ##########################################################################################################################
 # Set up the UI using fluid rows #########################################################################################
-ui <- fluidPage(theme = "bootstrap.css",
+ui <- fluidPage(theme = "bootstrap.css", tags$head(includeHTML("google-analytics.html")),
 
   fluidRow(style="background-color:#EA8A35;;color:white;",
     column(2, imageOutput('image1', height="160px")),
     column(9, h1(tags$b("MetaMEx")),
               h3("Transcriptomic meta-analysis of skeletal muscle response to exercise"),
-              h4(a("Nicolas J. Pillon,", href="https://nicopillon.com", style="color:#ffeb3d;", target="_blank"),
-                 a("Anna Krook,", href="https://ki.se/en/people/annkro", style="color:#ffeb3d;", target="_blank"),
-                 a("Juleen R. Zierath", href="https://ki.se/en/people/julzie", style="color:#ffeb3d;", target="_blank")))),
+              h4(a("Nicolas J. Pillon,", href="https://nicopillon.com",         style="color:#ffeb3d;", target="_blank"),
+                 a("Anna Krook,",        href="https://ki.se/en/people/annkro", style="color:#ffeb3d;", target="_blank"),
+                 a("Juleen R. Zierath",  href="https://ki.se/en/people/julzie", style="color:#ffeb3d;", target="_blank")))),
 
   fluidRow(style="background-color:#F3BB8A;padding:1%",
     column(12, "Use MetaMEx to test the behavior of a gene in skeletal muscle during exercise and inactivity. Type the official gene symbol and select your population of interest.")),
@@ -875,8 +877,6 @@ server <- function(input, output, session) {
       dev.off()
   })
   
-  
-
   
 
 }
