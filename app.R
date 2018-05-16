@@ -298,7 +298,7 @@ server <- function(input, output, session) {
     # meta-analysis stats
       meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
                   method = "REML", measure = "MD", data = data, control=list(maxiter=1000, stepadj=0.5))
-      fdr  <- p.adjust(meta$pval, method='BH', n=length(rownames(Stats_AA)))
+      fdr  <- p.adjust(meta$pval, method='BH')
     #merge table with meta data
       data <- (rbind(data,
                      Acute_Aerobic_Meta_Analysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T))))
@@ -368,7 +368,7 @@ server <- function(input, output, session) {
     #meta-analysis stats
     meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
                 method = "REML", measure = "MD", data = data, control=list(maxiter=1000, stepadj=0.5))
-    fdr  <- p.adjust(meta$pval, method='BH', n=length(rownames(Stats_AR)))
+    fdr  <- p.adjust(meta$pval, method='BH')
     #merge table with meta data
     data <- (rbind(data,
                    Acute_Resistance_Meta_Analysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T))))
@@ -428,7 +428,7 @@ server <- function(input, output, session) {
     #meta-analysis stats
     meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
                 method = "REML", measure = "MD", data = data, control=list(maxiter=1000, stepadj=0.5))
-    fdr  <- p.adjust(meta$pval, method='BH', n=length(rownames(Stats_TA)))
+    fdr  <- p.adjust(meta$pval, method='BH')
     #merge table with meta data
     data <- (rbind(data,
                    Training_Aerobic_Meta_Analysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T))))
@@ -488,7 +488,7 @@ server <- function(input, output, session) {
     #meta-analysis stats
     meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
                 method = "REML", measure = "MD", data = data, control=list(maxiter=1000, stepadj=0.5))
-    fdr  <- p.adjust(meta$pval, method='BH', n=length(rownames(Stats_TR)))
+    fdr  <- p.adjust(meta$pval, method='BH')
     #merge table with meta data
     data <- (rbind(data,
                    Training_Resistance_Meta_Analysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T))))
@@ -548,7 +548,7 @@ server <- function(input, output, session) {
     #meta-analysis stats
     meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
                 method = "REML", measure = "MD", data = data, control=list(maxiter=1000, stepadj=0.5))
-    fdr  <- p.adjust(meta$pval, method='BH', n=length(rownames(Stats_TC)))
+    fdr  <- p.adjust(meta$pval, method='BH')
     #merge table with meta data
     data <- (rbind(data,
                    Training_Combined_Meta_Analysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T))))
@@ -608,7 +608,7 @@ server <- function(input, output, session) {
     #meta-analysis stats
     meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
                 method = "REML", measure = "MD", data = data, control=list(maxiter=1000, stepadj=0.5))
-    fdr  <- p.adjust(meta$pval, method='BH', n=length(rownames(Stats_IN)))
+    fdr  <- p.adjust(meta$pval, method='BH')
     #merge table with meta data
     data <- (rbind(data,
                    Inactivity_Meta_Analysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T))))
