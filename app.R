@@ -48,7 +48,7 @@ AR_names <- sort(unique(sub('_.*', '', AR_names)))
 TA_names <- sub('.*GSE', 'GSE', colnames(Stats_TA))
 TA_names <- sort(unique(sub('_.*', '', TA_names)))
 
-TR_names <- colnames(Stats_TR[grepl('logFC', colnames(Stats_TR))])
+TR_names <- colnames(Stats_TR[grepl('logFC', colnames(Stats_TR))]) # have to use different method because one of the studies in not "GSE"
 TR_names <- gsub("logFC_","",TR_names)
 TR_names <- gsub("_.*","",TR_names)
 TR_names <- sort(TR_names[!duplicated(TR_names)])
