@@ -47,9 +47,7 @@ genelist <- unique(genelist)
 
 
 # Load the table describing the legend of the tables
-annotation <- read_csv("Datasets_categories.csv", col_names = TRUE,
-                       col_types=cols(.default = col_character()))
-
+annotation <- readRDS("Datasets_categories.Rds")
 
 # Set up the different categories to be selected
 muscle_choice <- c("Vastus Lateralis" = "VAL",

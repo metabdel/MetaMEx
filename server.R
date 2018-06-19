@@ -59,14 +59,17 @@ server <- function(input, output, session) {
                      Biopsy %in% input$biopsy,
                      Exercisetype %in% input$exercisetype)
     #order datasets by alphabetical order
-      data <- data[order(rownames(data)),]
+      data <- data[order(data$Studies),]
     # meta-analysis stats
       meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
                   method = "REML", measure = "MD", data = data, control=list(maxiter=1000, stepadj=0.5))
       fdr  <- p.adjust(meta$pval, method='BH')
     #merge table with meta data
-      data <- (rbind(data[,1:10],
-                     MetaAnalysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T))))
+      data <- rbind(data[,1:10],
+                     MetaAnalysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T), NA))
+    #add a column with the names of the studies included in the analysis
+      data$Studies <- c(data$Studies[1:(length(data$Studies)-1)], "Acute Aerobic score (REML)")
+      data <- (data)
   },error=function(e) NULL)
 })
   
@@ -100,7 +103,7 @@ server <- function(input, output, session) {
                    Biopsy %in% input$biopsy,
                    Exercisetype %in% input$exercisetype)
     #order datasets by alphabetical order
-    data <- data[order(rownames(data)),]
+    data <- data[order(data$Studies),]
     #meta-analysis stats
     meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
                 method = "REML", measure = "MD", data = data, control=list(maxiter=1000, stepadj=0.5))
@@ -108,6 +111,9 @@ server <- function(input, output, session) {
     #merge table with meta data
     data <- (rbind(data[,1:10],
                    Acute_Resistance_Meta_Analysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T))))
+    # add a column with the names of the studies included in the analysis
+    data$Studies <- c(gsub("logFC_", "", data$Studies[1:(length(data$Studies)-1)]), "Acute Resistance score (REML)")
+    data <- data.frame(data)
     },error=function(e) NULL)
   })
   
@@ -139,7 +145,7 @@ server <- function(input, output, session) {
                    Training %in% input$training,
                    Disease %in% input$disease)
     #order datasets by alphabetical order
-    data <- data[order(rownames(data)),]
+    data <- data[order(data$Studies),]
     #meta-analysis stats
     meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
                 method = "REML", measure = "MD", data = data, control=list(maxiter=1000, stepadj=0.5))
@@ -147,6 +153,9 @@ server <- function(input, output, session) {
     #merge table with meta data
     data <- (rbind(data[,1:10],
                    Training_Aerobic_Meta_Analysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T))))
+    # add a column with the names of the studies included in the analysis
+    data$Studies <- c(gsub("logFC_", "", data$Studies[1:(length(data$Studies)-1)]), "Training Aerobic score (REML)")
+    data <- data.frame(data)
   },error=function(e) NULL)
   }) 
   
@@ -177,8 +186,8 @@ server <- function(input, output, session) {
                      Age %in% input$age, 
                      Training %in% input$training,
                      Disease %in% input$disease)
-      #order datasets by alphabetical order
-      data <- data[order(rownames(data)),]
+    #order datasets by alphabetical order
+    data <- data[order(data$Studies),]
     #meta-analysis stats
     meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
                 method = "REML", measure = "MD", data = data, control=list(maxiter=1000, stepadj=0.5))
@@ -186,6 +195,9 @@ server <- function(input, output, session) {
     #merge table with meta data
     data <- (rbind(data[,1:10],
                    Training_Resistance_Meta_Analysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T))))
+    # add a column with the names of the studies included in the analysis
+    data$Studies <- c(gsub("logFC_", "", data$Studies[1:(length(data$Studies)-1)]), "Training Resistance score (REML)")
+    data <- data.frame(data)
   },error=function(e) NULL)
   })
   
@@ -217,7 +229,7 @@ server <- function(input, output, session) {
                      Training %in% input$training,
                      Disease %in% input$disease)
       #order datasets by alphabetical order
-      data <- data[order(rownames(data)),]
+      data <- data[order(data$Studies),]
     #meta-analysis stats
     meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
                 method = "REML", measure = "MD", data = data, control=list(maxiter=1000, stepadj=0.5))
@@ -225,6 +237,9 @@ server <- function(input, output, session) {
     #merge table with meta data
     data <- (rbind(data[,1:10],
                    Training_Combined_Meta_Analysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T))))
+    # add a column with the names of the studies included in the analysis
+    data$Studies <- c(gsub("logFC_", "", data$Studies[1:(length(data$Studies)-1)]), "Training Combined score (REML)")
+    data <- data.frame(data)
   },error=function(e) NULL)
   })
   
@@ -256,7 +271,7 @@ server <- function(input, output, session) {
                    Training %in% input$training,
                    Disease %in% input$disease)
     #order datasets by alphabetical order
-    data <- data[order(rownames(data)),]
+    data <- data[order(data$Studies),]
       
     #meta-analysis stats
     meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
@@ -265,6 +280,9 @@ server <- function(input, output, session) {
     #merge table with meta data
     data <- (rbind(data[,1:10],
                    Inactivity_Meta_Analysis=c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(data$size, na.rm=T))))
+    # add a column with the names of the studies included in the analysis
+    data$Studies <- c(gsub("logFC_", "", data$Studies[1:(length(data$Studies)-1)]), "Physical Inactivity score (REML)")
+    data <- data.frame(data)
     },error=function(e) NULL)
     
 })
@@ -276,10 +294,8 @@ server <- function(input, output, session) {
   plotInputAA <- function(){
     # get the selected data for acute aerobic
     data <- AA_data()
-    # add a column with the names of the studies included in the analysis
-    data$Studies <- c(gsub("logFC_", "", data$Studies[1:(length(data$Studies)-1)]), "Acute Aerobic score (REML)")
     # make forest plot
-    tabledata <- data.frame(mean = c(NA , data[,1]), 
+    tabledata <- data.frame(mean = c(NA , data[,1]),
                             lower= c(NA , data[,3]),
                             upper= c(NA , data[,4]))
     tabletext<-cbind(c('Study' , data[,10]),
@@ -312,8 +328,6 @@ server <- function(input, output, session) {
   plotInputAR <- function(){
     # get the selected data for acute resistance
     data <- AR_data()
-    # add a column with the names of the studies included in the analysis
-    data$Studies <- c(gsub("logFC_", "", data$Studies[1:(length(data$Studies)-1)]), "Acute Resistance score (REML)")
     # make forest plot
     tabledata <- data.frame(mean = c(NA , data[,1]), 
                             lower= c(NA , data[,3]),
@@ -347,8 +361,6 @@ server <- function(input, output, session) {
   plotInputTA <- function(){
     # get the selected data for training aerobic
     data <- TA_data()
-    # add a column with the names of the studies included in the analysis
-    data$Studies <- c(gsub("logFC_", "", data$Studies[1:(length(data$Studies)-1)]), "Training Aerobic score (REML)")
     # make forest plot
     tabledata <- data.frame(mean = c(NA , data[,1]), 
                             lower= c(NA , data[,3]),
@@ -382,8 +394,6 @@ server <- function(input, output, session) {
   plotInputTR <- function(){
     # get the selected data for training resistance
     data <- TR_data()
-    # add a column with the names of the studies included in the analysis
-    data$Studies <- c(gsub("logFC_", "", data$Studies[1:(length(data$Studies)-1)]), "Training Resistance score (REML)")
     # make forest plot
     tabledata <- data.frame(mean = c(NA , data[,1]), 
                             lower= c(NA , data[,3]),
@@ -417,8 +427,6 @@ server <- function(input, output, session) {
   plotInputTC <- function(){
     # get the selected data for training combined
     data <- TC_data()
-    # add a column with the names of the studies included in the analysis
-    data$Studies <- c(gsub("logFC_", "", data$Studies[1:(length(data$Studies)-1)]), "Training Combined score (REML)")
     # make forest plot
     tabledata <- data.frame(mean = c(NA , data[,1]), 
                             lower= c(NA , data[,3]),
@@ -452,8 +460,6 @@ server <- function(input, output, session) {
   plotInputIN <- function(){
     # get the selected data for inactivity
     data <- IN_data()
-    # add a column with the names of the studies included in the analysis
-    data$Studies <- c(gsub("logFC_", "", data$Studies[1:(length(data$Studies)-1)]), "Physical Inactivity score (REML)")
     # make forest plot
     tabledata <- data.frame(mean = c(NA , data[,1]), 
                             lower= c(NA , data[,3]),
@@ -495,7 +501,6 @@ server <- function(input, output, session) {
                        TC_data(),
                        IN_data())
       dataset <- dataset[,c(10,1:4,9)]
-      dataset$study <- gsub("logFC_","", rownames(dataset))
       write.xlsx(dataset, file, row.names=F)
     })
 
