@@ -3,6 +3,10 @@
 # Define server logic ##############################################################################################
 server <- function(input, output, session) {
 
+    # Hide the loading message when the rest of the server function has executed
+    hide(id = "loading-content", anim = TRUE, animType = "fade")    
+    show("app-content")
+  
 #- Make all checkboxes selected by default ----------------------------------------
   observe({ updateCheckboxGroupInput(session, 'muscle',      choices = muscle_choice,   selected = if (input$bar_muscle) muscle_choice)})
   observe({ updateCheckboxGroupInput(session, 'sex',         choices = sex_choice,      selected = if (input$bar_sex) sex_choice)})
@@ -31,22 +35,8 @@ server <- function(input, output, session) {
 #- Make reactive functions to select data ----------------------------------------
   AA_data <- reactive({    
     # Select gene name and calculate parameters on filtered data
-    genename   <- toupper(input$genename)
-    data <- Stats_AA[genename,]
-    data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
-                       t(data[grepl('adj.P.Val',colnames(data))]), # Benjamini and Hochberg's method to control the false discovery rate
-                       t(data[grepl('CI.L',     colnames(data))]), # lower limit of the 95% confidence interval
-                       t(data[grepl('CI.R',     colnames(data))]), # upper limit of the 95% confidence interval
-                       t(data[grepl('mean.pre', colnames(data))]), # mean of control condition
-                       t(data[grepl('mean.post', colnames(data))]), # mean of exercise condition
-                       t(data[grepl('Sd.pre',   colnames(data))]), # standard deviation of control condition
-                       t(data[grepl('Sd.post',   colnames(data))]), # standard deviation of exercise condition
-                       t(data[grepl('size',     colnames(data))])) # number of subjects in the study
-    data <- cbind(data, str_split_fixed(rownames(data), "_", 9))
-    colnames(data) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
-                        'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                        'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Disease', 'Biopsy', 'Exercisetype')
-    data$Studies <- gsub("logFC_","", rownames(data))
+    data <- Stats_AA[toupper(input$genename),]
+    data <- DataForGeneName(data) #call the custom function to make data table
     
     tryCatch({
       data <- filter(data,
@@ -75,22 +65,8 @@ server <- function(input, output, session) {
   
   AR_data <- reactive({    
     # Select gene name and calculate parameters on filtered data
-    genename   <- toupper(input$genename)
-    data <- Stats_AR[genename,]
-    data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
-                       t(data[grepl('adj.P.Val',colnames(data))]), # Benjamini and Hochberg's method to control the false discovery rate
-                       t(data[grepl('CI.L',     colnames(data))]), # lower limit of the 95% confidence interval
-                       t(data[grepl('CI.R',     colnames(data))]), # upper limit of the 95% confidence interval
-                       t(data[grepl('mean.pre', colnames(data))]), # mean of control condition
-                       t(data[grepl('mean.post', colnames(data))]), # mean of exercise condition
-                       t(data[grepl('Sd.pre',   colnames(data))]), # standard deviation of control condition
-                       t(data[grepl('Sd.post',   colnames(data))]), # standard deviation of exercise condition
-                       t(data[grepl('size',     colnames(data))])) # number of subjects in the study
-    data <- cbind(data, str_split_fixed(rownames(data), "_", 9))
-    colnames(data) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
-                        'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                        'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Disease', 'Biopsy', 'Exercisetype')
-    data$Studies <- gsub("logFC_","", rownames(data))
+    data <- Stats_AR[toupper(input$genename),]
+    data <- DataForGeneName(data) #call the custom function to make data table
     
     tryCatch({
     data <- filter(data,
@@ -119,22 +95,8 @@ server <- function(input, output, session) {
   
   TA_data <- reactive({    
     # Select gene name and calculate parameters on filtered data
-    genename   <- toupper(input$genename)
-    data <- Stats_TA[genename,]
-    data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
-                       t(data[grepl('adj.P.Val',colnames(data))]), # Benjamini and Hochberg's method to control the false discovery rate
-                       t(data[grepl('CI.L',     colnames(data))]), # lower limit of the 95% confidence interval
-                       t(data[grepl('CI.R',     colnames(data))]), # upper limit of the 95% confidence interval
-                       t(data[grepl('mean.pre', colnames(data))]), # mean of control condition
-                       t(data[grepl('mean.post', colnames(data))]), # mean of exercise condition
-                       t(data[grepl('Sd.pre',   colnames(data))]), # standard deviation of control condition
-                       t(data[grepl('Sd.post',   colnames(data))]), # standard deviation of exercise condition
-                       t(data[grepl('size',     colnames(data))])) # number of subjects in the study
-    data <- cbind(data, str_split_fixed(rownames(data), "_", 9))
-    colnames(data) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
-                        'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                        'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Disease', 'Biopsy', 'Exercisetype')
-    data$Studies <- gsub("logFC_","", rownames(data))
+    data <- Stats_TA[toupper(input$genename),]
+    data <- DataForGeneName(data) #call the custom function to make data table
     
     tryCatch({
     data <- filter(data,
@@ -161,22 +123,8 @@ server <- function(input, output, session) {
   
   TR_data <- reactive({    
     # Select gene name and calculate parameters on filtered data
-    genename   <- toupper(input$genename)
-    data <- Stats_TR[genename,]
-    data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
-                       t(data[grepl('adj.P.Val',colnames(data))]), # Benjamini and Hochberg's method to control the false discovery rate
-                       t(data[grepl('CI.L',     colnames(data))]), # lower limit of the 95% confidence interval
-                       t(data[grepl('CI.R',     colnames(data))]), # upper limit of the 95% confidence interval
-                       t(data[grepl('mean.pre', colnames(data))]), # mean of control condition
-                       t(data[grepl('mean.post', colnames(data))]), # mean of exercise condition
-                       t(data[grepl('Sd.pre',   colnames(data))]), # standard deviation of control condition
-                       t(data[grepl('Sd.post',   colnames(data))]), # standard deviation of exercise condition
-                       t(data[grepl('size',     colnames(data))])) # number of subjects in the study
-    data <- cbind(data, str_split_fixed(rownames(data), "_", 9))
-    colnames(data) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
-                        'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                        'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Disease', 'Biopsy', 'Exercisetype')
-    data$Studies <- gsub("logFC_","", rownames(data))
+    data <- Stats_TR[toupper(input$genename),]
+    data <- DataForGeneName(data) #call the custom function to make data table
     
     tryCatch({
       data <- filter(data,
@@ -203,22 +151,8 @@ server <- function(input, output, session) {
   
   TC_data <- reactive({    
     # Select gene name and calculate parameters on filtered data
-    genename   <- toupper(input$genename)
-    data <- Stats_TC[genename,]
-    data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
-                       t(data[grepl('adj.P.Val',colnames(data))]), # Benjamini and Hochberg's method to control the false discovery rate
-                       t(data[grepl('CI.L',     colnames(data))]), # lower limit of the 95% confidence interval
-                       t(data[grepl('CI.R',     colnames(data))]), # upper limit of the 95% confidence interval
-                       t(data[grepl('mean.pre', colnames(data))]), # mean of control condition
-                       t(data[grepl('mean.post', colnames(data))]), # mean of exercise condition
-                       t(data[grepl('Sd.pre',   colnames(data))]), # standard deviation of control condition
-                       t(data[grepl('Sd.post',   colnames(data))]), # standard deviation of exercise condition
-                       t(data[grepl('size',     colnames(data))])) # number of subjects in the study
-    data <- cbind(data, str_split_fixed(rownames(data), "_", 9))
-    colnames(data) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
-                        'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                        'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Disease', 'Biopsy', 'Exercisetype')
-    data$Studies <- gsub("logFC_","", rownames(data))
+    data <- Stats_TC[toupper(input$genename),]
+    data <- DataForGeneName(data) #call the custom function to make data table
     
     tryCatch({
       data <- filter(data,
@@ -245,22 +179,8 @@ server <- function(input, output, session) {
   
   IN_data <- reactive({    
     # Select gene name and calculate parameters on filtered data
-    genename   <- toupper(input$genename)
-    data <- Stats_IN[genename,]
-    data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
-                       t(data[grepl('adj.P.Val',colnames(data))]), # Benjamini and Hochberg's method to control the false discovery rate
-                       t(data[grepl('CI.L',     colnames(data))]), # lower limit of the 95% confidence interval
-                       t(data[grepl('CI.R',     colnames(data))]), # upper limit of the 95% confidence interval
-                       t(data[grepl('mean.pre', colnames(data))]), # mean of control condition
-                       t(data[grepl('mean.post', colnames(data))]), # mean of exercise condition
-                       t(data[grepl('Sd.pre',   colnames(data))]), # standard deviation of control condition
-                       t(data[grepl('Sd.post',   colnames(data))]), # standard deviation of exercise condition
-                       t(data[grepl('size',     colnames(data))])) # number of subjects in the study
-    data <- cbind(data, str_split_fixed(rownames(data), "_", 9))
-    colnames(data) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
-                        'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                        'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Disease', 'Biopsy', 'Exercisetype')
-    data$Studies <- gsub("logFC_","", rownames(data))
+    data <- Stats_IN[toupper(input$genename),]
+    data <- DataForGeneName(data) #call the custom function to make data table
     
     tryCatch({
     data <- filter(data,

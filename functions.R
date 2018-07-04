@@ -10,6 +10,7 @@ library(grid)
 library(gridExtra)
 library(readr)
 library(dplyr)
+library(shinyjs)
 
 # Load the different datasets, all in csv format
 # Each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
@@ -86,3 +87,23 @@ own$summary$cex <- 1.2
 
 # sanitize errors
 options(shiny.sanitize.errors=T)
+
+
+#Function to make data table for selected gene
+DataForGeneName <- function(data){
+  data <- data.frame(t(data[grepl('logFC',    colnames(data))]), # M-value (M) is the log2-fold change
+                     t(data[grepl('adj.P.Val',colnames(data))]), # Benjamini and Hochberg's method to control the false discovery rate
+                     t(data[grepl('CI.L',     colnames(data))]), # lower limit of the 95% confidence interval
+                     t(data[grepl('CI.R',     colnames(data))]), # upper limit of the 95% confidence interval
+                     t(data[grepl('mean.pre', colnames(data))]), # mean of control condition
+                     t(data[grepl('mean.post', colnames(data))]), # mean of exercise condition
+                     t(data[grepl('Sd.pre',   colnames(data))]), # standard deviation of control condition
+                     t(data[grepl('Sd.post',   colnames(data))]), # standard deviation of exercise condition
+                     t(data[grepl('size',     colnames(data))])) # number of subjects in the study
+  data <- cbind(data, str_split_fixed(rownames(data), "_", 9))
+  colnames(data) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
+                      'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
+                      'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Disease', 'Biopsy', 'Exercisetype')
+  data$Studies <- gsub("logFC_","", rownames(data))
+  data
+}

@@ -1,19 +1,55 @@
 # Define UI ----
 source("functions.R")
+url_twitter  <- "https://twitter.com/intent/tweet?text=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20@NicoPillon%20@JuleenRZierath%20@AnnaKrook_KI&url=http://www.metamex.eu"
+url_linkedin <- "https://www.linkedin.com/shareArticle?mini=true&url=http://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20&summary=MetaMEx&source=LinkedIn"
+url_facebook <- "https://www.facebook.com/sharer.php?u=https://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20"
 
+appCSS <- "
+#loading-content {
+  position: absolute;
+  background: #EA8A35;
+  z-index: 100;
+  left: 0;
+  right: 0;
+  color: #FFFFFF;
+  padding: 0 0 0 18%;
+  font-family: sans-serif;
+}
+"
 
 ##########################################################################################################################
 # Set up the UI using fluid rows #########################################################################################
-ui <- fluidPage(theme = "bootstrap.css", tags$head(includeHTML("google-analytics.html")),
+ui <- fluidPage(
+  
+  #make loading page
+  useShinyjs(),
+  inlineCSS(appCSS),
+  div(id = "loading-content",
+      h1(tags$b("MetaMEx: loading the data...")),
+      h3("Transcriptomic meta-analysis of skeletal muscle response to exercise"),
+      h4("Nicolas J. Pillon, Anna Krook, Juleen R. Zierath", style="color:#ffeb3d;")),
+  hidden(div(id = "app-content",
+  
+  #The main app code starts here 
+  theme = "bootstrap.css", tags$head(includeHTML("google-analytics.html")),
 
   fluidRow(style="background-color:#EA8A35;;color:white;",
-    column(2, imageOutput('image1', height="160px")),
-    column(9, h1(tags$b("MetaMEx")),
+    column(2, style="text-align:center;padding:5px 0 5px 0;",
+           imageOutput('image1', height="160px")),
+    column(8, h1(tags$b("MetaMEx")),
               h3("Transcriptomic meta-analysis of skeletal muscle response to exercise"),
               h4(a("Nicolas J. Pillon,", href="https://nicopillon.com",         style="color:#ffeb3d;", target="_blank"),
                  a("Anna Krook,",        href="https://ki.se/en/people/annkro", style="color:#ffeb3d;", target="_blank"),
-                 a("Juleen R. Zierath",  href="https://ki.se/en/people/julzie", style="color:#ffeb3d;", target="_blank")))),
-
+                 a("Juleen R. Zierath",  href="https://ki.se/en/people/julzie", style="color:#ffeb3d;", target="_blank"))),
+    column(2, style="text-align:center;padding:20px 10px 10px 10px;",
+              h5("Share MetaMEx"),
+              actionButton("twitter_share", label = "", icon = icon("twitter"),
+                           onclick = sprintf("window.open('%s')", url_twitter)),
+              actionButton("linkedin_share", label = "", icon = icon("linkedin"),
+                           onclick = sprintf("window.open('%s')", url_linkedin)),
+              actionButton("facebook_share", label = "", icon = icon("facebook"),
+                           onclick = sprintf("window.open('%s')", url_facebook)))),
+           
   fluidRow(style="background-color:#F3BB8A;padding:1%",
     column(12, "Use MetaMEx to test the behavior of a gene in skeletal muscle during exercise and inactivity. Type the official gene symbol and select your population of interest.")),
   
@@ -100,5 +136,8 @@ ui <- fluidPage(theme = "bootstrap.css", tags$head(includeHTML("google-analytics
                   "and illustrated by", a("Csil", href="http://misshue.net", style="color:#ffeb3d;", target="_blank"),
                   "under the Creative Commons Attribution-NonCommercial 4.0 International",
                   a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", style="color:#ffeb3d;", target="_blank")))
+  )
+)
+
   )
 )
