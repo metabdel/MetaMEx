@@ -38,7 +38,7 @@ output$Annotation <- renderTable(spacing='xs',{ annotation })
 # Make reactive functions to select data
 #=======================================================================================
   AA_data <- reactive({
-    tryCatch({ start <- Sys.time()
+    tryCatch({
     #Select data based on gene name
     selectedata <- Stats_AA[toupper(input$genename),]
     #call the custom function to make a useable data table
@@ -56,10 +56,9 @@ output$Annotation <- renderTable(spacing='xs',{ annotation })
     #call the custom function for meta-analysis
     selectedata <- suppressWarnings(MetaAnalysis(selectedata))
     #add a column with the names of the studies included in the analysis
-    selectedata$Studies <- c(selectedata$Studies[1:(nrow(selectedata)-1)], "Acute Aerobic score (REML)")
+    selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(length(selectedata$Studies)-1)]), "Acute Aerobic score (REML)")
     return(selectedata)
-    },  
-  print(paste("Data preparation in reactive:", signif(Sys.time()-start,3))),
+    },
   error=function(e) NULL) })
 
   AR_data <- reactive({
@@ -176,7 +175,7 @@ output$Annotation <- renderTable(spacing='xs',{ annotation })
 
   plotInputAA <- function() ({
     #Validate selection criteria:
-    start2 <- Sys.time()
+    #start2 <- Sys.time()
     validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
     validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
     validate(need(input$age!="",         "Please select at least one group in the age category")) 
@@ -200,7 +199,7 @@ output$Annotation <- renderTable(spacing='xs',{ annotation })
                             is.summary=c(TRUE,rep(FALSE,(nrow(selectedata)-1)),TRUE),
                             xlog=F,  txt_gp = own, xlab="logFC",
                             col=fpColors(box="orange2",line="orange3", summary="orange3"))
-    print(paste("Make forest plot:", signif(Sys.time()-start2,3)))
+    #print(paste("Make forest plot:", signif(Sys.time()-start2,3)))
     return(finalplot)
   })
   
@@ -349,9 +348,9 @@ output$Annotation <- renderTable(spacing='xs',{ annotation })
 # print plots
 #=======================================================================================
   output$Acute_A <- renderPlot({
-    start3 <- Sys.time()
+    #start3 <- Sys.time()
     plotInputAA()
-    print(paste("Print forest plot:", signif(Sys.time()-start3,3)))
+    #print(paste("Print forest plot:", signif(Sys.time()-start3,3)))
   })
   output$Acute_R <- renderPlot({plotInputAR()})
   output$Training_A <- renderPlot({plotInputTA()})
