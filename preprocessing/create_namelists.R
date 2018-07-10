@@ -1,4 +1,4 @@
-setwd("C:/Dropbox/NICO/R/Shiny/MetaMEx - Test")
+setwd("C:/Dropbox/NICO/R/Shiny/MetaMEx")
 library(stringr)
 
 # Make a list of the different studies names in each file

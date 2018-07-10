@@ -4,15 +4,11 @@
 options(shiny.sanitize.errors=F)
 
 #load libraries
-start <- Sys.time()
 library(forestplot)
 library(metafor)
 library(dplyr)
-stop <- Sys.time()
-print(paste("Time to load libraries:", stop-start))
 
 # Load the different datasets, all in csv format, each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
-start <- Sys.time()
 Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
 Stats_AR <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
 Stats_TA <- readRDS("data/Training_Aerobic_Merged_Stats_SYMBOL.Rds")
@@ -20,14 +16,11 @@ Stats_TR <- readRDS("data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
 Stats_TC <- readRDS("data/Training_Combined_Merged_Stats_SYMBOL.Rds")
 Stats_IN <- readRDS("data/Inactivity_Merged_Stats_SYMBOL.Rds")
 annotation <- readRDS("data/Datasets_legend.Rds") # Load the table describing the legend of the tables
-stop <- Sys.time()
-print(paste("Time to load data:", stop-start))
 
 # load the lists of the different studies, categories and gene names
 list_datasets   <- readRDS("data/Names_datasets.Rds")
 list_genes      <- readRDS("data/Names_genes.Rds")
 list_categories <- readRDS("data/Names_categories.Rds")
-
 
 # Set up the graphical parameters for the forest plots
 library(forestplot)
@@ -37,12 +30,10 @@ own$xlab$cex <- 1
 own$label$cex <- 0.9
 own$summary$cex <- 1.2
 
-
 #URLs for sharing buttons
 url_twitter  <- "https://twitter.com/intent/tweet?text=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20@NicoPillon%20@JuleenRZierath%20@AnnaKrook_KI&url=http://www.metamex.eu"
 url_linkedin <- "https://www.linkedin.com/shareArticle?mini=true&url=http://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20&summary=MetaMEx&source=LinkedIn"
 url_facebook <- "https://www.facebook.com/sharer.php?u=https://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20"
-
 
 #Function to make data table for selected gene
 library(stringr)
@@ -66,14 +57,12 @@ DataForGeneName <- function(x){
 
 #Function to make meta-analysis table
 MetaAnalysis <- function(x){
-#order datasets by alphabetical order
-x <- x[order(x$Studies),]
-#meta-analysis stats
-meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
-            method = "REML", measure = "MD", data = x, control=list(maxiter=1000, stepadj=0.5))
-fdr  <- p.adjust(meta$pval, method='BH')
-#merge table with meta data
-x <- rbind(x[,1:10],
-           c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(x$size, na.rm=T)))
+  x <- x[order(x$Studies),]
+  meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
+              method = "REML", measure = "MD", data = x, control=list(maxiter=1000, stepadj=0.5))
+  fdr  <- p.adjust(meta$pval, method='BH')
+  x <- rbind(x[,1:10],
+             c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(x$size, na.rm=T)))
+  x
 }
 

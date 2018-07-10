@@ -1,19 +1,21 @@
 # Define UI ----
 source("functions.R")
 
+
 ##########################################################################################################################
 # Set up the UI using fluid rows #########################################################################################
 ui <- fluidPage(theme = "bootstrap.css", tags$head(includeHTML("google-analytics.html")),
 
                 fluidRow(style="background-color:#EA8A35;;color:white",
-                         column(2, style="text-align:center;padding:5px 0 5px 0;",
+                         column(2, style="text-align:center;padding:1%;",
                                 imageOutput('image1', height='160px')),
-                         column(8, h1(tags$b("MetaMEx")),
+                         column(8,  style="text-align:left;padding:1%;",
+                                h1(tags$b("MetaMEx")),
                                 h3("Transcriptomic meta-analysis of skeletal muscle response to exercise"),
                                 h4(a("Nicolas J. Pillon,", href="https://nicopillon.com",         style="color:#ffeb3d;", target="_blank"),
                                    a("Anna Krook,",        href="https://ki.se/en/people/annkro", style="color:#ffeb3d;", target="_blank"),
                                    a("Juleen R. Zierath",  href="https://ki.se/en/people/julzie", style="color:#ffeb3d;", target="_blank"))),
-                         column(2, style="text-align:center;padding:20px 10px 10px 10px;",
+                         column(2, style="text-align:center;padding:2%",
                                 h5("Share MetaMEx"),
                                 actionButton("twitter_share", label = "", icon = icon("twitter"),
                                              onclick = sprintf("window.open('%s')", url_twitter)),
