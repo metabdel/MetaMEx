@@ -1,82 +1,36 @@
 
+
+## sanitize errors
+options(shiny.sanitize.errors=F)
+
 #load libraries
+start <- Sys.time()
 library(forestplot)
 library(metafor)
-library(ggpubr)
-library(xlsx)
-library(stringr)
-library(rmarkdown)
-library(grid)
-library(gridExtra)
-library(readr)
 library(dplyr)
+stop <- Sys.time()
+print(paste("Time to load libraries:", stop-start))
 
-# Load the different datasets, all in csv format
-# Each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
-Stats_AA <- readRDS("Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
-Stats_AR <- readRDS("Acute_Resistance_Merged_Stats_SYMBOL.Rds")
-Stats_TA <- readRDS("Training_Aerobic_Merged_Stats_SYMBOL.Rds")
-Stats_TR <- readRDS("Training_Resistance_Merged_Stats_SYMBOL.Rds")
-Stats_TC <- readRDS("Training_Combined_Merged_Stats_SYMBOL.Rds")
-Stats_IN <- readRDS("Inactivity_Merged_Stats_SYMBOL.Rds")
+# Load the different datasets, all in csv format, each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
+start <- Sys.time()
+Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
+Stats_AR <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
+Stats_TA <- readRDS("data/Training_Aerobic_Merged_Stats_SYMBOL.Rds")
+Stats_TR <- readRDS("data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
+Stats_TC <- readRDS("data/Training_Combined_Merged_Stats_SYMBOL.Rds")
+Stats_IN <- readRDS("data/Inactivity_Merged_Stats_SYMBOL.Rds")
+annotation <- readRDS("data/Datasets_legend.Rds") # Load the table describing the legend of the tables
+stop <- Sys.time()
+print(paste("Time to load data:", stop-start))
 
-
-# Make a list of the different studies in each file
-AA_names <- str_extract(string=colnames(Stats_AA), pattern = "(?<=_).*[0-9]")  #select study names 'XXXX_'
-AA_names <- sort(unique(sub('_.*', '', AA_names)))                             #delete study info after '_', take unique and sort
-
-AR_names <- str_extract(string=colnames(Stats_AR), pattern = "(?<=_).*[0-9]")
-AR_names <- sort(unique(sub('_.*', '', AR_names)))
-
-TA_names <- str_extract(string=colnames(Stats_TA), pattern = "(?<=_).*[0-9]")
-TA_names <- sort(unique(sub('_.*', '', TA_names)))
-
-TR_names <- str_extract(string=colnames(Stats_TR), pattern = "(?<=_).*[0-9]")
-TR_names <- sort(unique(sub('_.*', '', TR_names)))
-
-TC_names <- str_extract(string=colnames(Stats_TC), pattern = "(?<=_).*[0-9]")
-TC_names <- sort(unique(sub('_.*', '', TC_names)))
-
-IN_names <- str_extract(string=colnames(Stats_IN), pattern = "(?<=_).*[0-9]")
-IN_names <- sort(unique(sub('_.*', '', IN_names)))
-
-
-# Make a list of genes
-genelist <- c(rownames(Stats_AA), rownames(Stats_AR), rownames(Stats_TA), rownames(Stats_TR), rownames(Stats_TC), rownames(Stats_IN))
-genelist <- unique(genelist)
-
-
-# Load the table describing the legend of the tables
-annotation <- readRDS("Datasets_categories.Rds")
-
-# Set up the different categories to be selected
-muscle_choice <- c("Vastus Lateralis" = "VAL",
-                   "Biceps Brachii"   = "BIB",
-                   "Soleus"           = "SOL",
-                   "N/A"              = "N.A")
-sex_choice <- c("Male"       = "M",
-                "Female"     = "F",
-                "Undefined"  = "U")
-age_choice <- c("Young"   = "YNG",
-                "Middle"    = "MDL",
-                "Elderly" = "ELD")
-training_choice <- c("Sedentary" = "SED",
-                     "Active"    = "ACT",
-                     "Athlete"   = "ATH")
-exercise_choice <- c("Concentric" = "CON",
-                     "Eccentric"  = "ECC",
-                     "Mixed"      = "MIX")
-biopsy_choice <- c("Immediately after" = "IMM",
-                   "After a recovery period"    = "REC")
-disease_choice <- c("Healthy" = "HLY",
-                    "Overweight/Obese" = "OBE",
-                    "Type 2 diabetes" = "T2D",
-                    "Metabolic Syndrome" = "MTS",
-                    "Chronic Kidney Disease" = "CKD",
-                    "Chronic Obstructive Pulmonary Disease" = "COP")
+# load the lists of the different studies, categories and gene names
+list_datasets   <- readRDS("data/Names_datasets.Rds")
+list_genes      <- readRDS("data/Names_genes.Rds")
+list_categories <- readRDS("data/Names_categories.Rds")
 
 
 # Set up the graphical parameters for the forest plots
+library(forestplot)
 own <- fpTxtGp()
 own$ticks$cex <- 0.8 #tick labels
 own$xlab$cex <- 1
@@ -84,5 +38,42 @@ own$label$cex <- 0.9
 own$summary$cex <- 1.2
 
 
-# sanitize errors
-options(shiny.sanitize.errors=T)
+#URLs for sharing buttons
+url_twitter  <- "https://twitter.com/intent/tweet?text=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20@NicoPillon%20@JuleenRZierath%20@AnnaKrook_KI&url=http://www.metamex.eu"
+url_linkedin <- "https://www.linkedin.com/shareArticle?mini=true&url=http://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20&summary=MetaMEx&source=LinkedIn"
+url_facebook <- "https://www.facebook.com/sharer.php?u=https://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20"
+
+
+#Function to make data table for selected gene
+library(stringr)
+DataForGeneName <- function(x){
+  x <- data.frame(t(x[grepl('logFC',    colnames(x))]), # M-value (M) is the log2-fold change
+                     t(x[grepl('adj.P.Val',colnames(x))]), # Benjamini and Hochberg's method to control the false discovery rate
+                     t(x[grepl('CI.L',     colnames(x))]), # lower limit of the 95% confidence interval
+                     t(x[grepl('CI.R',     colnames(x))]), # upper limit of the 95% confidence interval
+                     t(x[grepl('mean.pre', colnames(x))]), # mean of control condition
+                     t(x[grepl('mean.post', colnames(x))]), # mean of exercise condition
+                     t(x[grepl('Sd.pre',   colnames(x))]), # standard deviation of control condition
+                     t(x[grepl('Sd.post',   colnames(x))]), # standard deviation of exercise condition
+                     t(x[grepl('size',     colnames(x))])) # number of subjects in the study
+  x <- cbind(x, str_split_fixed(rownames(x), "_", 9))
+  colnames(x) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
+                      'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
+                      'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Disease', 'Biopsy', 'Exercisetype')
+  x$Studies <- gsub("logFC_","", rownames(x))
+  x
+}
+
+#Function to make meta-analysis table
+MetaAnalysis <- function(x){
+#order datasets by alphabetical order
+x <- x[order(x$Studies),]
+#meta-analysis stats
+meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
+            method = "REML", measure = "MD", data = x, control=list(maxiter=1000, stepadj=0.5))
+fdr  <- p.adjust(meta$pval, method='BH')
+#merge table with meta data
+x <- rbind(x[,1:10],
+           c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(x$size, na.rm=T)))
+}
+
