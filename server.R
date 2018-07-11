@@ -1,4 +1,3 @@
-
 ####################################################################################################################
 # Define server logic ##############################################################################################
 server <- function(input, output, session) {
@@ -13,25 +12,49 @@ server <- function(input, output, session) {
   observe({ updateCheckboxGroupInput(session, 'disease',     choices = list_categories[['disease_choice']],  selected = if (input$bar_disease) list_categories[['disease_choice']])})
   observe({ updateCheckboxGroupInput(session, 'biopsy',      choices = list_categories[['biopsy_choice']],   selected = if (input$bar_biopsy) list_categories[['biopsy_choice']])})
   observe({ updateCheckboxGroupInput(session, 'exercisetype',choices = list_categories[['exercise_choice']], selected = if (input$bar_exercisetype) list_categories[['exercise_choice']])})
-  observe({ updateCheckboxGroupInput(session, 'AA_studies',  choices = list_datasets[['AA_studies']],        selected = if (input$AA_all) list_datasets[['AA_studies']], inline=TRUE)})
-  observe({ updateCheckboxGroupInput(session, 'AR_studies',  choices = list_datasets[['AR_studies']],        selected = if (input$AR_all) list_datasets[['AR_studies']], inline=TRUE)})
-  observe({ updateCheckboxGroupInput(session, 'TA_studies',  choices = list_datasets[['TA_studies']],        selected = if (input$TA_all) list_datasets[['TA_studies']], inline=TRUE)})
-  observe({ updateCheckboxGroupInput(session, 'TR_studies',  choices = list_datasets[['TR_studies']],        selected = if (input$TR_all) list_datasets[['TR_studies']], inline=TRUE)})
-  observe({ updateCheckboxGroupInput(session, 'TC_studies',  choices = list_datasets[['TC_studies']],        selected = if (input$TC_all) list_datasets[['TC_studies']], inline=TRUE)})
-  observe({ updateCheckboxGroupInput(session, 'IN_studies',  choices = list_datasets[['IN_studies']],        selected = if (input$IN_all) list_datasets[['IN_studies']], inline=TRUE)})
+  observe({ updateCheckboxGroupInput(session, 'AA_studies',  choices = list_datasets[['AA_names']],        selected = if (input$AA_all) list_datasets[['AA_names']], inline=TRUE)})
+  observe({ updateCheckboxGroupInput(session, 'AR_studies',  choices = list_datasets[['AR_names']],        selected = if (input$AR_all) list_datasets[['AR_names']], inline=TRUE)})
+  observe({ updateCheckboxGroupInput(session, 'TA_studies',  choices = list_datasets[['TA_names']],        selected = if (input$TA_all) list_datasets[['TA_names']], inline=TRUE)})
+  observe({ updateCheckboxGroupInput(session, 'TR_studies',  choices = list_datasets[['TR_names']],        selected = if (input$TR_all) list_datasets[['TR_names']], inline=TRUE)})
+  observe({ updateCheckboxGroupInput(session, 'TC_studies',  choices = list_datasets[['TC_names']],        selected = if (input$TC_all) list_datasets[['TC_names']], inline=TRUE)})
+  observe({ updateCheckboxGroupInput(session, 'IN_studies',  choices = list_datasets[['IN_names']],        selected = if (input$IN_all) list_datasets[['IN_names']], inline=TRUE)})
+  updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected='PPARGC1A', options = list(maxOptions=length(list_genes)))
+  observeEvent(input$jumpToApp, {updateTabsetPanel(session, "inTabset", selected="panelApp") })
   
-
-#=======================================================================================  
-# Make image outputs
-#=======================================================================================
-output$image1 <- renderImage({ list(src='images/Nico-Macrophage-weight-L.png',  height="95%") }, deleteFile = FALSE)
-output$image2 <- renderImage({ list(src='images/Nico-Macrophage-bike-R.png', width="90%") }, deleteFile = FALSE)
-
-
 #=======================================================================================
 # Make annotation table for legend 
 #=======================================================================================
-output$Annotation <- renderTable(spacing='xs',{ annotation })
+output$Annotation <- DT::renderDataTable(escape = FALSE, rownames= FALSE, options=list(paging = FALSE), { annotation })
+
+output$StudiesAA <- DT::renderDataTable(escape = FALSE, rownames= FALSE, {
+    my_table <- studiesAA
+    my_table$Publication <- sapply(my_table$Publication, createLink)
+    return(my_table) })
+  
+output$StudiesAR <- DT::renderDataTable(escape = FALSE, rownames= FALSE, {
+    my_table <- studiesAR
+    my_table$Publication <- sapply(my_table$Publication, createLink)
+    return(my_table) })
+  
+output$StudiesTA <- DT::renderDataTable(escape = FALSE, rownames= FALSE, {
+    my_table <- studiesTA
+    my_table$Publication <- sapply(my_table$Publication, createLink)
+    return(my_table) })
+  
+output$StudiesTC <- DT::renderDataTable(escape = FALSE, rownames= FALSE, {
+    my_table <- studiesTC
+    my_table$Publication <- sapply(my_table$Publication, createLink)
+    return(my_table) })
+
+output$StudiesTR <- DT::renderDataTable(escape = FALSE, rownames= FALSE, {
+  my_table <- studiesTR
+  my_table$Publication <- sapply(my_table$Publication, createLink)
+  return(my_table) })
+
+output$StudiesIN <- DT::renderDataTable(escape = FALSE, rownames= FALSE, {
+  my_table <- studiesIN
+  my_table$Publication <- sapply(my_table$Publication, createLink)
+  return(my_table) })
 
 
 #=======================================================================================  
@@ -39,133 +62,119 @@ output$Annotation <- renderTable(spacing='xs',{ annotation })
 #=======================================================================================
   AA_data <- reactive({
     tryCatch({
-    #Select data based on gene name
-    selectedata <- Stats_AA[toupper(input$genename),]
-    #call the custom function to make a useable data table
-    selectedata <- DataForGeneName(selectedata) 
-    #filter according to selected categories
-    selectedata <- filter(selectedata,
-                          GEO %in% input$AA_studies, 
-                          Muscle %in% input$muscle, 
-                          Sex %in% input$sex, 
-                          Age %in% input$age, 
-                          Training %in% input$training,
-                          Disease %in% input$disease,
-                          Biopsy %in% input$biopsy,
-                          Exercisetype %in% input$exercisetype)
-    #call the custom function for meta-analysis
-    selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-    #add a column with the names of the studies included in the analysis
-    selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(length(selectedata$Studies)-1)]), "Acute Aerobic score (REML)")
-    return(selectedata)
-    },
-  error=function(e) NULL) })
+      #data for selected gene name
+      selectedata <- Stats_AA[toupper(input$genename),]
+      #custom function to make a useable data frame
+      selectedata <- DataForGeneName(selectedata) 
+      #filter according to selected categories
+      selectedata <- dplyr::filter(selectedata,
+                            GEO %in% input$AA_studies, 
+                            Muscle %in% input$muscle, 
+                            Sex %in% input$sex, 
+                            Age %in% input$age, 
+                            Training %in% input$training,
+                            Disease %in% input$disease,
+                            Biopsy %in% input$biopsy,
+                            Exercisetype %in% input$exercisetype)
+      #custom function for meta-analysis
+      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
+      #add a column with the names of the studies included
+      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
+                               "Acute Aerobic score (REML)")
+      return(selectedata)
+    }, error=function(e) NULL)
+  })
 
   AR_data <- reactive({
-    # Select gene name and calculate parameters on filtered data
-    selectedata<- Stats_AR[toupper(input$genename),]
-    selectedata<- DataForGeneName(selectedata) #call the custom function to make data table
-    
     tryCatch({
-      selectedata <- filter(selectedata,
-                   GEO %in% input$AR_studies, 
-                   Muscle %in% input$muscle, 
-                   Sex %in% input$sex, 
-                   Age %in% input$age, 
-                   Training %in% input$training,
-                   Disease %in% input$disease,
-                   Biopsy %in% input$biopsy,
-                   Exercisetype %in% input$exercisetype)
-    #call the custom function for meta-analysis
-    selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-    #add a column with the names of the studies included in the analysis
-    selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(length(selectedata$Studies)-1)]), "Acute Resistance score (REML)")
-    return(selectedata)
-    },error=function(e) NULL)
+      selectedata<- Stats_AR[toupper(input$genename),]
+      selectedata<- DataForGeneName(selectedata) #call the custom function to make data table
+      selectedata <- dplyr::filter(selectedata,
+                     GEO %in% input$AR_studies, 
+                     Muscle %in% input$muscle, 
+                     Sex %in% input$sex, 
+                     Age %in% input$age, 
+                     Training %in% input$training,
+                     Disease %in% input$disease,
+                     Biopsy %in% input$biopsy,
+                     Exercisetype %in% input$exercisetype)
+      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
+      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
+                               "Acute Resistance score (REML)")
+      return(selectedata)
+    }, error=function(e) NULL)
   })
   
-  TA_data <- reactive({    
-    # Select gene name and calculate parameters on filtered data
-    selectedata <- Stats_TA[toupper(input$genename),]
-    selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
-    
+  TA_data <- reactive({
     tryCatch({
-      selectedata <- filter(selectedata,
-                   GEO %in% input$TA_studies, 
-                   Muscle %in% input$muscle, 
-                   Sex %in% input$sex, 
-                   Age %in% input$age, 
-                   Training %in% input$training,
-                   Disease %in% input$disease)
-    #call the custom function for meta-analysis
-    selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-    #add a column with the names of the studies included in the analysis
-    selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(length(selectedata$Studies)-1)]), "Training Aerobic score (REML)")
-    return(selectedata)
-    },error=function(e) NULL)
+      selectedata <- Stats_TA[toupper(input$genename),]
+      selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
+      selectedata <- dplyr::filter(selectedata,
+                     GEO %in% input$TA_studies, 
+                     Muscle %in% input$muscle, 
+                     Sex %in% input$sex, 
+                     Age %in% input$age, 
+                     Training %in% input$training,
+                     Disease %in% input$disease)
+      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
+      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
+                               "Training Aerobic score (REML)")
+      return(selectedata)
+    }, error=function(e) NULL)
   }) 
   
-  TR_data <- reactive({    
-    # Select gene name and calculate parameters on filtered data
-    selectedata <- Stats_TR[toupper(input$genename),]
-    selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
-    
+  TR_data <- reactive({
     tryCatch({
-      selectedata <- filter(selectedata,
-                     GEO %in% input$TR_studies, 
-                     Muscle %in% input$muscle, 
-                     Sex %in% input$sex, 
-                     Age %in% input$age, 
-                     Training %in% input$training,
-                     Disease %in% input$disease)
-    #call the custom function for meta-analysis
-    selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-    #add a column with the names of the studies included in the analysis
-    selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(length(selectedata$Studies)-1)]), "Training Resistance score (REML)")
-    return(selectedata)
-    },error=function(e) NULL)
+      selectedata <- Stats_TR[toupper(input$genename),]
+      selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
+      selectedata <- dplyr::filter(selectedata,
+                            GEO %in% input$TR_studies, 
+                            Muscle %in% input$muscle, 
+                            Sex %in% input$sex, 
+                            Age %in% input$age, 
+                            Training %in% input$training,
+                            Disease %in% input$disease)
+      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
+      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
+                               "Training Resistance score (REML)")
+      return(selectedata)
+    }, error=function(e) NULL)
   })
   
-  TC_data <- reactive({    
-    # Select gene name and calculate parameters on filtered data
-    selectedata <- Stats_TC[toupper(input$genename),]
-    selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
-    
+  TC_data <- reactive({
     tryCatch({
-      selectedata <- filter(selectedata,
-                     GEO %in% input$TC_studies, 
-                     Muscle %in% input$muscle, 
-                     Sex %in% input$sex, 
-                     Age %in% input$age, 
-                     Training %in% input$training,
-                     Disease %in% input$disease)
-    #call the custom function for meta-analysis
-    selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-    #add a column with the names of the studies included in the analysis
-    selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(length(selectedata$Studies)-1)]), "Training Combined score (REML)")
-    return(selectedata)
-    },error=function(e) NULL)
+      selectedata <- Stats_TC[toupper(input$genename),]
+      selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
+      selectedata <- dplyr::filter(selectedata,
+                            GEO %in% input$TC_studies, 
+                            Muscle %in% input$muscle, 
+                            Sex %in% input$sex, 
+                            Age %in% input$age, 
+                            Training %in% input$training,
+                            Disease %in% input$disease)
+      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
+      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
+                               "Training Combined score (REML)")
+      return(selectedata)
+    }, error=function(e) NULL)
   })
   
-  IN_data <- reactive({    
-    # Select gene name and calculate parameters on filtered data
-    selectedata <- Stats_IN[toupper(input$genename),]
-    selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
-    
+  IN_data <- reactive({
     tryCatch({
-      selectedata <- filter(selectedata,
-                   GEO %in% input$IN_studies, 
-                   Muscle %in% input$muscle, 
-                   Sex %in% input$sex, 
-                   Age %in% input$age, 
-                   Training %in% input$training,
-                   Disease %in% input$disease)
-    #call the custom function for meta-analysis
-    selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-    #add a column with the names of the studies included in the analysis
-    selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(length(selectedata$Studies)-1)]), "Physical Inactivity score (REML)")
-    return(selectedata)
-    },error=function(e) NULL)
+      selectedata <- Stats_IN[toupper(input$genename),]
+      selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
+      selectedata <- dplyr::filter(selectedata,
+                            GEO %in% input$IN_studies, 
+                            Muscle %in% input$muscle, 
+                            Sex %in% input$sex, 
+                            Age %in% input$age, 
+                            Training %in% input$training,
+                            Disease %in% input$disease)
+      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
+      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
+                               "Physical Inactivity score (REML)")
+      return(selectedata)
+    }, error=function(e) NULL)
   })
 
 
@@ -175,7 +184,6 @@ output$Annotation <- renderTable(spacing='xs',{ annotation })
 
   plotInputAA <- function() ({
     #Validate selection criteria:
-    #start2 <- Sys.time()
     validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
     validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
     validate(need(input$age!="",         "Please select at least one group in the age category")) 
@@ -199,7 +207,6 @@ output$Annotation <- renderTable(spacing='xs',{ annotation })
                             is.summary=c(TRUE,rep(FALSE,(nrow(selectedata)-1)),TRUE),
                             xlog=F,  txt_gp = own, xlab="logFC",
                             col=fpColors(box="orange2",line="orange3", summary="orange3"))
-    #print(paste("Make forest plot:", signif(Sys.time()-start2,3)))
     return(finalplot)
   })
   
@@ -347,16 +354,12 @@ output$Annotation <- renderTable(spacing='xs',{ annotation })
 #=======================================================================================
 # print plots
 #=======================================================================================
-  output$Acute_A <- renderPlot({
-    #start3 <- Sys.time()
-    plotInputAA()
-    #print(paste("Print forest plot:", signif(Sys.time()-start3,3)))
-  })
-  output$Acute_R <- renderPlot({plotInputAR()})
-  output$Training_A <- renderPlot({plotInputTA()})
-  output$Training_R <- renderPlot({plotInputTR()})
-  output$Training_C <- renderPlot({plotInputTC()})
-  output$Inact <- renderPlot({plotInputIN()})
+  output$Acute_A    <- renderPlot({ plotInputAA() })
+  output$Acute_R    <- renderPlot({ plotInputAR() })
+  output$Training_A <- renderPlot({ plotInputTA() })
+  output$Training_R <- renderPlot({ plotInputTR() })
+  output$Training_C <- renderPlot({ plotInputTC() })
+  output$Inact      <- renderPlot({ plotInputIN() })
   
 
 #=======================================================================================
@@ -399,11 +402,6 @@ output$Annotation <- renderTable(spacing='xs',{ annotation })
   output$downloadReport = downloadHandler(
     filename = function() { paste(input$genename, "_MetaMEx.pdf", sep="") },
     content = function(file) {
-      #matrix
-      matrix <- rbind(c(1,2),c(1,2),
-                      c(3,4),c(3,4),c(3,4),
-                      c(5,6))
-      margin = theme(plot.margin = unit(c(2,2,2,2), "cm"))
       if(!is.null(AA_data())) { AA <- grid.grabExpr(print(plotInputAA()))} 
         else {AA <- textGrob("Acute Aerobic:\nNo data available for the selected criteria")}
       if(!is.null(AR_data())) { AR <- grid.grabExpr(print(plotInputAR()))}
@@ -422,6 +420,10 @@ output$Annotation <- renderTable(spacing='xs',{ annotation })
       library(readr)
       library(grid)
       library(gridExtra)
+      matrix <- rbind(c(1,2),c(1,2),
+                      c(3,4),c(3,4),c(3,4),
+                      c(5,6))
+      margin = theme(plot.margin = unit(c(2,2,2,2), "cm"))
       pdf(file, onefile = TRUE, width=16, height=22.6)
       grid.arrange(AA, AR, TA, TR, TC, IN,
                    top = textGrob(paste(input$genename, "transcriptional response to physical activity"), gp=gpar(fontsize=30, font=7)),

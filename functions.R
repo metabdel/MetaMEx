@@ -1,12 +1,23 @@
+#URLs for sharing buttons
+url_twitter  <- "https://twitter.com/intent/tweet?text=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20@NicoPillon%20@JuleenRZierath%20@AnnaKrook_KI&url=http://www.metamex.eu"
+url_linkedin <- "https://www.linkedin.com/shareArticle?mini=true&url=http://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20&summary=MetaMEx&source=LinkedIn"
+url_facebook <- "https://www.facebook.com/sharer.php?u=https://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20"
 
+
+# load the lists of the different studies, categories and gene names
+list_datasets   <- readRDS("data/Names_datasets.Rds")
+list_genes      <- readRDS("data/Names_genes.Rds")
+list_categories <- readRDS("data/Names_categories.Rds")
 
 ## sanitize errors
 options(shiny.sanitize.errors=F)
 
 #load libraries
+library(DT)
+library(dplyr)
 library(forestplot)
 library(metafor)
-library(dplyr)
+
 
 # Load the different datasets, all in csv format, each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
 Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
@@ -16,11 +27,12 @@ Stats_TR <- readRDS("data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
 Stats_TC <- readRDS("data/Training_Combined_Merged_Stats_SYMBOL.Rds")
 Stats_IN <- readRDS("data/Inactivity_Merged_Stats_SYMBOL.Rds")
 annotation <- readRDS("data/Datasets_legend.Rds") # Load the table describing the legend of the tables
-
-# load the lists of the different studies, categories and gene names
-list_datasets   <- readRDS("data/Names_datasets.Rds")
-list_genes      <- readRDS("data/Names_genes.Rds")
-list_categories <- readRDS("data/Names_categories.Rds")
+studiesAA <- readRDS("data/StudiesAA.Rds") # Load the table describing the legend of the tables
+studiesAR <- readRDS("data/StudiesAR.Rds") # Load the table describing the legend of the tables
+studiesTA <- readRDS("data/StudiesTA.Rds") # Load the table describing the legend of the tables
+studiesTC <- readRDS("data/StudiesTC.Rds") # Load the table describing the legend of the tables
+studiesTR <- readRDS("data/StudiesTR.Rds") # Load the table describing the legend of the tables
+studiesIN <- readRDS("data/StudiesIN.Rds") # Load the table describing the legend of the tables
 
 # Set up the graphical parameters for the forest plots
 library(forestplot)
@@ -29,11 +41,6 @@ own$ticks$cex <- 0.8 #tick labels
 own$xlab$cex <- 1
 own$label$cex <- 0.9
 own$summary$cex <- 1.2
-
-#URLs for sharing buttons
-url_twitter  <- "https://twitter.com/intent/tweet?text=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20@NicoPillon%20@JuleenRZierath%20@AnnaKrook_KI&url=http://www.metamex.eu"
-url_linkedin <- "https://www.linkedin.com/shareArticle?mini=true&url=http://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20&summary=MetaMEx&source=LinkedIn"
-url_facebook <- "https://www.facebook.com/sharer.php?u=https://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20"
 
 #Function to make data table for selected gene
 library(stringr)
@@ -66,3 +73,7 @@ MetaAnalysis <- function(x){
   x
 }
 
+#function to make hyperlinks
+createLink <- function(val) {
+  sprintf(paste0('<a href="', URLdecode(val),'" target="_blank">', substr(val, 1, 25) ,'</a>'))
+}
