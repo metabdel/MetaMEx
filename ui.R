@@ -1,15 +1,18 @@
 source("functions.R")
 
 shinyUI(navbarPage(title="MetaMEx", id="inTabset",
+                   #add css theme
                    theme="bootstrap.css",
+                   #include google analytics
                    header=tags$head(includeHTML("google-analytics.html")),
-                   footer=fluidRow(style="background-color:black;color:#D9DADB",
-                                   column(9, style="padding:1% 1% 1% 2%;", align="left",
+                   #make sticky footer
+                   footer=tags$footer(fluidRow(
+                                   column(9, style="padding:1% 1% 1% 3%;", align="left",
                                              tags$b("Cite MetaMEx:"), tags$br(),
                                              a("Transcriptomic Meta-Analysis of Skeletal Muscle Responses to Physical Inactivity and Exercise",
                                                href="https://www.ncbi.nlm.nih.gov/pubmed/", target="_blank", style="color:#D9DADB"), tags$br(),
                                               "Nicolas J. Pillon, Anna Krook & Juleen R. Zierath. Under review 2018"),
-                                   column(3, style="padding:1% 2% 1% 1%;", align="right",
+                                   column(3, style="padding:1% 3% 1% 1%;", align="right",
                                              tags$b(HTML("Share:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                                                          &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp")), tags$br(),
                                              actionButton("twitter_share", label="", icon=icon("twitter"),
@@ -18,7 +21,14 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                                                           onclick = sprintf("window.open('%s')", url_linkedin)),
                                              actionButton("facebook_share", label="", icon=icon("facebook"),
                                                           onclick = sprintf("window.open('%s')", url_facebook)))
-                                   ),
+                                   ), style="position:fixed;
+                                             bottom:0;
+                                             width:100%;
+                                             height:100px;
+                                             color: white;
+                                             background-color: black;
+                                             z-index: 1000;"),
+
 #=======================================================================================================================        
         tabPanel("Home",
                  #code to make link between tabs
@@ -38,7 +48,7 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                               tags$br(),
                               actionButton('jumpToApp', 'Get started!', width="200px",
                                            style="background-color:#E95420;border-color:black;box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);")),
-                    column(5, tags$img(src='Nico-Macrophage-weight-L.png', width="100%")))
+                    column(5, tags$img(src='Nico-Macrophage-weight-L.png', width="100%", style="padding:0 5% 0 0")))
         ),
 
 #=======================================================================================================================        
@@ -67,12 +77,12 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                  
                  fluidRow(
                    column(6,  h3("Acute Aerobic Exercise"), 
-                          plotOutput("Acute_A"),
+                          plotOutput("Acute_A", height="450px"),
                           checkboxGroupInput("AA_studies", "Acute Aerobic Studies", selected=list_datasets[[1]], list_datasets[[1]], inline=TRUE),
                           checkboxInput('AA_all', 'Select all/none', value=T), style="padding:0 0 0 3%"),
                    
                    column(6,  h3("Acute Resistance Exercise"),
-                          plotOutput("Acute_R", height="400px"),
+                          plotOutput("Acute_R", height="450px"),
                           checkboxGroupInput("AR_studies", "Acute Resistance Studies", selected=list_datasets[[2]], list_datasets[[2]], inline=TRUE),
                           checkboxInput('AR_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
                  ),
@@ -102,14 +112,18 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                           plotOutput("Inact", height="230px"),
                           checkboxGroupInput("IN_studies", "Physical Inactivity studies", selected=list_datasets[[6]], list_datasets[[6]], inline=TRUE),
                           checkboxInput('IN_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
-                 )
+                 ),
+                 
+                 tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()
         ),
 
 #=======================================================================================================================        
         tabPanel("Downloads", 
                  fluidRow(style="background-color:#edcdc2;padding:1%",
-                          h3("Downloads"), "All the data used in MetMEx is freely available. Download only the data corresponding to
-                          the criteria used in the app or download the individual statistics for all studies."),
+                          h3("Downloads"),
+                          "All the data used in MetMEx is freely available. Download only the data corresponding to
+                          the criteria used in the app or download the individual statistics for all studies.", tags$br(),
+                          "For more advanced subsetting or analysis of the data, please", a("contact us!", href="mailto:nicolas.pillon@ki.se")),
                   tags$br(),
                  fluidRow(
                 column(6, h3("Data selected in the App"),
@@ -127,55 +141,34 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
 
 #=======================================================================================================================        
 navbarMenu("Datasets",
-    tabPanel("Annotation Legend", 
+    tabPanel("Annotation", 
              fluidRow(style="background-color:#edcdc2;padding:1%",
                       h3("Annotation"), "Summary of the criteria used to categorize the studies.", tags$br(),
                 "Your study is not included? You have information on age, sex, BMI or else for one of the studies? Please",
                 a("contact us!", href="mailto:nicolas.pillon@ki.se"), tags$b("The more data we collect, the stronger MetaMex becomes!")),
              tags$br(),
-             DT::dataTableOutput("Annotation")),           
-    tabPanel("Acute Aerobic Studies", 
+             DT::dataTableOutput("Annotation"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()),         
+    tabPanel("Acute Studies", 
              fluidRow(style="background-color:#edcdc2;padding:1%",
-                      h3("Acute Aerobic Studies"), "Summarized clinical data and experimental conditions.", tags$br(),
+                      h3("Acute Exercise Studies"), "Summarized clinical data and experimental conditions.", tags$br(),
                 "Your study is not included? You have information on age, sex, BMI or else for one of the studies? Please",
                 a("contact us!", href="mailto:nicolas.pillon@ki.se"), tags$b("The more data we collect, the stronger MetaMex becomes!")),
              tags$br(),
-             DT::dataTableOutput("StudiesAA")),
-    tabPanel("Acute Resistance Studies", 
+             DT::dataTableOutput("StudiesAcute"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()),    
+    tabPanel("Training Studies", 
              fluidRow(style="background-color:#edcdc2;padding:1%",
-                      h3("Acute Resistance Studies"), "Summarized clinical data and experimental conditions.", tags$br(),
+                      h3("Training Exercise Studies"), "Summarized clinical data and experimental conditions.", tags$br(),
                 "Your study is not included? You have information on age, sex, BMI or else for one of the studies? Please",
                 a("contact us!", href="mailto:nicolas.pillon@ki.se"), tags$b("The more data we collect, the stronger MetaMex becomes!")),
              tags$br(),
-             DT::dataTableOutput("StudiesAR")),
-    tabPanel("Training Aerobic Studies", 
-             fluidRow(style="background-color:#edcdc2;padding:1%",
-                      h3("Training Aerobic Studies"), "Summarized clinical data and experimental conditions.", tags$br(),
-                "Your study is not included? You have information on age, sex, BMI or else for one of the studies? Please",
-                a("contact us!", href="mailto:nicolas.pillon@ki.se"), tags$b("The more data we collect, the stronger MetaMex becomes!")),
-             tags$br(),
-             DT::dataTableOutput("StudiesTA")),
-    tabPanel("Training Combined Studies", 
-             fluidRow(style="background-color:#edcdc2;padding:1%",
-                      h3("Training Combined Studies"), "Summarized clinical data and experimental conditions.", tags$br(),
-                "Your study is not included? You have information on age, sex, BMI or else for one of the studies? Please",
-                a("contact us!", href="mailto:nicolas.pillon@ki.se"), tags$b("The more data we collect, the stronger MetaMex becomes!")),
-             tags$br(),
-             DT::dataTableOutput("StudiesTC")),
-    tabPanel("Training Resistance Studies", 
-             fluidRow(style="background-color:#edcdc2;padding:1%",
-                      h3("Training Resistance Studies"), "Summarized clinical data and experimental conditions.", tags$br(),
-                "Your study is not included? You have information on age, sex, BMI or else for one of the studies? Please",
-                a("contact us!", href="mailto:nicolas.pillon@ki.se"), tags$b("The more data we collect, the stronger MetaMex becomes!")),
-             tags$br(),
-             DT::dataTableOutput("StudiesTR")),
+             DT::dataTableOutput("StudiesTraining"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()),    
     tabPanel("Inactivity Studies", 
              fluidRow(style="background-color:#edcdc2;padding:1%",
                       h3("Inactivity Studies"), "Summarized clinical data and experimental conditions.", tags$br(),
                 "Your study is not included? You have information on age, sex, BMI or else for one of the studies? Please",
                 a("contact us!", href="mailto:nicolas.pillon@ki.se"), tags$b("The more data we collect, the stronger MetaMex becomes!")),
              tags$br(),
-             DT::dataTableOutput("StudiesIN"))
+             DT::dataTableOutput("StudiesInactivity"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br())    
 
 ),
 
@@ -188,8 +181,10 @@ navbarMenu("Datasets",
                  individually for each array. The meta-analysis summary was then calculated using a random effects model (REML).
                  Forest plots present the log2(fold-change) and 95% confidence intervals for each study as well as the meta-analysis score and adjusted p value.",
                  h3("Citation"),
+                 "Nicolas J. Pillon, Anna Krook & Juleen R. Zierath.", tags$br(),
                  a("Transcriptomic Meta-Analysis of Skeletal Muscle Responses to Physical Inactivity and Exercise",
-                   href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank"),
+                   href="https://www.ncbi.nlm.nih.gov/pubmed/", target="_blank"), tags$br(),
+                 "Submitted and under review, July 2018",
                  h3("Copyrights"),
                  "MetaMEx was created by", a("Nicolas J. Pillon", href="https://nicopillon.com/contact",         target="_blank"),
                  ",",                      a("Anna Krook",        href="https://ki.se/en/people/annkro", target="_blank"),
@@ -197,7 +192,7 @@ navbarMenu("Datasets",
                  "and illustrated by", a("Csil.", href="http://misshue.net", target="_blank"),
                  "All content and code are published under the Creative Commons Attribution-NonCommercial 4.0 International",
                     a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank")),
-                 column(4, tags$img(src='Nico-Macrophage-bike-L.png', width = "100%"))
+                 column(4, tags$img(src='Nico-Macrophage-bike-L.png', width = "100%", style="padding:0 5% 0 0"))
         ))
 )
 )

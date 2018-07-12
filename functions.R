@@ -9,30 +9,10 @@ list_datasets   <- readRDS("data/Names_datasets.Rds")
 list_genes      <- readRDS("data/Names_genes.Rds")
 list_categories <- readRDS("data/Names_categories.Rds")
 
+
 ## sanitize errors
-options(shiny.sanitize.errors=F)
+options(shiny.sanitize.errors=T)
 
-#load libraries
-library(DT)
-library(dplyr)
-library(forestplot)
-library(metafor)
-
-
-# Load the different datasets, all in csv format, each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
-Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
-Stats_AR <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
-Stats_TA <- readRDS("data/Training_Aerobic_Merged_Stats_SYMBOL.Rds")
-Stats_TR <- readRDS("data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
-Stats_TC <- readRDS("data/Training_Combined_Merged_Stats_SYMBOL.Rds")
-Stats_IN <- readRDS("data/Inactivity_Merged_Stats_SYMBOL.Rds")
-annotation <- readRDS("data/Datasets_legend.Rds") # Load the table describing the legend of the tables
-studiesAA <- readRDS("data/StudiesAA.Rds") # Load the table describing the legend of the tables
-studiesAR <- readRDS("data/StudiesAR.Rds") # Load the table describing the legend of the tables
-studiesTA <- readRDS("data/StudiesTA.Rds") # Load the table describing the legend of the tables
-studiesTC <- readRDS("data/StudiesTC.Rds") # Load the table describing the legend of the tables
-studiesTR <- readRDS("data/StudiesTR.Rds") # Load the table describing the legend of the tables
-studiesIN <- readRDS("data/StudiesIN.Rds") # Load the table describing the legend of the tables
 
 # Set up the graphical parameters for the forest plots
 library(forestplot)
@@ -42,8 +22,10 @@ own$xlab$cex <- 1
 own$label$cex <- 0.9
 own$summary$cex <- 1.2
 
+
 #Function to make data table for selected gene
 library(stringr)
+library(dplyr)
 DataForGeneName <- function(x){
   x <- data.frame(t(x[grepl('logFC',    colnames(x))]), # M-value (M) is the log2-fold change
                      t(x[grepl('adj.P.Val',colnames(x))]), # Benjamini and Hochberg's method to control the false discovery rate
@@ -62,7 +44,9 @@ DataForGeneName <- function(x){
   x
 }
 
+
 #Function to make meta-analysis table
+library(metafor)
 MetaAnalysis <- function(x){
   x <- x[order(x$Studies),]
   meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
@@ -73,7 +57,19 @@ MetaAnalysis <- function(x){
   x
 }
 
-#function to make hyperlinks
-createLink <- function(val) {
-  sprintf(paste0('<a href="', URLdecode(val),'" target="_blank">', substr(val, 1, 25) ,'</a>'))
-}
+
+#load other required libraries
+library(DT)
+
+
+# Load the different datasets, all in csv format, each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
+Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
+Stats_AR <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
+Stats_TA <- readRDS("data/Training_Aerobic_Merged_Stats_SYMBOL.Rds")
+Stats_TR <- readRDS("data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
+Stats_TC <- readRDS("data/Training_Combined_Merged_Stats_SYMBOL.Rds")
+Stats_IN <- readRDS("data/Inactivity_Merged_Stats_SYMBOL.Rds")
+annotation <- readRDS("data/Datasets_legend.Rds") # Load the table describing the legend of the tables
+StudiesAcute <- readRDS("data/studiesAcute.Rds") # Load the table describing the legend of the tables
+StudiesTraining <- readRDS("data/StudiesTraining.Rds") # Load the table describing the legend of the tables
+StudiesInactivity <- readRDS("data/StudiesInactivity.Rds") # Load the table describing the legend of the tables

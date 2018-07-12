@@ -24,37 +24,19 @@ server <- function(input, output, session) {
 #=======================================================================================
 # Make annotation table for legend 
 #=======================================================================================
-output$Annotation <- DT::renderDataTable(escape = FALSE, rownames= FALSE, options=list(paging = FALSE), { annotation })
+output$Annotation <- DT::renderDataTable(escape = FALSE, rownames = FALSE, options=list(paging = FALSE), { annotation })
 
-output$StudiesAA <- DT::renderDataTable(escape = FALSE, rownames= FALSE, {
-    my_table <- studiesAA
-    my_table$Publication <- sapply(my_table$Publication, createLink)
-    return(my_table) })
-  
-output$StudiesAR <- DT::renderDataTable(escape = FALSE, rownames= FALSE, {
-    my_table <- studiesAR
-    my_table$Publication <- sapply(my_table$Publication, createLink)
-    return(my_table) })
-  
-output$StudiesTA <- DT::renderDataTable(escape = FALSE, rownames= FALSE, {
-    my_table <- studiesTA
-    my_table$Publication <- sapply(my_table$Publication, createLink)
-    return(my_table) })
-  
-output$StudiesTC <- DT::renderDataTable(escape = FALSE, rownames= FALSE, {
-    my_table <- studiesTC
-    my_table$Publication <- sapply(my_table$Publication, createLink)
-    return(my_table) })
+output$StudiesAcute <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { StudiesAcute },
+                                           options=list(autoWidth = TRUE,
+                                                        columnDefs = list(list(targets=c(11), visible=TRUE, width='3000'),
+                                                                     list(targets=c(7,15), visible=TRUE, width='2000'))))
 
-output$StudiesTR <- DT::renderDataTable(escape = FALSE, rownames= FALSE, {
-  my_table <- studiesTR
-  my_table$Publication <- sapply(my_table$Publication, createLink)
-  return(my_table) })
+output$StudiesTraining <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { StudiesTraining },
+                                              options=list(autoWidth = TRUE,
+                                                           columnDefs = list(list(targets=c(13), visible=TRUE, width='4000'),
+                                                                        list(targets=c(17), visible=TRUE, width='2000'))))
 
-output$StudiesIN <- DT::renderDataTable(escape = FALSE, rownames= FALSE, {
-  my_table <- studiesIN
-  my_table$Publication <- sapply(my_table$Publication, createLink)
-  return(my_table) })
+output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { StudiesInactivity })
 
 
 #=======================================================================================  

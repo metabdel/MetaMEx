@@ -1,6 +1,38 @@
 setwd("C:/Dropbox/NICO/R/Shiny/MetaMEx")
 library(stringr)
 
+# Make a table of the studies and annotation
+library(readxl)
+#function to make hyperlinks
+createLink <- function(val) {
+  sprintf(paste0('<a href="', URLdecode(val),'" target="_blank">', gsub("(.*org/)|(.*=)", "", val) ,'</a>'))
+}
+
+StudiesAcute <- read_xlsx("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Datasets.xlsx", na='NA', sheet=1)
+StudiesAcute <- StudiesAcute[,1:16]
+StudiesAcute$GEO <- paste("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", StudiesAcute$GEO, sep="")
+StudiesAcute$GEO  <- sapply(StudiesAcute$GEO, createLink)
+StudiesAcute$Publication <- sapply(StudiesAcute$Publication, createLink)
+
+StudiesTraining <- read_xlsx("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Datasets.xlsx", na='NA', sheet=2)
+StudiesTraining <- StudiesTraining[,1:18]
+StudiesTraining$GEO <- paste("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", StudiesTraining$GEO, sep="")
+StudiesTraining$GEO  <- sapply(StudiesTraining$GEO, createLink)
+StudiesTraining$Publication <- sapply(StudiesTraining$Publication, createLink)
+
+StudiesInactivity <- read_xlsx("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Datasets.xlsx", na='NA', sheet=3)
+StudiesInactivity <- StudiesInactivity[,1:16]
+StudiesInactivity$GEO <- paste("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", StudiesInactivity$GEO, sep="")
+StudiesInactivity$GEO  <- sapply(StudiesInactivity$GEO, createLink)
+StudiesInactivity$Publication <- sapply(StudiesInactivity$Publication, createLink)
+
+CategoryTable <- read_xlsx("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Datasets.xlsx", na='NA', sheet=4)
+
+saveRDS(StudiesAcute, "data/StudiesAcute.Rds")
+saveRDS(StudiesTraining, "data/StudiesTraining.Rds")
+saveRDS(StudiesInactivity, "data/StudiesInactivity.Rds")
+saveRDS(CategoryTable, "data/Datasets_legend.Rds")
+
 # Make a list of the different studies names in each file
 Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
 Stats_AR <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
