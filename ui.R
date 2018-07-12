@@ -47,7 +47,7 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                                  all published exercise and inactivity transcriptomic studies."),
                               tags$br(),
                               actionButton('jumpToApp', 'Get started!', width="200px",
-                                           style="background-color:#E95420;border-color:black;box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);")),
+                                           style="background-color:#E95420;border-color:#C34113;box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);")),
                     column(5, tags$img(src='Nico-Macrophage-weight-L.png', width="100%", style="padding:0 5% 0 0")))
         ),
 
