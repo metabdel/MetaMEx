@@ -48,7 +48,7 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                               tags$br(),
                               actionButton('jumpToApp', 'Get started!', width="200px",
                                            style="background-color:#E95420;border-color:black;box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);")),
-                    column(5, tags$img(src='Nico-Macrophage-weight-L.png', width="100%")))
+                    column(5, tags$img(src='Nico-Macrophage-weight-L.png', width="100%", style="padding:0 5% 0 0")))
         ),
 
 #=======================================================================================================================        
@@ -120,8 +120,10 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
 #=======================================================================================================================        
         tabPanel("Downloads", 
                  fluidRow(style="background-color:#edcdc2;padding:1%",
-                          h3("Downloads"), "All the data used in MetMEx is freely available. Download only the data corresponding to
-                          the criteria used in the app or download the individual statistics for all studies."),
+                          h3("Downloads"),
+                          "All the data used in MetMEx is freely available. Download only the data corresponding to
+                          the criteria used in the app or download the individual statistics for all studies.", tags$br(),
+                          "For more advanced subsetting or analysis of the data, please", a("contact us!", href="mailto:nicolas.pillon@ki.se")),
                   tags$br(),
                  fluidRow(
                 column(6, h3("Data selected in the App"),
@@ -179,8 +181,10 @@ navbarMenu("Datasets",
                  individually for each array. The meta-analysis summary was then calculated using a random effects model (REML).
                  Forest plots present the log2(fold-change) and 95% confidence intervals for each study as well as the meta-analysis score and adjusted p value.",
                  h3("Citation"),
+                 "Nicolas J. Pillon, Anna Krook & Juleen R. Zierath.", tags$br(),
                  a("Transcriptomic Meta-Analysis of Skeletal Muscle Responses to Physical Inactivity and Exercise",
-                   href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank"),
+                   href="https://www.ncbi.nlm.nih.gov/pubmed/", target="_blank"), tags$br(),
+                 "Submitted and under review, July 2018",
                  h3("Copyrights"),
                  "MetaMEx was created by", a("Nicolas J. Pillon", href="https://nicopillon.com/contact",         target="_blank"),
                  ",",                      a("Anna Krook",        href="https://ki.se/en/people/annkro", target="_blank"),
@@ -188,7 +192,7 @@ navbarMenu("Datasets",
                  "and illustrated by", a("Csil.", href="http://misshue.net", target="_blank"),
                  "All content and code are published under the Creative Commons Attribution-NonCommercial 4.0 International",
                     a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank")),
-                 column(4, tags$img(src='Nico-Macrophage-bike-L.png', width = "100%"))
+                 column(4, tags$img(src='Nico-Macrophage-bike-L.png', width = "100%", style="padding:0 5% 0 0"))
         ))
 )
 )

@@ -70,6 +70,6 @@ Stats_TR <- readRDS("data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
 Stats_TC <- readRDS("data/Training_Combined_Merged_Stats_SYMBOL.Rds")
 Stats_IN <- readRDS("data/Inactivity_Merged_Stats_SYMBOL.Rds")
 annotation <- readRDS("data/Datasets_legend.Rds") # Load the table describing the legend of the tables
-studiesAcute <- readRDS("data/studiesAcute.Rds") # Load the table describing the legend of the tables
+StudiesAcute <- readRDS("data/studiesAcute.Rds") # Load the table describing the legend of the tables
 StudiesTraining <- readRDS("data/StudiesTraining.Rds") # Load the table describing the legend of the tables
 StudiesInactivity <- readRDS("data/StudiesInactivity.Rds") # Load the table describing the legend of the tables
