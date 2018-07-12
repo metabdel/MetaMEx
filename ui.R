@@ -136,7 +136,7 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                           downloadButton("downloadTA", "Training Aerobic (.csv, 76MB)"),tags$br(),tags$br(),
                           downloadButton("downloadTR", "Training Resistance (.csv, 76MB)"),tags$br(),tags$br(),
                           downloadButton("downloadTC", "Training Combined (.csv, 17MB)"),tags$br(),tags$br(),
-                          downloadButton("downloadIN", "Inactivity (.csv, 18MB)"), tags$br(),tags$br())
+                          downloadButton("downloadIN", "Inactivity (.csv, 18MB)"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br())
         )),
 
 #=======================================================================================================================        
