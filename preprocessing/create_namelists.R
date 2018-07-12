@@ -1,6 +1,20 @@
 setwd("C:/Dropbox/NICO/R/Shiny/MetaMEx")
 library(stringr)
 
+# Make a table of the studies and annotation
+library(readxl)
+StudiesAcute <- read_xlsx("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Datasets.xlsx", na='NA', sheet=1)
+StudiesAcute <- StudiesAcute[,1:16]
+StudiesTraining <- read_xlsx("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Datasets.xlsx", na='NA', sheet=2)
+StudiesTraining <- StudiesTraining[,1:18]
+StudiesInactivity <- read_xlsx("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Datasets.xlsx", na='NA', sheet=3)
+StudiesInactivity <- StudiesInactivity[,1:16]
+CategoryTable <- read_xlsx("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Datasets.xlsx", na='NA', sheet=4)
+saveRDS(StudiesAcute, "data/StudiesAcute.Rds")
+saveRDS(StudiesTraining, "data/StudiesTraining.Rds")
+saveRDS(StudiesInactivity, "data/StudiesInactivity.Rds")
+saveRDS(CategoryTable, "data/Datasets_legend.Rds")
+
 # Make a list of the different studies names in each file
 Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
 Stats_AR <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
