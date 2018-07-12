@@ -14,19 +14,6 @@ list_categories <- readRDS("data/Names_categories.Rds")
 options(shiny.sanitize.errors=T)
 
 
-# Load the different datasets, all in csv format, each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
-Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
-Stats_AR <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
-Stats_TA <- readRDS("data/Training_Aerobic_Merged_Stats_SYMBOL.Rds")
-Stats_TR <- readRDS("data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
-Stats_TC <- readRDS("data/Training_Combined_Merged_Stats_SYMBOL.Rds")
-Stats_IN <- readRDS("data/Inactivity_Merged_Stats_SYMBOL.Rds")
-annotation <- readRDS("data/Datasets_legend.Rds") # Load the table describing the legend of the tables
-studiesAcute <- readRDS("data/studiesAcute.Rds") # Load the table describing the legend of the tables
-StudiesTraining <- readRDS("data/StudiesTraining.Rds") # Load the table describing the legend of the tables
-StudiesInactivity <- readRDS("data/StudiesInactivity.Rds") # Load the table describing the legend of the tables
-
-
 # Set up the graphical parameters for the forest plots
 library(forestplot)
 own <- fpTxtGp()
@@ -71,11 +58,18 @@ MetaAnalysis <- function(x){
 }
 
 
-#function to make hyperlinks
-createLink <- function(val) {
-  sprintf(paste0('<a href="', URLdecode(val),'" target="_blank">', substr(val, 1, 25) ,'</a>'))
-}
-
-
 #load other required libraries
 library(DT)
+
+
+# Load the different datasets, all in csv format, each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
+Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
+Stats_AR <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
+Stats_TA <- readRDS("data/Training_Aerobic_Merged_Stats_SYMBOL.Rds")
+Stats_TR <- readRDS("data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
+Stats_TC <- readRDS("data/Training_Combined_Merged_Stats_SYMBOL.Rds")
+Stats_IN <- readRDS("data/Inactivity_Merged_Stats_SYMBOL.Rds")
+annotation <- readRDS("data/Datasets_legend.Rds") # Load the table describing the legend of the tables
+studiesAcute <- readRDS("data/studiesAcute.Rds") # Load the table describing the legend of the tables
+StudiesTraining <- readRDS("data/StudiesTraining.Rds") # Load the table describing the legend of the tables
+StudiesInactivity <- readRDS("data/StudiesInactivity.Rds") # Load the table describing the legend of the tables

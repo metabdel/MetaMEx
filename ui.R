@@ -77,12 +77,12 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                  
                  fluidRow(
                    column(6,  h3("Acute Aerobic Exercise"), 
-                          plotOutput("Acute_A"),
+                          plotOutput("Acute_A", height="450px"),
                           checkboxGroupInput("AA_studies", "Acute Aerobic Studies", selected=list_datasets[[1]], list_datasets[[1]], inline=TRUE),
                           checkboxInput('AA_all', 'Select all/none', value=T), style="padding:0 0 0 3%"),
                    
                    column(6,  h3("Acute Resistance Exercise"),
-                          plotOutput("Acute_R", height="400px"),
+                          plotOutput("Acute_R", height="450px"),
                           checkboxGroupInput("AR_studies", "Acute Resistance Studies", selected=list_datasets[[2]], list_datasets[[2]], inline=TRUE),
                           checkboxInput('AR_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
                  ),
@@ -152,7 +152,7 @@ navbarMenu("Datasets",
                 "Your study is not included? You have information on age, sex, BMI or else for one of the studies? Please",
                 a("contact us!", href="mailto:nicolas.pillon@ki.se"), tags$b("The more data we collect, the stronger MetaMex becomes!")),
              tags$br(),
-             DT::dataTableOutput("studiesAcute"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()),    
+             DT::dataTableOutput("StudiesAcute"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()),    
     tabPanel("Training Studies", 
              fluidRow(style="background-color:#edcdc2;padding:1%",
                       h3("Training Exercise Studies"), "Summarized clinical data and experimental conditions.", tags$br(),
