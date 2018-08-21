@@ -18,7 +18,7 @@ server <- function(input, output, session) {
   observe({ updateCheckboxGroupInput(session, 'TR_studies',  choices = list_datasets[['TR_names']],        selected = if (input$TR_all) list_datasets[['TR_names']], inline=TRUE)})
   observe({ updateCheckboxGroupInput(session, 'TC_studies',  choices = list_datasets[['TC_names']],        selected = if (input$TC_all) list_datasets[['TC_names']], inline=TRUE)})
   observe({ updateCheckboxGroupInput(session, 'IN_studies',  choices = list_datasets[['IN_names']],        selected = if (input$IN_all) list_datasets[['IN_names']], inline=TRUE)})
-  updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected='PPARGC1A', options = list(maxOptions=length(list_genes)))
+  #updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected='', options=list(maxOptions=length(list_genes)))
   observeEvent(input$jumpToApp, {updateTabsetPanel(session, "inTabset", selected="panelApp") })
   
 #=======================================================================================
