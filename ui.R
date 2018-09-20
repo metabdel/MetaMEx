@@ -52,13 +52,13 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
         ),
 
 #=======================================================================================================================        
-        tabPanel("App", value="panelApp",
+        tabPanel("Meta-analysis", value="panelApp",
                  fluidRow(style="background-color:#edcdc2;padding:1%",
-                          h3("MetaMEx app"), "Type the official gene symbol and select your population of interest"),
+                          h3("Meta-analysis"), "Find out how your gene of interest behaves in response to exercise and inactivity.
+                          Type the official gene symbol and select your population of interest."),
                  
                  fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
-                          #column(2, selectInput("genename", "Official Gene Name", choice=NULL, selectize=T)), #input official gene name
-                          column(2, textInput("genename", "Official Gene Name", value="PPARGC1A")), #input official gene name
+                          column(2, selectizeInput("genename", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
                           column(1, checkboxGroupInput("muscle", "Muscle", selected=c("VAL", "BIB", "SOL", "N.A"), list_categories[['muscle_choice']]), #checkbox to select category
                                  checkboxInput('bar_muscle', 'All/None', value=T)), #checkbox to select all
                           column(1, checkboxGroupInput("sex", "Sex", selected=c("M", "F", "U"), list_categories[['sex_choice']]), #checkbox to select category
@@ -74,7 +74,7 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                           column(1, checkboxGroupInput("exercisetype", "Type", selected=c("CON", "ECC", "MIX"), list_categories[['exercise_choice']]), #checkbox to select category
                                  checkboxInput('bar_exercisetype', 'All/None', value=T)) #checkbox to select all
                  ),
-                 
+
                  
                  fluidRow(
                    column(6,  h3("Acute Aerobic Exercise"), 
@@ -117,6 +117,37 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                  
                  tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()
         ),
+
+#=======================================================================================================================        
+tabPanel("Correlations", value="panelCorr",
+         fluidRow(style="background-color:#edcdc2;padding:1%",
+                  h3("Correlations"), "Display the correlation between your gene of interest and all other genes in response to exercise.
+                  Type the official gene symbol and select your population of interest."),
+         
+         fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
+                  column(2, selectizeInput("gene1", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
+                  column(6,   selectInput("selectgroup", label="Highlight", 
+                                          choices = list("All"=1,
+                                                         "Protocol"=3, 
+                                                         "Muscle"=5, 
+                                                         "Sex"=6,
+                                                         "Age"=7,
+                                                         "Training"=8,
+                                                         "Disease"=9),
+                                          selected = "All"))
+         ),
+         
+         
+         fluidRow(
+           column(6,  h3("Correlation Table"),
+                  DT::dataTableOutput("CorrTable")),
+           
+           column(6,  h3("Correlation Plot"),
+                  plotOutput("CorrPlot"))
+         ),
+         
+         tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()
+),
 
 #=======================================================================================================================        
         tabPanel("Downloads", 
