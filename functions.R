@@ -57,6 +57,9 @@ MetaAnalysis <- function(x){
   x
 }
 
+#Functions for correlation
+
+
 
 #load other required libraries
 library(DT)
@@ -73,3 +76,4 @@ annotation <- readRDS("data/Datasets_legend.Rds") # Load the table describing th
 StudiesAcute <- readRDS("data/StudiesAcute.Rds") # Load the table describing the legend of the tables
 StudiesTraining <- readRDS("data/StudiesTraining.Rds") # Load the table describing the legend of the tables
 StudiesInactivity <- readRDS("data/StudiesInactivity.Rds") # Load the table describing the legend of the tables
+Individual_FC <- readRDS("data/Allindividuals_foldchange.Rds")

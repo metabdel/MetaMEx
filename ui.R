@@ -52,12 +52,13 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
         ),
 
 #=======================================================================================================================        
-        tabPanel("App", value="panelApp",
+        tabPanel("Meta-analysis", value="panelApp",
                  fluidRow(style="background-color:#edcdc2;padding:1%",
-                          h3("MetaMEx app"), "Type the official gene symbol and select your population of interest"),
+                          h3("Meta-analysis"), "Find out how your gene of interest behaves in response to exercise and inactivity.
+                          Type the official gene symbol and select your population of interest."),
                  
                  fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
-                          column(2, selectInput("genename", "Official Gene Name", choice=NULL, selectize=T)), #input official gene name
+                          column(2, selectizeInput("genename", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
                           column(1, checkboxGroupInput("muscle", "Muscle", selected=c("VAL", "BIB", "SOL", "N.A"), list_categories[['muscle_choice']]), #checkbox to select category
                                  checkboxInput('bar_muscle', 'All/None', value=T)), #checkbox to select all
                           column(1, checkboxGroupInput("sex", "Sex", selected=c("M", "F", "U"), list_categories[['sex_choice']]), #checkbox to select category
@@ -73,7 +74,7 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                           column(1, checkboxGroupInput("exercisetype", "Type", selected=c("CON", "ECC", "MIX"), list_categories[['exercise_choice']]), #checkbox to select category
                                  checkboxInput('bar_exercisetype', 'All/None', value=T)) #checkbox to select all
                  ),
-                 
+
                  
                  fluidRow(
                    column(6,  h3("Acute Aerobic Exercise"), 
@@ -92,11 +93,11 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                  fluidRow(align="top",
                           column(6,  
                                  h3("Training Aerobic Exercise"),
-                                 plotOutput("Training_A", height="550px"),
+                                 plotOutput("Training_A", height="500px"),
                                  checkboxGroupInput("TA_studies", "Training Aerobic Studies", selected=list_datasets[[3]], list_datasets[[3]], inline=TRUE),
                                  checkboxInput('TA_all', 'Select all/None', value=T), style="padding:0 0 0 3%"),
                           column(6,  h3("Training Resistance Exercise"),
-                                 plotOutput("Training_R", height="550px"),
+                                 plotOutput("Training_R", height="500px"),
                                  checkboxGroupInput("TR_studies", "Training Resistance Studies", selected=list_datasets[[4]], list_datasets[[4]], inline=TRUE),
                                  checkboxInput('TR_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
                  ),
@@ -109,13 +110,44 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                           checkboxGroupInput("TC_studies", "Training Combined Studies", selected=list_datasets[[5]], list_datasets[[5]], inline=TRUE),
                           checkboxInput('TC_all', 'Select all/none', value=T), style="padding:0 0 0 3%"),
                    column(6, h3("Physical Inactivity"),
-                          plotOutput("Inact", height="230px"),
+                          plotOutput("Inact", height="300px"),
                           checkboxGroupInput("IN_studies", "Physical Inactivity studies", selected=list_datasets[[6]], list_datasets[[6]], inline=TRUE),
                           checkboxInput('IN_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
                  ),
                  
                  tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()
         ),
+
+#=======================================================================================================================        
+tabPanel("Correlations", value="panelCorr",
+         fluidRow(style="background-color:#edcdc2;padding:1%",
+                  h3("Correlations"), "Display the correlation between your gene of interest and all other genes in response to exercise.
+                  Type the official gene symbol and select your population of interest."),
+         
+         fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
+                  column(2, selectizeInput("gene1", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
+                  column(6,   selectInput("selectgroup", label="Highlight", 
+                                          choices = list("All"=1,
+                                                         "Protocol"=3, 
+                                                         "Muscle"=5, 
+                                                         "Sex"=6,
+                                                         "Age"=7,
+                                                         "Training"=8,
+                                                         "Disease"=9),
+                                          selected = "All"))
+         ),
+         
+         
+         fluidRow(
+           column(6,  h3("Correlation Table"),
+                  DT::dataTableOutput("CorrTable")),
+           
+           column(6,  h3("Correlation Plot"),
+                  plotOutput("CorrPlot"))
+         ),
+         
+         tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()
+),
 
 #=======================================================================================================================        
         tabPanel("Downloads", 

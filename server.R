@@ -18,7 +18,9 @@ server <- function(input, output, session) {
   observe({ updateCheckboxGroupInput(session, 'TR_studies',  choices = list_datasets[['TR_names']],        selected = if (input$TR_all) list_datasets[['TR_names']], inline=TRUE)})
   observe({ updateCheckboxGroupInput(session, 'TC_studies',  choices = list_datasets[['TC_names']],        selected = if (input$TC_all) list_datasets[['TC_names']], inline=TRUE)})
   observe({ updateCheckboxGroupInput(session, 'IN_studies',  choices = list_datasets[['IN_names']],        selected = if (input$IN_all) list_datasets[['IN_names']], inline=TRUE)})
-  updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected='PPARGC1A', options = list(maxOptions=length(list_genes)))
+  updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected=NULL , options=NULL)
+  updateSelectizeInput(session, 'gene1', choices=list_genes, server=TRUE, selected=NULL , options=NULL)
+  updateSelectizeInput(session, 'gene2', choices=list_genes, server=TRUE, selected=NULL , options=NULL)
   observeEvent(input$jumpToApp, {updateTabsetPanel(session, "inTabset", selected="panelApp") })
   
 #=======================================================================================
@@ -332,7 +334,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     return(finalplot)
   })
 
-  
+
 #=======================================================================================
 # print plots
 #=======================================================================================
@@ -342,6 +344,80 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
   output$Training_R <- renderPlot({ plotInputTR() })
   output$Training_C <- renderPlot({ plotInputTC() })
   output$Inact      <- renderPlot({ plotInputIN() })
+
+  
+#=======================================================================================
+# Make correlation table
+#=======================================================================================
+
+  Corr_stats <- reactive({
+    tryCatch({
+    withProgress(message = 'Calculating', value = 0, max=4, {
+
+      incProgress(1, detail="Functions")
+        geneofinterest <- as.numeric(selectedata[toupper(input$gene1),])
+        estimate <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$estimate
+        p.value  <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$p.value
+      incProgress(1, detail="Spearman coefficient")
+        Spearman.r <- apply(selectedata, 1, estimate)
+      incProgress(1, detail="Spearman statistics")
+        Spearman.p <- apply(selectedata, 1, p.value)
+        Spearman.FDR <- p.adjust(Spearman.p, method="bonferroni")
+        Spearman.r <- round(Spearman.r, digits=2)
+        Spearman.p <- signif(Spearman.p, digits=2)
+        Spearman.FDR <- signif(Spearman.FDR, digits=2)
+      incProgress(1)
+        coeff <- data.frame(Spearman.r, Spearman.p, Spearman.FDR)
+        colnames(coeff) <- c("Spearman.r", "P.value", "FDR")
+        coeff <- coeff[order(coeff$FDR),]
+      return(coeff)
+    })
+    }, error=function(e) NULL)
+  })
+  
+    output$CorrTable <- DT::renderDataTable(escape = FALSE, rownames = TRUE, selection = "single", {
+      validate(need(!is.null(Corr_stats()),   "Dataset not available for the selected criteria"))
+      
+      Corr_stats()
+
+  })
+
+  
+#=======================================================================================
+# Make correlation plot
+#=======================================================================================
+  
+  output$CorrPlot <- renderPlot({
+    validate(need(!is.null(Corr_stats()),     "Dataset not available for the selected criteria"))
+    validate(need(input$CorrTable_rows_selected!="",  "Please select one gene in the table")) 
+    
+    Gene1 <- Individual_FC[toupper(input$gene1),]
+    Gene2 <- Corr_stats()
+    Gene2 <- rownames(Gene2[input$CorrTable_rows_selected,])
+    Gene2 <- Individual_FC[Gene2,]
+    data  <- data.frame(t(Gene1), t(Gene2))
+    data <- cbind(data, str_split_fixed(rownames(data), "_", 9))
+    colnames(data) <- c("Gene1", "Gene2", "Protocol", "Study", "Muscle", "Sex", "Age", "Training", "Disease")
+    library(ggplot2)
+    library(ggrepel)
+    library(ggfortify)
+    library(gplots)
+    active <- ggplot(data, aes(x=Gene1, y=Gene2, color=data[,as.numeric(input$selectgroup)])) +
+      geom_smooth(method=lm, se=F) +
+      geom_point(shape=19) +
+      labs(x=paste(input$gene1, "log2(fold-change)"),
+           y=paste(rownames(Gene2), "log2(fold-change)"),
+           title="") +
+      theme(plot.title  = element_text(face="bold", color="black", size=8, angle=0),
+            axis.text.x = element_text(color="black", size=6, angle=0, hjust = 1),
+            axis.text.y = element_text(color="black", size=6, angle=0, hjust = 1),
+            axis.title  = element_text(face="bold", color="black", size=7, angle=0),
+            legend.text   = element_text(face="bold", color="black", size=6, angle=0),
+            legend.position="right", legend.title = element_blank())
+    return(active)
+    
+    
+  })
   
 
 #=======================================================================================
