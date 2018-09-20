@@ -344,7 +344,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
   output$Training_R <- renderPlot({ plotInputTR() })
   output$Training_C <- renderPlot({ plotInputTC() })
   output$Inact      <- renderPlot({ plotInputIN() })
-  
+
   
 #=======================================================================================
 # Make correlation table
@@ -352,30 +352,34 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
 
   Corr_stats <- reactive({
     tryCatch({
-      selectedata <- Individual_FC
-      selectedata <- selectedata[rowSums(is.na(selectedata)) / ncol(selectedata) < 20/100, ]
-    
-      geneofinterest <- as.numeric(selectedata[toupper(input$gene1),])
-      estimate <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$estimate
-      p.value  <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$p.value
-      Spearman.r <- apply(selectedata, 1, estimate)
-      Spearman.p <- apply(selectedata, 1, p.value)
-      Spearman.FDR <- p.adjust(Spearman.p, method="bonferroni")
-    
-      Spearman.r <- round(Spearman.r, digits=2)
-      Spearman.p <- signif(Spearman.p, digits=2)
-      Spearman.FDR <- signif(Spearman.FDR, digits=2)
-    
-      coeff <- data.frame(Spearman.r, Spearman.p, Spearman.FDR)
-      colnames(coeff) <- c("Spearman.r", "P.value", "FDR")
-      coeff <- coeff[order(coeff$FDR),]
+    withProgress(message = 'Calculating', value = 0, max=4, {
+
+      incProgress(1, detail="Functions")
+        geneofinterest <- as.numeric(selectedata[toupper(input$gene1),])
+        estimate <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$estimate
+        p.value  <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$p.value
+      incProgress(1, detail="Spearman coefficient")
+        Spearman.r <- apply(selectedata, 1, estimate)
+      incProgress(1, detail="Spearman statistics")
+        Spearman.p <- apply(selectedata, 1, p.value)
+        Spearman.FDR <- p.adjust(Spearman.p, method="bonferroni")
+        Spearman.r <- round(Spearman.r, digits=2)
+        Spearman.p <- signif(Spearman.p, digits=2)
+        Spearman.FDR <- signif(Spearman.FDR, digits=2)
+      incProgress(1)
+        coeff <- data.frame(Spearman.r, Spearman.p, Spearman.FDR)
+        colnames(coeff) <- c("Spearman.r", "P.value", "FDR")
+        coeff <- coeff[order(coeff$FDR),]
       return(coeff)
+    })
     }, error=function(e) NULL)
   })
   
     output$CorrTable <- DT::renderDataTable(escape = FALSE, rownames = TRUE, selection = "single", {
       validate(need(!is.null(Corr_stats()),   "Dataset not available for the selected criteria"))
+      
       Corr_stats()
+
   })
 
   
