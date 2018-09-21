@@ -57,9 +57,6 @@ MetaAnalysis <- function(x){
   x
 }
 
-#Functions for correlation
-
-
 
 #load other required libraries
 library(DT)
