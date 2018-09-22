@@ -363,7 +363,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
         Spearman.p <- apply(selectedata, 1, p.value)
       incProgress(2, detail="Making table")
         Spearman.FDR <- p.adjust(Spearman.p, method="bonferroni")
-        Spearman.r <- round(Spearman.r, digits=2)
+        Spearman.r <- round(Spearman.r, digits=3)
         Spearman.p <- signif(Spearman.p, digits=2)
         Spearman.FDR <- signif(Spearman.FDR, digits=2)
         coeff <- data.frame(Spearman.r, Spearman.p, Spearman.FDR)
