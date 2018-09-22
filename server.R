@@ -352,21 +352,20 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
 
   Corr_stats <- reactive({
     tryCatch({
-    withProgress(message = 'Calculating', value = 0, max=4, {
-
-      incProgress(1, detail="Functions")
+    withProgress(message = 'Calculating', value = 0, max=10, {
+        selectedata <- Individual_FC
         geneofinterest <- as.numeric(selectedata[toupper(input$gene1),])
         estimate <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$estimate
         p.value  <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$p.value
-      incProgress(1, detail="Spearman coefficient")
+      incProgress(4, detail="Spearman coefficients")
         Spearman.r <- apply(selectedata, 1, estimate)
-      incProgress(1, detail="Spearman statistics")
+      incProgress(4, detail="Spearman statistics")
         Spearman.p <- apply(selectedata, 1, p.value)
+      incProgress(2, detail="Making table")
         Spearman.FDR <- p.adjust(Spearman.p, method="bonferroni")
-        Spearman.r <- round(Spearman.r, digits=2)
+        Spearman.r <- round(Spearman.r, digits=3)
         Spearman.p <- signif(Spearman.p, digits=2)
         Spearman.FDR <- signif(Spearman.FDR, digits=2)
-      incProgress(1)
         coeff <- data.frame(Spearman.r, Spearman.p, Spearman.FDR)
         colnames(coeff) <- c("Spearman.r", "P.value", "FDR")
         coeff <- coeff[order(coeff$FDR),]
@@ -408,12 +407,12 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       labs(x=paste(input$gene1, "log2(fold-change)"),
            y=paste(rownames(Gene2), "log2(fold-change)"),
            title="") +
-      theme(plot.title  = element_text(face="bold", color="black", size=8, angle=0),
-            axis.text.x = element_text(color="black", size=6, angle=0, hjust = 1),
-            axis.text.y = element_text(color="black", size=6, angle=0, hjust = 1),
-            axis.title  = element_text(face="bold", color="black", size=7, angle=0),
-            legend.text   = element_text(face="bold", color="black", size=6, angle=0),
-            legend.position="right", legend.title = element_blank())
+      theme(axis.text.x = element_text(color="black", size=12, angle=0, hjust = 1),
+            axis.text.y = element_text(color="black", size=12, angle=0, hjust = 1),
+            axis.title  = element_text(face="bold", color="black", size=14, angle=0),
+            legend.text   = element_text(face="bold", color="black", size=14, angle=0),
+            legend.position="right", legend.title = element_blank(),
+            legend.key = element_rect(size = 10), legend.key.size = unit(1.5, 'lines'))
     return(active)
     
     
