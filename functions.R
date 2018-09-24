@@ -60,6 +60,7 @@ MetaAnalysis <- function(x){
 
 #load other required libraries
 library(DT)
+library(ggplot2)
 
 
 # Load the different datasets, all in csv format, each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
