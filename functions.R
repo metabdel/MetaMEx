@@ -1,3 +1,9 @@
+#load other required libraries
+library(DT)
+library(ggplot2)
+library(stringr)
+
+
 #URLs for sharing buttons
 url_twitter  <- "https://twitter.com/intent/tweet?text=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20@NicoPillon%20@JuleenRZierath%20@AnnaKrook_KI&url=http://www.metamex.eu"
 url_linkedin <- "https://www.linkedin.com/shareArticle?mini=true&url=http://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20&summary=MetaMEx&source=LinkedIn"
@@ -24,7 +30,6 @@ own$summary$cex <- 1.2
 
 
 #Function to make data table for selected gene
-library(stringr)
 library(dplyr)
 DataForGeneName <- function(x){
   x <- data.frame(t(x[grepl('logFC',    colnames(x))]), # M-value (M) is the log2-fold change
@@ -56,11 +61,6 @@ MetaAnalysis <- function(x){
              c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(x$size, na.rm=T)))
   x
 }
-
-
-#load other required libraries
-library(DT)
-library(ggplot2)
 
 
 # Load the different datasets, all in csv format, each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
