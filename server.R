@@ -397,10 +397,6 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     data  <- data.frame(t(Gene1), t(Gene2))
     data <- cbind(data, str_split_fixed(rownames(data), "_", 9))
     colnames(data) <- c("Gene1", "Gene2", "Protocol", "Study", "Muscle", "Sex", "Age", "Training", "Disease")
-    library(ggplot2)
-    library(ggrepel)
-    library(ggfortify)
-    library(gplots)
     active <- ggplot(data, aes(x=Gene1, y=Gene2, color=data[,as.numeric(input$selectgroup)])) +
       geom_smooth(method=lm, se=F) +
       geom_point(shape=19) +
