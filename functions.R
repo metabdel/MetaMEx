@@ -1,5 +1,6 @@
 #load other required libraries
 library(DT)
+library(gplot)
 library(ggplot2)
 library(ggfortify)
 library(stringr)
