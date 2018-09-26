@@ -159,7 +159,7 @@ tabPanel("Correlations", value="panelCorr",
                   tags$br(),
                  fluidRow(
                 column(6, h3("Data selected in the App"),
-                          downloadButton("downloadReport", "Plots of selected data (.pdf)"),tags$br(),tags$br(),
+                          downloadButton("downloadReport", "Forest plots of selected data (.pdf)"),tags$br(),tags$br(),
                           downloadButton("downloadData", "Statistics of selected data (.csv)"), tags$br(), tags$br(),
                           tags$img(src='Nico-Macrophage-weight-R.png', width="50%", align="center"), tags$br(),tags$br()),
                 column(6, h3("Complete datasets"),

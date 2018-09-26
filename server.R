@@ -19,8 +19,8 @@ server <- function(input, output, session) {
   observe({ updateCheckboxGroupInput(session, 'TC_studies',  choices = list_datasets[['TC_names']],        selected = if (input$TC_all) list_datasets[['TC_names']], inline=TRUE)})
   observe({ updateCheckboxGroupInput(session, 'IN_studies',  choices = list_datasets[['IN_names']],        selected = if (input$IN_all) list_datasets[['IN_names']], inline=TRUE)})
   updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected=NULL , options=NULL)
-  updateSelectizeInput(session, 'gene1', choices=list_genes, server=TRUE, selected=NULL , options=NULL)
-  updateSelectizeInput(session, 'gene2', choices=list_genes, server=TRUE, selected=NULL , options=NULL)
+  updateSelectizeInput(session, 'gene1', choices=list_genes2, server=TRUE, selected=NULL , options=NULL)
+  updateSelectizeInput(session, 'gene2', choices=list_genes2, server=TRUE, selected=NULL , options=NULL)
   observeEvent(input$jumpToApp, {updateTabsetPanel(session, "inTabset", selected="panelApp") })
   
 #=======================================================================================
@@ -357,16 +357,27 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
         geneofinterest <- as.numeric(selectedata[toupper(input$gene1),])
         estimate <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$estimate
         p.value  <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$p.value
-      incProgress(2, detail="Spearman coefficients")
-        Spearman.r1 <- apply(selectedata[1:6000,], 1, estimate)
-      incProgress(2, detail="Spearman coefficients")
-        Spearman.r2 <- apply(selectedata[6001:nrow(selectedata),], 1, estimate)
-        Spearman.r <- c(Spearman.r1, Spearman.r2)
-      incProgress(2, detail="Spearman statistics")
-        Spearman.p1 <- apply(selectedata[1:6000,], 1, p.value)
-      incProgress(2, detail="Spearman statistics")
-        Spearman.p2 <- apply(selectedata[6001:nrow(selectedata),], 1, p.value)
-        Spearman.p <- c(Spearman.p1, Spearman.p2)
+      
+      incProgress(1, detail="Spearman coefficients")
+        Spearman.r1 <- apply(selectedata[1:3000,], 1, estimate)
+      incProgress(1, detail="Spearman coefficients")
+        Spearman.r2 <- apply(selectedata[3001:6000,], 1, estimate)
+      incProgress(1, detail="Spearman coefficients")
+        Spearman.r3 <- apply(selectedata[6001:9000,], 1, estimate)
+      incProgress(1, detail="Spearman coefficients")
+        Spearman.r4 <- apply(selectedata[9001:nrow(selectedata),], 1, estimate)
+        Spearman.r <- c(Spearman.r1, Spearman.r2, Spearman.r3, Spearman.r4)
+        
+      incProgress(1, detail="Spearman statistics")
+        Spearman.p1 <- apply(selectedata[1:3000,], 1, p.value)
+      incProgress(1, detail="Spearman statistics")
+        Spearman.p2 <- apply(selectedata[3001:6000,], 1, p.value)
+      incProgress(1, detail="Spearman statistics")
+        Spearman.p3 <- apply(selectedata[6001:9000,], 1, p.value)
+      incProgress(1, detail="Spearman statistics")
+        Spearman.p4 <- apply(selectedata[9001:nrow(selectedata),], 1, p.value)
+        Spearman.p <- c(Spearman.p1, Spearman.p2, Spearman.p3, Spearman.p4)
+        
       incProgress(2, detail="Making table")
         Spearman.FDR <- p.adjust(Spearman.p, method="bonferroni")
         Spearman.r <- round(Spearman.r, digits=3)
@@ -375,12 +386,18 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
         coeff <- data.frame(Spearman.r, Spearman.p, Spearman.FDR)
         colnames(coeff) <- c("Spearman.r", "P.value", "FDR")
         coeff <- coeff[order(coeff$FDR),]
+        
+  #make hyperlinks on gene names
+        coeff$GeneCards <- paste("https://www.genecards.org/cgi-bin/carddisp.pl?gene=", rownames(coeff), sep="")
+        coeff$GeneCards  <- sapply(coeff$GeneCards, createLink)
+        coeff <- coeff[,c(4,1,2,3)]
+        
       return(coeff)
     })
     }, error=function(e) NULL)
   })
   
-    output$CorrTable <- DT::renderDataTable(escape = FALSE, rownames = TRUE, selection = "single", {
+    output$CorrTable <- DT::renderDataTable(escape = FALSE, rownames = FALSE, selection = "single", {
       validate(need(!is.null(Corr_stats()),   "Dataset not available for the selected criteria"))
       
       Corr_stats()
@@ -409,12 +426,11 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       labs(x=paste(input$gene1, "log2(fold-change)"),
            y=paste(rownames(Gene2), "log2(fold-change)"),
            title="") +
-      theme(axis.text.x = element_text(color="black", size=12, angle=0, hjust = 1),
-            axis.text.y = element_text(color="black", size=12, angle=0, hjust = 1),
-            axis.title  = element_text(face="bold", color="black", size=14, angle=0),
-            legend.text   = element_text(face="bold", color="black", size=14, angle=0),
-            legend.position="right", legend.title = element_blank(),
-            legend.key = element_rect(size = 10), legend.key.size = unit(1.5, 'lines'))
+      theme(axis.text.x = element_text(color="black", size=10, angle=0, hjust = 1),
+            axis.text.y = element_text(color="black", size=10, angle=0, hjust = 1),
+            axis.title  = element_text(face="bold", color="black", size=12, angle=0),
+            legend.text   = element_text(face="bold", color="black", size=10, angle=0),
+            legend.position="right", legend.title = element_blank())
     return(active)
     
     
@@ -486,7 +502,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       pdf(file, onefile = TRUE, width=16, height=22.6)
       grid.arrange(AA, AR, TA, TR, TC, IN,
                    top = textGrob(paste(input$genename, "transcriptional response to physical activity"), gp=gpar(fontsize=30, font=7)),
-                   bottom = textGrob("MetaMEx v2.7 Copyright 2018 Nicolas J. Pillon. For more information, contact nicolas.pillon@ki.se or visit www.nicopillon.com",
+                   bottom = textGrob("MetaMEx Copyright 2018 Nicolas J. Pillon. For more information, visit www.metamex.eu",
                                      gp=gpar(fontsize=16)),
                    layout_matrix=matrix, vp=viewport(width=0.95, height=0.9))
       dev.off()
