@@ -1,6 +1,8 @@
 #load other required libraries
 library(DT)
+library(gplot)
 library(ggplot2)
+library(ggfortify)
 library(stringr)
 
 
@@ -75,3 +77,9 @@ StudiesAcute <- readRDS("data/StudiesAcute.Rds") # Load the table describing the
 StudiesTraining <- readRDS("data/StudiesTraining.Rds") # Load the table describing the legend of the tables
 StudiesInactivity <- readRDS("data/StudiesInactivity.Rds") # Load the table describing the legend of the tables
 Individual_FC <- readRDS("data/Allindividuals_foldchange.Rds")
+list_genes2 <- rownames(Individual_FC)
+
+#function to make hyperlinks
+createLink <- function(val) {
+  sprintf(paste0('<a href="', URLdecode(val),'" target="_blank">', gsub("(.*org/)|(.*=)", "", val) ,'</a>'))
+}
