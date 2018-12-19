@@ -1,6 +1,6 @@
 source("functions.R")
 
-shinyUI(navbarPage(title="MetaMEx", id="inTabset",
+navbarPage(title="MetaMEx", id="inTabset",
                    #add css theme
                    theme="bootstrap.css",
                    #include google analytics
@@ -75,7 +75,6 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                                  checkboxInput('bar_exercisetype', 'All/None', value=T)) #checkbox to select all
                  ),
 
-                 
                  fluidRow(
                    column(6,  h3("Acute Aerobic Exercise"), 
                           plotOutput("Acute_A", height="450px"),
@@ -105,13 +104,23 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                  tags$hr(),
                  
                  fluidRow(
+                   column(6, h3("Training HIIT Exercise"),
+                          plotOutput("Training_H", height="180px"),
+                          checkboxGroupInput("HI_studies", "Training HIIT studies", selected=list_datasets[[5]], list_datasets[[5]], inline=TRUE),
+                          checkboxInput('HI_all', 'Select all/none', value=T), style="padding:0 0 0 3%"),
                    column(6, h3("Training Combined Exercise"),
-                          plotOutput("Training_C", height="230px"),
-                          checkboxGroupInput("TC_studies", "Training Combined Studies", selected=list_datasets[[5]], list_datasets[[5]], inline=TRUE),
-                          checkboxInput('TC_all', 'Select all/none', value=T), style="padding:0 0 0 3%"),
+                          plotOutput("Training_C", height="250px"),
+                          checkboxGroupInput("TC_studies", "Training Combined Studies", selected=list_datasets[[6]], list_datasets[[6]], inline=TRUE),
+                          checkboxInput('TC_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
+
+                 ),
+                 
+                 tags$hr(),
+                 
+                 fluidRow(
                    column(6, h3("Physical Inactivity"),
                           plotOutput("Inact", height="300px"),
-                          checkboxGroupInput("IN_studies", "Physical Inactivity studies", selected=list_datasets[[6]], list_datasets[[6]], inline=TRUE),
+                          checkboxGroupInput("IN_studies", "Physical Inactivity studies", selected=list_datasets[[7]], list_datasets[[7]], inline=TRUE),
                           checkboxInput('IN_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
                  ),
                  
@@ -168,6 +177,7 @@ tabPanel("Correlations", value="panelCorr",
                           downloadButton("downloadTA", "Training Aerobic (.csv, 76MB)"),tags$br(),tags$br(),
                           downloadButton("downloadTR", "Training Resistance (.csv, 76MB)"),tags$br(),tags$br(),
                           downloadButton("downloadTC", "Training Combined (.csv, 17MB)"),tags$br(),tags$br(),
+                          downloadButton("downloadHI", "Training HIIT (.csv, 17MB)"),tags$br(),tags$br(),
                           downloadButton("downloadIN", "Inactivity (.csv, 18MB)"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br())
         )),
 
@@ -226,7 +236,8 @@ navbarMenu("Datasets",
                     a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank")),
                  column(4, tags$img(src='Nico-Macrophage-bike-L.png', width = "100%", style="padding:0 5% 0 0"))
         ))
+
 )
-)
+
 
 
