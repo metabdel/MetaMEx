@@ -131,7 +131,7 @@ navbarPage(title="MetaMEx", id="inTabset",
 tabPanel("Correlations", value="panelCorr",
          fluidRow(style="background-color:#edcdc2;padding:1%",
                   h3("Correlations"), "Display the correlation between your gene of interest and all other genes in response to exercise.
-                  Type the official gene symbol and select your population of interest."),
+                  Type the official gene symbol and highlight your criteria of interest."),
          
          fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
                   column(2, selectizeInput("gene1", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
@@ -162,13 +162,14 @@ tabPanel("Correlations", value="panelCorr",
         tabPanel("Downloads", 
                  fluidRow(style="background-color:#edcdc2;padding:1%",
                           h3("Downloads"),
-                          "All the data used in MetMEx is freely available. Download only the data corresponding to
+                          "All the data used in MetMEx is freely available. You can download only the plots corresponding to
                           the criteria used in the app or download the individual statistics for all studies.", tags$br(),
                           "For more advanced subsetting or analysis of the data, please", a("contact us!", href="mailto:nicolas.pillon@ki.se")),
                   tags$br(),
                  fluidRow(
                 column(6, h3("Data selected in the App"),
-                          downloadButton("downloadReport", "Forest plots of selected data (.pdf)"),tags$br(),tags$br(),
+                          downloadButton("downloadReport", "Forest plots (.pdf)"),tags$br(),tags$br(),
+                          downloadButton("downloadCorr", "Correlation plot (.pdf)"),tags$br(),tags$br(),
                           downloadButton("downloadData", "Statistics of selected data (.csv)"), tags$br(), tags$br(),
                           tags$img(src='Nico-Macrophage-weight-R.png', width="50%", align="center"), tags$br(),tags$br()),
                 column(6, h3("Complete datasets"),

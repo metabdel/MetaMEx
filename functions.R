@@ -4,7 +4,6 @@ library(gplots)
 library(ggplot2)
 library(ggfortify)
 library(stringr)
-library(shinydashboard)
 
 #URLs for sharing buttons
 url_twitter  <- "https://twitter.com/intent/tweet?text=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20@NicoPillon%20@JuleenRZierath%20@AnnaKrook_KI&url=http://www.metamex.eu"

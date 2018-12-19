@@ -67,7 +67,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       #add a column with the names of the studies included
       selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Acute Aerobic score (REML)")
+                               "Acute Aerobic score")
       return(selectedata)
     }, error=function(e) NULL)
   })
@@ -87,7 +87,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                      Exercisetype %in% input$exercisetype)
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Acute Resistance score (REML)")
+                               "Acute Resistance score")
       return(selectedata)
     }, error=function(e) NULL)
   })
@@ -105,7 +105,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                      Disease %in% input$disease)
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Training Aerobic score (REML)")
+                               "Training Aerobic score")
       return(selectedata)
     }, error=function(e) NULL)
   }) 
@@ -123,7 +123,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                             Disease %in% input$disease)
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Training Resistance score (REML)")
+                               "Training Resistance score")
       return(selectedata)
     }, error=function(e) NULL)
   })
@@ -141,7 +141,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                             Disease %in% input$disease)
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Training Combined score (REML)")
+                               "Training Combined score")
       return(selectedata)
     }, error=function(e) NULL)
   })
@@ -159,7 +159,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                                    Disease %in% input$disease)
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Training HIIT score (REML)")
+                               "Training HIIT score")
       return(selectedata)
     }, error=function(e) NULL)
   })
@@ -177,7 +177,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                             Disease %in% input$disease)
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Physical Inactivity score (REML)")
+                               "Physical Inactivity score")
       return(selectedata)
     }, error=function(e) NULL)
   })
@@ -204,7 +204,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- cbind(mean = c(NA , selectedata[,1]), 
                        lower= c(NA , selectedata[,3]),
                        upper= c(NA , selectedata[,4]))
-    tabletext <- cbind(c('Study' , selectedata[,10]),
+    tabletext <- cbind(c('Acute Aerobic Studies' , selectedata[,10]),
                        c("logFC" , format(round(selectedata[,1], digits=2))),
                        c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
     finalplot <- forestplot(tabletext, 
@@ -232,7 +232,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- cbind(mean = c(NA , selectedata[,1]), 
                        lower= c(NA , selectedata[,3]),
                        upper= c(NA , selectedata[,4]))
-    tabletext <- cbind(c('Study' , selectedata[,10]),
+    tabletext <- cbind(c('Acute Resistance Studies' , selectedata[,10]),
                        c("logFC" , format(round(selectedata[,1], digits=2))),
                        c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
     finalplot <- forestplot(tabletext, 
@@ -260,7 +260,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                               lower= c(NA , selectedata[,3]),
                               upper= c(NA , selectedata[,4]))
-      tabletext<-cbind(c('Study' , selectedata[,10]),
+      tabletext<-cbind(c('Training Aerobic Studies' , selectedata[,10]),
                        c("logFC" , format(round(selectedata[,1], digits=2))),
                        c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
       finalplot <- forestplot(tabletext, 
@@ -288,7 +288,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                             lower= c(NA , selectedata[,3]),
                             upper= c(NA , selectedata[,4]))
-    tabletext<-cbind(c('Study' , selectedata[,10]),
+    tabletext<-cbind(c('Training Resistance Studies' , selectedata[,10]),
                      c("logFC" , format(round(selectedata[,1], digits=2))),
                      c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
     finalplot <- forestplot(tabletext, 
@@ -316,7 +316,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                             lower= c(NA , selectedata[,3]),
                             upper= c(NA , selectedata[,4]))
-    tabletext<-cbind(c('Study' , selectedata[,10]),
+    tabletext<-cbind(c('Training Combined Studies' , selectedata[,10]),
                      c("logFC" , format(round(selectedata[,1], digits=2))),
                      c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
     finalplot <- forestplot(tabletext, 
@@ -344,7 +344,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                             lower= c(NA , selectedata[,3]),
                             upper= c(NA , selectedata[,4]))
-    tabletext<-cbind(c('Study' , selectedata[,10]),
+    tabletext<-cbind(c('Training HIIT Studies' , selectedata[,10]),
                      c("logFC" , format(round(selectedata[,1], digits=2))),
                      c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
     finalplot <- forestplot(tabletext, 
@@ -372,7 +372,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                             lower= c(NA , selectedata[,3]),
                             upper= c(NA , selectedata[,4]))
-    tabletext <- cbind(c('Study' , selectedata[,10]),
+    tabletext <- cbind(c('Physical Inactivity Studies' , selectedata[,10]),
                        c("logFC" , format(round(selectedata[,1], digits=2))),
                        c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
     finalplot <- forestplot(tabletext,
@@ -471,7 +471,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     data <- cbind(data, str_split_fixed(rownames(data), "_", 9))
     colnames(data) <- c("Gene1", "Gene2", "Protocol", "Study", "Muscle", "Sex", "Age", "Training", "Disease")
     active <- ggplot(data, aes(x=Gene1, y=Gene2, color=data[,as.numeric(input$selectgroup)])) +
-      geom_smooth(method=lm, se=F) +
+      geom_smooth(method=lm, se=F, fullrange=TRUE) +
       geom_point(shape=19) +
       labs(x=paste(input$gene1, "log2(fold-change)"),
            y=paste(rownames(Gene2), "log2(fold-change)"),
@@ -525,7 +525,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     content = function(file) { write.csv(Stats_IN, file) })
 
 #=======================================================================================
-# Make button to save as PDF
+# Make button to save forrest plots as PDF
 #=======================================================================================
   output$downloadReport = downloadHandler(
     filename = function() { paste(input$genename, "_MetaMEx.pdf", sep="") },
@@ -583,5 +583,32 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                    layout_matrix=matrix, vp=viewport(width=0.95, height=0.9))
       dev.off()
   })
+
+#=======================================================================================
+# Make button to save correlation plot as PDF
+#=======================================================================================
+  output$downloadCorr = downloadHandler(
+    filename = function() { paste(input$gene1, "_MetaMEx.pdf", sep="") },
+    content = function(file) {
+      if(!is.null(Corr_stats())) { COR <- plotInputCOR()}
+      else {COR <- textGrob("Correlation:\nNo data available for the selected criteria")}
+      t <- textGrob("")
+      
+      library(rmarkdown)
+      library(ggpubr)
+      library(readr)
+      library(grid)
+      library(gridExtra)
+      matrix <- rbind(c(1,1), c(2,2))
+      blank <- grid.rect(gp=gpar(col="white"))
+      margin = theme(plot.margin = unit(c(4,4,4,4), "cm"))
+      pdf(file, onefile = TRUE, width=16, height=22.6)
+      grid.arrange(COR, t,
+                   top = textGrob(paste(input$gene1, "correlation with", rownames(Corr_stats()[input$CorrTable_rows_selected,]), "during exercise and inactivity"), gp=gpar(fontsize=30, font=7)),
+                   bottom = textGrob("MetaMEx Copyright 2018 Nicolas J. Pillon. For more information, visit www.metamex.eu",
+                                     gp=gpar(fontsize=16)),
+                   layout_matrix=matrix, vp=viewport(width=0.95, height=0.9))
+      dev.off()
+    })
   
 }
