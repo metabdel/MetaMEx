@@ -1,6 +1,6 @@
 source("functions.R")
 
-shinyUI(navbarPage(title="MetaMEx", id="inTabset",
+navbarPage(title="MetaMEx", id="inTabset",
                    #add css theme
                    theme="bootstrap.css",
                    #include google analytics
@@ -75,7 +75,6 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                                  checkboxInput('bar_exercisetype', 'All/None', value=T)) #checkbox to select all
                  ),
 
-                 
                  fluidRow(
                    column(6,  h3("Acute Aerobic Exercise"), 
                           plotOutput("Acute_A", height="450px"),
@@ -105,13 +104,23 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
                  tags$hr(),
                  
                  fluidRow(
+                   column(6, h3("Training HIIT Exercise"),
+                          plotOutput("Training_H", height="180px"),
+                          checkboxGroupInput("HI_studies", "Training HIIT studies", selected=list_datasets[[5]], list_datasets[[5]], inline=TRUE),
+                          checkboxInput('HI_all', 'Select all/none', value=T), style="padding:0 0 0 3%"),
                    column(6, h3("Training Combined Exercise"),
-                          plotOutput("Training_C", height="230px"),
-                          checkboxGroupInput("TC_studies", "Training Combined Studies", selected=list_datasets[[5]], list_datasets[[5]], inline=TRUE),
-                          checkboxInput('TC_all', 'Select all/none', value=T), style="padding:0 0 0 3%"),
+                          plotOutput("Training_C", height="250px"),
+                          checkboxGroupInput("TC_studies", "Training Combined Studies", selected=list_datasets[[6]], list_datasets[[6]], inline=TRUE),
+                          checkboxInput('TC_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
+
+                 ),
+                 
+                 tags$hr(),
+                 
+                 fluidRow(
                    column(6, h3("Physical Inactivity"),
                           plotOutput("Inact", height="300px"),
-                          checkboxGroupInput("IN_studies", "Physical Inactivity studies", selected=list_datasets[[6]], list_datasets[[6]], inline=TRUE),
+                          checkboxGroupInput("IN_studies", "Physical Inactivity studies", selected=list_datasets[[7]], list_datasets[[7]], inline=TRUE),
                           checkboxInput('IN_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
                  ),
                  
@@ -122,7 +131,7 @@ shinyUI(navbarPage(title="MetaMEx", id="inTabset",
 tabPanel("Correlations", value="panelCorr",
          fluidRow(style="background-color:#edcdc2;padding:1%",
                   h3("Correlations"), "Display the correlation between your gene of interest and all other genes in response to exercise.
-                  Type the official gene symbol and select your population of interest."),
+                  Type the official gene symbol and highlight your criteria of interest."),
          
          fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
                   column(2, selectizeInput("gene1", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
@@ -153,13 +162,14 @@ tabPanel("Correlations", value="panelCorr",
         tabPanel("Downloads", 
                  fluidRow(style="background-color:#edcdc2;padding:1%",
                           h3("Downloads"),
-                          "All the data used in MetMEx is freely available. Download only the data corresponding to
+                          "All the data used in MetMEx is freely available. You can download only the plots corresponding to
                           the criteria used in the app or download the individual statistics for all studies.", tags$br(),
                           "For more advanced subsetting or analysis of the data, please", a("contact us!", href="mailto:nicolas.pillon@ki.se")),
                   tags$br(),
                  fluidRow(
                 column(6, h3("Data selected in the App"),
-                          downloadButton("downloadReport", "Forest plots of selected data (.pdf)"),tags$br(),tags$br(),
+                          downloadButton("downloadReport", "Forest plots (.pdf)"),tags$br(),tags$br(),
+                          downloadButton("downloadCorr", "Correlation plot (.pdf)"),tags$br(),tags$br(),
                           downloadButton("downloadData", "Statistics of selected data (.csv)"), tags$br(), tags$br(),
                           tags$img(src='Nico-Macrophage-weight-R.png', width="50%", align="center"), tags$br(),tags$br()),
                 column(6, h3("Complete datasets"),
@@ -168,6 +178,7 @@ tabPanel("Correlations", value="panelCorr",
                           downloadButton("downloadTA", "Training Aerobic (.csv, 76MB)"),tags$br(),tags$br(),
                           downloadButton("downloadTR", "Training Resistance (.csv, 76MB)"),tags$br(),tags$br(),
                           downloadButton("downloadTC", "Training Combined (.csv, 17MB)"),tags$br(),tags$br(),
+                          downloadButton("downloadHI", "Training HIIT (.csv, 17MB)"),tags$br(),tags$br(),
                           downloadButton("downloadIN", "Inactivity (.csv, 18MB)"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br())
         )),
 
@@ -226,7 +237,8 @@ navbarMenu("Datasets",
                     a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank")),
                  column(4, tags$img(src='Nico-Macrophage-bike-L.png', width = "100%", style="padding:0 5% 0 0"))
         ))
+
 )
-)
+
 
 

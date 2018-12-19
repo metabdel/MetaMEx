@@ -5,7 +5,6 @@ library(ggplot2)
 library(ggfortify)
 library(stringr)
 
-
 #URLs for sharing buttons
 url_twitter  <- "https://twitter.com/intent/tweet?text=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20@NicoPillon%20@JuleenRZierath%20@AnnaKrook_KI&url=http://www.metamex.eu"
 url_linkedin <- "https://www.linkedin.com/shareArticle?mini=true&url=http://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20&summary=MetaMEx&source=LinkedIn"
@@ -71,6 +70,7 @@ Stats_AR <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
 Stats_TA <- readRDS("data/Training_Aerobic_Merged_Stats_SYMBOL.Rds")
 Stats_TR <- readRDS("data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
 Stats_TC <- readRDS("data/Training_Combined_Merged_Stats_SYMBOL.Rds")
+Stats_HI <- readRDS("data/Training_HIIT_Merged_Stats_SYMBOL.Rds")
 Stats_IN <- readRDS("data/Inactivity_Merged_Stats_SYMBOL.Rds")
 annotation <- readRDS("data/Datasets_legend.Rds") # Load the table describing the legend of the tables
 StudiesAcute <- readRDS("data/StudiesAcute.Rds") # Load the table describing the legend of the tables

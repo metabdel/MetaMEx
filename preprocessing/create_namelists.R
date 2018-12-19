@@ -38,6 +38,7 @@ Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
 Stats_AR <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
 Stats_TA <- readRDS("data/Training_Aerobic_Merged_Stats_SYMBOL.Rds")
 Stats_TR <- readRDS("data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
+Stats_HI <- readRDS("data/Training_HIIT_Merged_Stats_SYMBOL.Rds")
 Stats_TC <- readRDS("data/Training_Combined_Merged_Stats_SYMBOL.Rds")
 Stats_IN <- readRDS("data/Inactivity_Merged_Stats_SYMBOL.Rds")
 
@@ -49,6 +50,8 @@ TA_names <- str_extract(string=colnames(Stats_TA), pattern = "(?<=_).*[0-9]")
 TA_names <- sort(unique(sub('_.*', '', TA_names)))
 TR_names <- str_extract(string=colnames(Stats_TR), pattern = "(?<=_).*[0-9]")
 TR_names <- sort(unique(sub('_.*', '', TR_names)))
+HI_names <- str_extract(string=colnames(Stats_HI), pattern = "(?<=_).*[0-9]")
+HI_names <- sort(unique(sub('_.*', '', HI_names)))
 TC_names <- str_extract(string=colnames(Stats_TC), pattern = "(?<=_).*[0-9]")
 TC_names <- sort(unique(sub('_.*', '', TC_names)))
 IN_names <- str_extract(string=colnames(Stats_IN), pattern = "(?<=_).*[0-9]")
@@ -58,6 +61,7 @@ list_names <- list(AA_names=AA_names,
                    AR_names=AR_names,
                    TA_names=TA_names,
                    TR_names=TR_names,
+                   HI_names=HI_names,
                    TC_names=TC_names,
                    IN_names=IN_names)
 saveRDS(list_names, "data/Names_datasets.Rds")
@@ -67,6 +71,7 @@ list_genes <- c(rownames(Stats_AA),
                 rownames(Stats_AR),
                 rownames(Stats_TA),
                 rownames(Stats_TR),
+                rownames(Stats_HI),
                 rownames(Stats_TC),
                 rownames(Stats_IN))
 list_genes <- unique(list_genes)

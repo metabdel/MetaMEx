@@ -47,6 +47,14 @@ annotdata <- Aggregate(annotdata, GENESYMBOL)
 saveRDS(annotdata, file="C:/Dropbox/NICO/R/Shiny/MetaMEx/data/Training_Combined_Merged_Stats_SYMBOL.Rds")
 
 
+#Training HIIT
+annotdata <- readRDS("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Training_HIIT/Training_HIIT_Merged_Stats.Rds")
+GENESYMBOL <- as.character(mapIds(org.Hs.eg.db, keys=as.character(rownames(annotdata)),
+                                  column="SYMBOL",   keytype="ENSEMBL", multiVals="first"))
+annotdata <- Aggregate(annotdata, GENESYMBOL)
+saveRDS(annotdata, file="C:/Dropbox/NICO/R/Shiny/MetaMEx/data/Training_HIIT_Merged_Stats_SYMBOL.Rds")
+
+
 #Training Resistance
 annotdata <- readRDS("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Training_Resistance/Training_Resistance_Merged_Stats.Rds")
 GENESYMBOL <- as.character(mapIds(org.Hs.eg.db, keys=as.character(rownames(annotdata)),
