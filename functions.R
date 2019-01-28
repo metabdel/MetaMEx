@@ -42,10 +42,10 @@ DataForGeneName <- function(x){
                      t(x[grepl('Sd.pre',   colnames(x))]), # standard deviation of control condition
                      t(x[grepl('Sd.post',   colnames(x))]), # standard deviation of exercise condition
                      t(x[grepl('size',     colnames(x))])) # number of subjects in the study
-  x <- cbind(x, str_split_fixed(rownames(x), "_", 9))
+  x <- cbind(x, str_split_fixed(rownames(x), "_", 10))
   colnames(x) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                       'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                      'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Disease', 'Biopsy', 'Exercisetype')
+                      'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease', 'Biopsy', 'Exercisetype')
   x$Studies <- gsub("logFC_","", rownames(x))
   x
 }
@@ -64,7 +64,7 @@ MetaAnalysis <- function(x){
 }
 
 
-# Load the different datasets, all in csv format, each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
+# Load the different datasets, each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
 Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
 Stats_AR <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
 Stats_TA <- readRDS("data/Training_Aerobic_Merged_Stats_SYMBOL.Rds")
@@ -76,6 +76,7 @@ annotation <- readRDS("data/Datasets_legend.Rds") # Load the table describing th
 StudiesAcute <- readRDS("data/StudiesAcute.Rds") # Load the table describing the legend of the tables
 StudiesTraining <- readRDS("data/StudiesTraining.Rds") # Load the table describing the legend of the tables
 StudiesInactivity <- readRDS("data/StudiesInactivity.Rds") # Load the table describing the legend of the tables
+MissingData <- readRDS("data/MissingData.Rds") # Load the table describing the missing data in the database
 Individual_FC <- readRDS("data/Allindividuals_foldchange.Rds")
 list_genes2 <- rownames(Individual_FC)
 

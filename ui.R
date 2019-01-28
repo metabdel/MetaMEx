@@ -8,13 +8,11 @@ navbarPage(title="MetaMEx", id="inTabset",
                    #make sticky footer
                    footer=tags$footer(fluidRow(
                                    column(9, style="padding:1% 1% 1% 3%;", align="left",
-                                             tags$b("Cite MetaMEx:"), tags$br(),
                                              a("Transcriptomic Meta-Analysis of Skeletal Muscle Responses to Physical Inactivity and Exercise",
                                                href="https://www.ncbi.nlm.nih.gov/pubmed/", target="_blank", style="color:#D9DADB"), tags$br(),
-                                              "Nicolas J. Pillon, Anna Krook & Juleen R. Zierath. Under review 2018"),
+                                              "Nicolas J. Pillon, et al. Under review 2018"),
                                    column(3, style="padding:1% 3% 1% 1%;", align="right",
-                                             tags$b(HTML("Share:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-                                                         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp")), tags$br(),
+                                             tags$b(HTML("Share:&nbsp")),
                                              actionButton("twitter_share", label="", icon=icon("twitter"),
                                                           onclick = sprintf("window.open('%s')", url_twitter)),
                                              actionButton("linkedin_share", label="", icon=icon("linkedin"),
@@ -24,7 +22,7 @@ navbarPage(title="MetaMEx", id="inTabset",
                                    ), style="position:fixed;
                                              bottom:0;
                                              width:100%;
-                                             height:100px;
+                                             height:60px;
                                              color: white;
                                              background-color: black;
                                              z-index: 1000;"),
@@ -48,7 +46,8 @@ navbarPage(title="MetaMEx", id="inTabset",
                               tags$br(),
                               actionButton('jumpToApp', 'Get started!', width="200px",
                                            style="background-color:#E95420;border-color:#C34113;box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);")),
-                    column(5, tags$img(src='Nico-Macrophage-weight-L.png', width="100%", style="padding:0 5% 0 0")))
+                    column(5, tags$img(src='Nico-Macrophage-weight-L.png', width="100%", style="padding:0 5% 0 0"))
+                   )
         ),
 
 #=======================================================================================================================        
@@ -67,17 +66,20 @@ navbarPage(title="MetaMEx", id="inTabset",
                                  checkboxInput('bar_age', 'All/None', value=T)), #checkbox to select all
                           column(1, checkboxGroupInput("training", "Fitness", selected=c("SED", "ACT", "ATH"), list_categories[['training_choice']]), #checkbox to select category
                                  checkboxInput('bar_training', 'All/None', value=T)), #checkbox to select all
-                          column(2, checkboxGroupInput("disease", "Health status", selected=c("HLY", "OBE", "T2D", "MTS", "CKD", "COP"), list_categories[['disease_choice']]), #checkbox to select category
+                          column(1, checkboxGroupInput("exercisetype", "Type", selected=c("CON", "ECC", "MIX"), list_categories[['exercise_choice']]), #checkbox to select category
+                                 checkboxInput('bar_exercisetype', 'All/None', value=T)), #checkbox to select all
+                          column(1, checkboxGroupInput("obesity", "Obesity", selected=c("LEA", "OWE", "OBE", "MOB"), list_categories[['obesity_choice']]), #checkbox to select category
+                                 checkboxInput('bar_obesity', 'All/None', value=T)), #checkbox to select all
+                          column(2, checkboxGroupInput("disease", "Health status", selected=c("HLY", "T2D", "MTS", "CKD", "COP"), list_categories[['disease_choice']]), #checkbox to select category
                                  checkboxInput('bar_disease', 'All/None', value=T)), #checkbox to select all
                           column(2, checkboxGroupInput("biopsy", "Biopsy collection", selected=c("IMM", "REC"), list_categories[['biopsy_choice']]), #checkbox to select category
-                                 checkboxInput('bar_biopsy', 'All/None', value=T)), #checkbox to select all
-                          column(1, checkboxGroupInput("exercisetype", "Type", selected=c("CON", "ECC", "MIX"), list_categories[['exercise_choice']]), #checkbox to select category
-                                 checkboxInput('bar_exercisetype', 'All/None', value=T)) #checkbox to select all
+                                 checkboxInput('bar_biopsy', 'All/None', value=T)) #checkbox to select all
+
                  ),
 
                  fluidRow(
                    column(6,  h3("Acute Aerobic Exercise"), 
-                          plotOutput("Acute_A", height="450px"),
+                          plotOutput("Acute_A", height="500px"),
                           checkboxGroupInput("AA_studies", "Acute Aerobic Studies", selected=list_datasets[[1]], list_datasets[[1]], inline=TRUE),
                           checkboxInput('AA_all', 'Select all/none', value=T), style="padding:0 0 0 3%"),
                    
@@ -142,7 +144,8 @@ tabPanel("Correlations", value="panelCorr",
                                                          "Sex"=6,
                                                          "Age"=7,
                                                          "Training"=8,
-                                                         "Disease"=9),
+                                                         "Obesity"=9,
+                                                         "Disease"=10),
                                           selected = "All"))
          ),
          
@@ -215,6 +218,17 @@ navbarMenu("Datasets",
 
 ),
 
+#=======================================================================================================================        
+        tabPanel("Contribute", value="Contribute",
+                 fluidRow(style="background-color:#edcdc2;padding:1%",
+                          h3("You have other information or datasets? Please",
+                          a("contact us!", href="mailto:nicolas.pillon@ki.se"))),
+                 fluidRow(style="padding:1%",
+                          DT::dataTableOutput("MissingData"),
+                          tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br())
+        ),
+           
+           
 #=======================================================================================================================
         tabPanel("About", fluidRow(
                  column(8, 
@@ -224,7 +238,7 @@ navbarMenu("Datasets",
                  individually for each array. The meta-analysis summary was then calculated using a random effects model (REML).
                  Forest plots present the log2(fold-change) and 95% confidence intervals for each study as well as the meta-analysis score and adjusted p value.",
                  h3("Citation"),
-                 "Nicolas J. Pillon, Anna Krook & Juleen R. Zierath.", tags$br(),
+                 "Nicolas J. Pillon et al.", tags$br(),
                  a("Transcriptomic Meta-Analysis of Skeletal Muscle Responses to Physical Inactivity and Exercise",
                    href="https://www.ncbi.nlm.nih.gov/pubmed/", target="_blank"), tags$br(),
                  "Submitted and under review, July 2018",
@@ -234,7 +248,14 @@ navbarMenu("Datasets",
                  "and",                    a("Juleen R. Zierath",  href="https://ki.se/en/people/julzie", target="_blank"),
                  "and illustrated by", a("Csil.", href="http://misshue.net", target="_blank"),
                  "All content and code are published under the Creative Commons Attribution-NonCommercial 4.0 International",
-                    a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank")),
+                    a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank"),
+                 h3("Contribution"),
+                 "MetMEx is a live database constantly updated with new data. MetaMEx becomes stronger with every bit of data we add. 
+                 So if you have information about clinical data or want us to add your study to the database, contact us!",
+                 tags$br(), tags$br(),
+                 actionButton('jumpToContribute', 'I have data!', width="200px",
+                              style="background-color:#E95420;border-color:#C34113;
+                              box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);")),
                  column(4, tags$img(src='Nico-Macrophage-bike-L.png', width = "100%", style="padding:0 5% 0 0"))
         ))
 

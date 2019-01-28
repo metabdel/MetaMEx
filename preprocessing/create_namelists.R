@@ -1,7 +1,7 @@
 setwd("C:/Dropbox/NICO/R/Shiny/MetaMEx")
 library(stringr)
 
-# Make a table of the studies and annotation
+# Make tables of the studies and annotation
 library(readxl)
 #function to make hyperlinks
 createLink <- function(val) {
@@ -13,25 +13,33 @@ StudiesAcute <- StudiesAcute[,1:16]
 StudiesAcute$GEO <- paste("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", StudiesAcute$GEO, sep="")
 StudiesAcute$GEO  <- sapply(StudiesAcute$GEO, createLink)
 StudiesAcute$Publication <- sapply(StudiesAcute$Publication, createLink)
+saveRDS(StudiesAcute, "data/StudiesAcute.Rds")
 
 StudiesTraining <- read_xlsx("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Datasets.xlsx", na='NA', sheet=2)
 StudiesTraining <- StudiesTraining[,1:18]
 StudiesTraining$GEO <- paste("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", StudiesTraining$GEO, sep="")
 StudiesTraining$GEO  <- sapply(StudiesTraining$GEO, createLink)
 StudiesTraining$Publication <- sapply(StudiesTraining$Publication, createLink)
+saveRDS(StudiesTraining, "data/StudiesTraining.Rds")
 
 StudiesInactivity <- read_xlsx("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Datasets.xlsx", na='NA', sheet=3)
 StudiesInactivity <- StudiesInactivity[,1:16]
 StudiesInactivity$GEO <- paste("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", StudiesInactivity$GEO, sep="")
 StudiesInactivity$GEO  <- sapply(StudiesInactivity$GEO, createLink)
 StudiesInactivity$Publication <- sapply(StudiesInactivity$Publication, createLink)
+saveRDS(StudiesInactivity, "data/StudiesInactivity.Rds")
 
 CategoryTable <- read_xlsx("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Datasets.xlsx", na='NA', sheet=4)
-
-saveRDS(StudiesAcute, "data/StudiesAcute.Rds")
-saveRDS(StudiesTraining, "data/StudiesTraining.Rds")
-saveRDS(StudiesInactivity, "data/StudiesInactivity.Rds")
 saveRDS(CategoryTable, "data/Datasets_legend.Rds")
+
+MissingData <- read_xlsx("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Datasets.xlsx", na='NA', sheet=5)
+saveRDS(MissingData, "data/MissingData.Rds")
+
+
+
+
+
+
 
 # Make a list of the different studies names in each file
 Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
@@ -97,11 +105,14 @@ list_categories <- list(
                        "Mixed"      = "MIX"),
   biopsy_choice = c("Immediately after" = "IMM",
                      "After a recovery period"    = "REC"),
+  obesity_choice = c("Lean" = "LEA",
+                     "Overweight" = "OWE",
+                     "Obese" = "OBE",
+                     "Morbidly Obese" = "MOB"),
   disease_choice = c("Healthy" = "HLY",
-                      "Overweight/Obese" = "OBE",
-                      "Type 2 diabetes" = "T2D",
-                      "Metabolic Syndrome" = "MTS",
-                      "Chronic Kidney Disease" = "CKD",
-                      "Chronic Obstructive Pulmonary Disease" = "COP")
+                     "Type 2 diabetes" = "T2D",
+                     "Metabolic Syndrome" = "MTS",
+                     "Chronic Kidney Disease" = "CKD",
+                     "Chronic Obstructive Pulmonary Disease" = "COP")
 )
 saveRDS(list_categories, "data/Names_categories.Rds")
