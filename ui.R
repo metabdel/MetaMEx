@@ -7,11 +7,11 @@ navbarPage(title="MetaMEx", id="inTabset",
                    header=tags$head(includeHTML("google-analytics.html")),
                    #make sticky footer
                    footer=tags$footer(fluidRow(
-                                   column(9, style="padding:1% 1% 1% 3%;", align="left",
+                                   column(9, style="padding:0.4% 1% 1% 3%;", align="left",
                                              a("Transcriptomic Meta-Analysis of Skeletal Muscle Responses to Physical Inactivity and Exercise",
                                                href="https://www.ncbi.nlm.nih.gov/pubmed/", target="_blank", style="color:#D9DADB"), tags$br(),
                                               "Nicolas J. Pillon, et al. Under review 2018"),
-                                   column(3, style="padding:1% 3% 1% 1%;", align="right",
+                                   column(3, style="padding:0.4% 3% 1% 1%;", align="right",
                                              tags$b(HTML("Share:&nbsp")),
                                              actionButton("twitter_share", label="", icon=icon("twitter"),
                                                           onclick = sprintf("window.open('%s')", url_twitter)),
