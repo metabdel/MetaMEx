@@ -61,3 +61,8 @@ GENESYMBOL <- as.character(mapIds(org.Hs.eg.db, keys=as.character(rownames(annot
                                   column="SYMBOL",   keytype="ENSEMBL", multiVals="first"))
 annotdata <- Aggregate(annotdata, GENESYMBOL)
 saveRDS(annotdata, file="C:/Dropbox/NICO/R/Shiny/MetaMEx/data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
+
+
+#Individual fold-changes
+annotdata <- readRDS("C:/Dropbox/NICO/R/Meta-Analysis_Exercise/Allindividuals_foldchange.Rds")
+saveRDS(annotdata, file="C:/Dropbox/NICO/R/Shiny/MetaMEx/data/Allindividuals_foldchange.Rds")

@@ -2,10 +2,11 @@
 # Define server logic ##############################################################################################
 server <- function(input, output, session) {
 
-  updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected=NA , options=NULL)
+  updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected='PPARGC1A' , options=NULL)
   updateSelectizeInput(session, 'gene1', choices=list_genes2, server=TRUE, selected=NA , options=NULL)
   updateSelectizeInput(session, 'gene2', choices=list_genes2, server=TRUE, selected=NA , options=NULL)
   observeEvent(input$jumpToApp, {updateTabsetPanel(session, "inTabset", selected="panelApp") })
+  observeEvent(input$jumpToContribute, {updateTabsetPanel(session, "inTabset", selected="Contribute") })
   
  #=======================================================================================
  # Make all checkboxes selected by default - necessary for the select all button to work
@@ -14,6 +15,7 @@ server <- function(input, output, session) {
   observe({ updateCheckboxGroupInput(session, 'sex',         choices = list_categories[['sex_choice']],      selected = if (input$bar_sex) list_categories[['sex_choice']])})
   observe({ updateCheckboxGroupInput(session, 'age',         choices = list_categories[['age_choice']],      selected = if (input$bar_age) list_categories[['age_choice']])})
   observe({ updateCheckboxGroupInput(session, 'training',    choices = list_categories[['training_choice']], selected = if (input$bar_training) list_categories[['training_choice']])})
+  observe({ updateCheckboxGroupInput(session, 'obesity',     choices = list_categories[['obesity_choice']],  selected = if (input$bar_obesity) list_categories[['obesity_choice']])})
   observe({ updateCheckboxGroupInput(session, 'disease',     choices = list_categories[['disease_choice']],  selected = if (input$bar_disease) list_categories[['disease_choice']])})
   observe({ updateCheckboxGroupInput(session, 'biopsy',      choices = list_categories[['biopsy_choice']],   selected = if (input$bar_biopsy) list_categories[['biopsy_choice']])})
   observe({ updateCheckboxGroupInput(session, 'exercisetype',choices = list_categories[['exercise_choice']], selected = if (input$bar_exercisetype) list_categories[['exercise_choice']])})
@@ -43,6 +45,8 @@ output$StudiesTraining <- DT::renderDataTable(escape = FALSE, rownames = FALSE, 
 
 output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { StudiesInactivity })
 
+output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { MissingData },
+                                          options = list(paging = FALSE, searching = FALSE))
 
 #=======================================================================================  
 # Make reactive functions to select data
@@ -60,9 +64,9 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                             Sex %in% input$sex, 
                             Age %in% input$age, 
                             Training %in% input$training,
+                            Obesity %in% input$obesity,
                             Disease %in% input$disease,
-                            Biopsy %in% input$biopsy,
-                            Exercisetype %in% input$exercisetype)
+                            Biopsy %in% input$biopsy)
       #custom function for meta-analysis
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       #add a column with the names of the studies included
@@ -82,6 +86,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                      Sex %in% input$sex, 
                      Age %in% input$age, 
                      Training %in% input$training,
+                     Obesity %in% input$obesity,
                      Disease %in% input$disease,
                      Biopsy %in% input$biopsy,
                      Exercisetype %in% input$exercisetype)
@@ -102,6 +107,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                      Sex %in% input$sex, 
                      Age %in% input$age, 
                      Training %in% input$training,
+                     Obesity %in% input$obesity,
                      Disease %in% input$disease)
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
@@ -120,6 +126,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                             Sex %in% input$sex, 
                             Age %in% input$age, 
                             Training %in% input$training,
+                            Obesity %in% input$obesity,
                             Disease %in% input$disease)
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
@@ -138,6 +145,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                             Sex %in% input$sex, 
                             Age %in% input$age, 
                             Training %in% input$training,
+                            Obesity %in% input$obesity,
                             Disease %in% input$disease)
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
@@ -156,6 +164,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                                    Sex %in% input$sex, 
                                    Age %in% input$age, 
                                    Training %in% input$training,
+                                   Obesity %in% input$obesity,
                                    Disease %in% input$disease)
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
@@ -174,6 +183,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                             Sex %in% input$sex, 
                             Age %in% input$age, 
                             Training %in% input$training,
+                            Obesity %in% input$obesity,
                             Disease %in% input$disease)
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
       selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
@@ -468,8 +478,8 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     Gene2 <- rownames(Gene2[input$CorrTable_rows_selected,])
     Gene2 <- Individual_FC[Gene2,]
     data  <- data.frame(t(Gene1), t(Gene2))
-    data <- cbind(data, str_split_fixed(rownames(data), "_", 9))
-    colnames(data) <- c("Gene1", "Gene2", "Protocol", "Study", "Muscle", "Sex", "Age", "Training", "Disease")
+    data <- cbind(data, str_split_fixed(rownames(data), "_", 10))
+    colnames(data) <- c("Gene1", "Gene2", "Protocol", "Study", "Muscle", "Sex", "Age", "Training", "Obesity", "Disease")
     active <- ggplot(data, aes(x=Gene1, y=Gene2, color=data[,as.numeric(input$selectgroup)])) +
       geom_smooth(method=lm, se=F, fullrange=TRUE) +
       geom_point(shape=19) +
@@ -493,7 +503,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     filename = function() { paste(input$genename, "_MetaMEx.csv", sep="") },
     content = function(file) {
       dataset <- rbind(AA_data(), AR_data(), TA_data(), TR_data(), HI_data(), TC_data(), IN_data())[,c(10,1:4,9)]
-      write.csv(dataset, file)
+      write.csv(dataset, file, row.names = F)
     })
 
   output$downloadAA <- downloadHandler(
@@ -568,7 +578,6 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                       c(3,4),
                       c(5,4),
                       c(5,4),
-                      c(5,7),
                       c(6,7),
                       c(6,7),
                       c(6,7),
@@ -576,7 +585,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       blank <- grid.rect(gp=gpar(col="white"))
       margin = theme(plot.margin = unit(c(2,2,2,2), "cm"))
       pdf(file, onefile = TRUE, width=16, height=22.6)
-      grid.arrange(AA, AR, TA, TR, HI, TC, IN,
+      grid.arrange(AA, TA, AR, TR, HI, IN, TC, 
                    top = textGrob(paste(input$genename, "transcriptional response to physical activity"), gp=gpar(fontsize=30, font=7)),
                    bottom = textGrob("MetaMEx Copyright 2018 Nicolas J. Pillon. For more information, visit www.metamex.eu",
                                      gp=gpar(fontsize=16)),
