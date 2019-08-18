@@ -1,4 +1,4 @@
-setwd("C:/Dropbox/NICO/R/Shiny/MetaMEx/preprocessing")
+setwd("C:/ownCloud/R/Shiny/MetaMEx/preprocessing")
 
 Individual_FC <- readRDS("../data/Allindividuals_foldchange.Rds")
 
