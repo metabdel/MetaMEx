@@ -95,7 +95,7 @@ navbarPage(title="MetaMEx", id="inTabset",
                                  checkboxGroupInput("TA_studies", "Training Aerobic Studies", selected=list_datasets[[3]], list_datasets[[3]], inline=TRUE),
                                  checkboxInput('TA_all', 'Select all/None', value=T), style="padding:0 0 0 3%"),
                           column(6,  h3("Training Resistance Exercise"),
-                                 plotOutput("Training_R", height="550px"),
+                                 plotOutput("Training_R", height="600px"),
                                  checkboxGroupInput("TR_studies", "Training Resistance Studies", selected=list_datasets[[4]], list_datasets[[4]], inline=TRUE),
                                  checkboxInput('TR_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
                  ),
