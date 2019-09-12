@@ -234,22 +234,25 @@ navbarMenu("Datasets",
 #=======================================================================================================================
         tabPanel("About", fluidRow(
                  column(8, 
-                 h3("Method"),
+                h3("Copyrights and Citation"),
+                "If you use data from MetaMEx for publication, teaching or scientific presentations, please cite:",  
+                a("Nicolas J. Pillon, Brendan M. Gabriel, Lucile Dollet, Jonathon A. Smith, Javier Botella, David J. Bishop,
+                  Anna Krook and Juleen R. Zierath, Transcriptomic Profiling of Skeletal Muscle Adaptations to Exercise and Inactivity.",
+                  href="https://www.ncbi.nlm.nih.gov/pubmed/", target="_blank"),
+                tags$br(), tags$br(),
+                "MetaMEx was created by", a("Nicolas J. Pillon", href="https://nicopillon.com/contact",         target="_blank"),
+                "and illustrated by", a("Csil.", href="http://misshue.net", target="_blank"),
+                "All content and code are published under the Creative Commons Attribution-NonCommercial 4.0 International",
+                a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank"), 
+                "Last update: 12/09/2019",
+
+                h3("Method"),
                  "The meta-analysis was created by collecting publicly available studies on
                  mRNA expression levels in human skeletal muscle after exercise or inactivity. Statistics were first perfomed
                  individually for each array. The meta-analysis summary was then calculated using a random effects model (REML).
                  Forest plots present the log2(fold-change) and 95% confidence intervals for each study as well as the meta-analysis score and adjusted p value.",
-                 h3("Citation"),
-                 "Nicolas J. Pillon, Brendan M. Gabriel, Lucile Dollet, Jonathon A. Smith, Javier Botella, David J. Bishop, Anna Krook and Juleen R. Zierath", tags$br(),
-                 a("Transcriptomic Profiling of Skeletal Muscle Adaptations to Exercise and Inactivity",
-                   href="https://www.ncbi.nlm.nih.gov/pubmed/", target="_blank"), tags$br(),
-                 "Nature Communications. Under review, 2019",
-                 h3("Copyrights"),
-                 "MetaMEx was created by", a("Nicolas J. Pillon", href="https://nicopillon.com/contact",         target="_blank"),
-                 "and illustrated by", a("Csil.", href="http://misshue.net", target="_blank"),
-                 "All content and code are published under the Creative Commons Attribution-NonCommercial 4.0 International",
-                    a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank"),
-                 h3("Contribution"),
+
+                h3("Contribution"),
                  "MetMEx is a live database constantly updated with new data. MetaMEx becomes stronger with every bit of data we add. 
                  So if you have information about clinical data or want us to add your study to the database, contact us!",
                  tags$br(), tags$br(),
