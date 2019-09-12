@@ -458,7 +458,7 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
   })
   
     output$CorrTable <- DT::renderDataTable(escape = FALSE, rownames = FALSE, selection = "single", {
-      validate(need(!is.null(Corr_stats()),   "Dataset not available for the selected criteria"))
+      validate(need(!is.null(Corr_stats()),   "Start by selecting a gene in the list of official gene names"))
       
       Corr_stats()
 
@@ -470,8 +470,8 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
 #=======================================================================================
   
     plotInputCOR <- function() ({
-    validate(need(!is.null(Corr_stats()),     "Dataset not available for the selected criteria"))
-    validate(need(input$CorrTable_rows_selected!="",  "Please select one gene in the table")) 
+    validate(need(!is.null(Corr_stats()),     " "))
+    validate(need(input$CorrTable_rows_selected!="",  "Select a second gene in the table to display the correlation")) 
     
     Gene1 <- Individual_FC[toupper(input$gene1),]
     Gene2 <- Corr_stats()
@@ -483,8 +483,8 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
     active <- ggplot(data, aes(x=Gene1, y=Gene2, color=data[,as.numeric(input$selectgroup)])) +
       geom_smooth(method=lm, se=F, fullrange=TRUE) +
       geom_point(shape=19) +
-      labs(x=paste(input$gene1, "log2(fold-change)"),
-           y=paste(rownames(Gene2), "log2(fold-change)"),
+      labs(x=paste(input$gene1, ", log2(fold-change)", sep=""),
+           y=paste(rownames(Gene2), ", log2(fold-change)", sep=""),
            title="") +
       theme(axis.text.x = element_text(color="black", size=10, angle=0, hjust = 1),
             axis.text.y = element_text(color="black", size=10, angle=0, hjust = 1),
@@ -535,10 +535,10 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
     content = function(file) { write.csv(Stats_IN, file) })
 
 #=======================================================================================
-# Make button to save forrest plots as PDF
+# Make button to save forrest plots
 #=======================================================================================
   output$downloadReport = downloadHandler(
-    filename = function() { paste(input$genename, "_MetaMEx.pdf", sep="") },
+    filename = function() { paste(input$genename, "_MetaMEx.jpeg", sep="") },
     content = function(file) {
       if(!is.null(AA_data())) { AA <- grid.grabExpr(print(plotInputAA()))} 
         else {AA <- textGrob("Acute Aerobic:\nNo data available for the selected criteria")}
@@ -562,6 +562,7 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
       library(readr)
       library(grid)
       library(gridExtra)
+      library(grDevices)
       matrix <- rbind(c(1,2),
                       c(1,2),
                       c(1,2),
@@ -575,49 +576,89 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
                       c(3,4),
                       c(3,4),
                       c(3,4),
-                      c(3,4),
                       c(5,4),
                       c(5,4),
+                      c(6,4),
                       c(6,7),
                       c(6,7),
                       c(6,7),
                       c(6,7))
-      blank <- grid.rect(gp=gpar(col="white"))
-      margin = theme(plot.margin = unit(c(2,2,2,2), "cm"))
-      pdf(file, onefile = TRUE, width=16, height=22.6)
+      
+      #Code for PDF 
+      #blank <- grid.rect(gp=gpar(col="white"))
+      #margin = theme(plot.margin = unit(c(2,2,2,2), "cm"))
+      #pdf(file, onefile = TRUE, width=16, height=22.6)
+      #grid.arrange(AA, TA, AR, TR, HI, IN, TC, 
+      #             top = textGrob(paste(input$genename, "transcriptional response to physical activity"), gp=gpar(fontsize=30, font=7)),
+      #             bottom = textGrob("MetaMEx Copyright 2019 Nicolas J. Pillon. For more information, visit www.metamex.eu",
+      #                               gp=gpar(fontsize=16)),
+      #             layout_matrix=matrix, vp=viewport(width=0.95, height=0.9))
+      #dev.off()
+    
+      #Code for JPEG
+      jpeg(file, unit="cm", width=40, height=46, res=300)
       grid.arrange(AA, TA, AR, TR, HI, IN, TC, 
                    top = textGrob(paste(input$genename, "transcriptional response to physical activity"), gp=gpar(fontsize=30, font=7)),
-                   bottom = textGrob("MetaMEx Copyright 2018 Nicolas J. Pillon. For more information, visit www.metamex.eu",
+                   bottom = textGrob("MetaMEx Copyright 2019 Nicolas J. Pillon. For more information, visit www.metamex.eu",
                                      gp=gpar(fontsize=16)),
-                   layout_matrix=matrix, vp=viewport(width=0.95, height=0.9))
+                   layout_matrix=matrix)
       dev.off()
   })
 
 #=======================================================================================
-# Make button to save correlation plot as PDF
+# Make button to save correlation plot
 #=======================================================================================
-  output$downloadCorr = downloadHandler(
-    filename = function() { paste(input$gene1, "_MetaMEx.pdf", sep="") },
+
+  output$download <- renderUI({
+    if(!is.null(input$gene1) & !is.null(input$CorrTable_rows_selected)) {
+      column(4,   tags$b("Download"),
+      tags$br(),
+      downloadButton("downloadCorrPlot", "Correlation plot (.jpeg)"),
+      downloadButton("downloadCorrData", "Correlation table (.csv)"))
+    }
+  })
+  
+  
+  output$downloadCorrPlot = downloadHandler(
+    filename = function() { paste(input$gene1, "_vs_", rownames(Corr_stats()[input$CorrTable_rows_selected,]), "_MetaMEx.jpeg", sep="") },
     content = function(file) {
-      if(!is.null(Corr_stats())) { COR <- plotInputCOR()}
-      else {COR <- textGrob("Correlation:\nNo data available for the selected criteria")}
-      t <- textGrob("")
-      
       library(rmarkdown)
       library(ggpubr)
       library(readr)
       library(grid)
       library(gridExtra)
-      matrix <- rbind(c(1,1), c(2,2))
-      blank <- grid.rect(gp=gpar(col="white"))
-      margin = theme(plot.margin = unit(c(4,4,4,4), "cm"))
-      pdf(file, onefile = TRUE, width=16, height=22.6)
-      grid.arrange(COR, t,
-                   top = textGrob(paste(input$gene1, "correlation with", rownames(Corr_stats()[input$CorrTable_rows_selected,]), "during exercise and inactivity"), gp=gpar(fontsize=30, font=7)),
-                   bottom = textGrob("MetaMEx Copyright 2018 Nicolas J. Pillon. For more information, visit www.metamex.eu",
-                                     gp=gpar(fontsize=16)),
-                   layout_matrix=matrix, vp=viewport(width=0.95, height=0.9))
+      library(grDevices)
+      COR <- plotInputCOR()
+      
+      #Code for PDF 
+      #matrix <- rbind(c(1,1), c(2,2))
+      #blank <- grid.rect(gp=gpar(col="white"))
+      #margin = theme(plot.margin = unit(c(4,4,4,4), "cm"))
+      #grDevices::pdf(file, onefile = TRUE, width=16, height=22.6)
+      #grid.arrange(COR, t,
+      #             top = textGrob(paste(input$gene1, "correlation with", rownames(Corr_stats()[input$CorrTable_rows_selected,]), "during exercise and inactivity"), gp=gpar(fontsize=30, font=7)),
+      #             bottom = textGrob("MetaMEx Copyright 2019 Nicolas J. Pillon. For more information, visit www.metamex.eu",
+      #                               gp=gpar(fontsize=16)),
+      #             layout_matrix=matrix, vp=viewport(width=0.95, height=0.9))
+      #dev.off()
+      
+      #Code for JPEG
+      jpeg(file, unit="cm", width=20, height=18, res=300)
+      grid.arrange(COR,
+                   top = textGrob(paste(input$gene1, "correlation with", rownames(Corr_stats()[input$CorrTable_rows_selected,]), "during exercise and inactivity"), gp=gpar(fontsize=18, font=7)),
+                   bottom = textGrob("MetaMEx Copyright 2019 Nicolas J. Pillon. For more information, visit www.metamex.eu",
+                                     gp=gpar(fontsize=9)))
       dev.off()
+    })
+  
+  
+  output$downloadCorrData <- downloadHandler(
+    filename = function() { paste(input$gene1, "_MetaMEx.csv", sep="") },
+    content = function(file) {
+      dataset <- Corr_stats()
+      dataset$SYMBOL <- rownames(dataset)
+      dataset <- dataset[,c(5,2,3,4)]
+      write.csv(dataset, file, row.names = F)
     })
   
 }
