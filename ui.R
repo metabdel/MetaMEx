@@ -3,8 +3,13 @@ source("functions.R")
 navbarPage(title="MetaMEx", id="inTabset",
                    #add css theme
                    theme="bootstrap.css",
-                   #include google analytics
-                   header=tags$head(includeHTML("google-analytics.html")),
+                   #include google analytics & adjust progress bar position
+                   header=tags$head(includeHTML("google-analytics.html"),
+                                    tags$style(HTML(".shiny-notification { height: 50px;
+                                                                           width: 800px;
+                                                                           position:fixed;
+                                                                           top: calc(50% - 50px);;
+                                                                           left: calc(50% - 400px);;}"))),
                    #make sticky footer
                    footer=tags$footer(fluidRow(
                                    column(9, style="padding:0.4% 1% 1% 3%;", align="left",
@@ -26,6 +31,7 @@ navbarPage(title="MetaMEx", id="inTabset",
                                              color: white;
                                              background-color: black;
                                              z-index: 1000;"),
+               
 
 #=======================================================================================================================        
         tabPanel("Home",
@@ -54,7 +60,9 @@ navbarPage(title="MetaMEx", id="inTabset",
                           Type the official gene symbol and select your population of interest."),
                  
                  fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
-                          column(2, selectizeInput("genename", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
+                          column(2, selectizeInput("genename", "Official Gene Name", choices=NULL, selected=NULL, options=NULL),
+                                 downloadButton("downloadReport", "Forest plots (.jpeg)"), tags$br(), tags$br(),
+                                 downloadButton("downloadData", "Statistics (.csv)")), #input official gene name
                           column(1, checkboxGroupInput("muscle", "Muscle", selected=c("VAL", "BIB", "SOL", "N.A"), list_categories[['muscle_choice']]), #checkbox to select category
                                  checkboxInput('bar_muscle', 'All/None', value=T)), #checkbox to select all
                           column(1, checkboxGroupInput("sex", "Sex", selected=c("M", "F", "U"), list_categories[['sex_choice']]), #checkbox to select category
@@ -129,12 +137,13 @@ navbarPage(title="MetaMEx", id="inTabset",
 #=======================================================================================================================        
 tabPanel("Correlations", value="panelCorr",
          fluidRow(style="background-color:#edcdc2;padding:1%",
-                  h3("Correlations"), "Display the correlation between your gene of interest and all other genes in response to exercise.
-                  Type the official gene symbol and highlight your criteria of interest."),
+                  h3("Correlations"), "Display the correlation between your gene of interest with all other genes in response to exercise and inactivity.
+                  First select your gene of interest using its official gene symbol (Spearman calculation takes a dozen of seconds). Then click on any gene
+                  in the correlation table to display the correlation plot. You can then highlight dots with your criteria of interest."),
          
          fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
                   column(2, selectizeInput("gene1", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
-                  column(6,   selectInput("selectgroup", label="Highlight", 
+                  column(4,   selectInput("selectgroup", label="Highlight", 
                                           choices = list("All"=1,
                                                          "Protocol"=3, 
                                                          "Muscle"=5, 
@@ -143,7 +152,8 @@ tabPanel("Correlations", value="panelCorr",
                                                          "Training"=8,
                                                          "Obesity"=9,
                                                          "Disease"=10),
-                                          selected = "All"))
+                                          selected = "All")),
+                  uiOutput("download")
          ),
          
          
@@ -162,24 +172,19 @@ tabPanel("Correlations", value="panelCorr",
         tabPanel("Downloads", 
                  fluidRow(style="background-color:#edcdc2;padding:1%",
                           h3("Downloads"),
-                          "All the data used in MetMEx is freely available. You can download only the plots corresponding to
-                          the criteria used in the app or download the individual statistics for all studies.", tags$br(),
+                          "All the data used in MetMEx is freely available.",
                           "For more advanced subsetting or analysis of the data, please", a("contact us!", href="mailto:nicolas.pillon@ki.se")),
                   tags$br(),
                  fluidRow(
-                column(6, h3("Data selected in the App"),
-                          downloadButton("downloadReport", "Forest plots (.pdf)"),tags$br(),tags$br(),
-                          downloadButton("downloadCorr", "Correlation plot (.pdf)"),tags$br(),tags$br(),
-                          downloadButton("downloadData", "Statistics of selected data (.csv)"), tags$br(), tags$br(),
-                          tags$img(src='Nico-Macrophage-weight-R.png', width="50%", align="center"), tags$br(),tags$br()),
-                column(6, h3("Complete datasets"),
-                          downloadButton("downloadAA", "Acute Aerobic (.csv, 66MB)"),tags$br(),tags$br(),
+                column(4, downloadButton("downloadAA", "Acute Aerobic (.csv, 66MB)"),tags$br(),tags$br(),
                           downloadButton("downloadAR", "Acute Resistance (.csv, 45MB)"),tags$br(),tags$br(), 
                           downloadButton("downloadTA", "Training Aerobic (.csv, 76MB)"),tags$br(),tags$br(),
                           downloadButton("downloadTR", "Training Resistance (.csv, 76MB)"),tags$br(),tags$br(),
                           downloadButton("downloadTC", "Training Combined (.csv, 17MB)"),tags$br(),tags$br(),
                           downloadButton("downloadHI", "Training HIIT (.csv, 17MB)"),tags$br(),tags$br(),
-                          downloadButton("downloadIN", "Inactivity (.csv, 18MB)"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br())
+                          downloadButton("downloadIN", "Inactivity (.csv, 18MB)"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()),
+                column(6, tags$img(src='Nico-Macrophage-weight-R.png', width="60%", align="left"))
+                
         )),
 
 #=======================================================================================================================        
