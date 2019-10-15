@@ -5,6 +5,7 @@ server <- function(input, output, session) {
   updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected='PPARGC1A' , options=NULL)
   updateSelectizeInput(session, 'gene1', choices=list_genes2, server=TRUE, selected=NA , options=NULL)
   updateSelectizeInput(session, 'gene2', choices=list_genes2, server=TRUE, selected=NA , options=NULL)
+  updateSelectizeInput(session, 'gene_timeline', choices=list_genes, server=TRUE, selected='PPARGC1A' , options=NULL)
   observeEvent(input$jumpToApp, {updateTabsetPanel(session, "inTabset", selected="panelApp") })
   observeEvent(input$jumpToContribute, {updateTabsetPanel(session, "inTabset", selected="Contribute") })
   
@@ -448,16 +449,16 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
         coeff <- coeff[order(coeff$FDR),]
         
   #make hyperlinks on gene names
-        coeff$GeneCards <- paste("https://www.genecards.org/cgi-bin/carddisp.pl?gene=", rownames(coeff), sep="")
-        coeff$GeneCards  <- sapply(coeff$GeneCards, createLink)
-        coeff <- coeff[,c(4,1,2,3)]
+        #coeff$GeneCards <- paste("https://www.genecards.org/cgi-bin/carddisp.pl?gene=", rownames(coeff), sep="")
+        #coeff$GeneCards  <- sapply(coeff$GeneCards, createLink)
+        #coeff <- coeff[,c(4,1,2,3)]
         
       return(coeff)
     })
     }, error=function(e) NULL)
   })
   
-    output$CorrTable <- DT::renderDataTable(escape = FALSE, rownames = FALSE, selection = "single", {
+    output$CorrTable <- DT::renderDataTable(escape = FALSE, rownames = T, selection = "single", {
       validate(need(!is.null(Corr_stats()),   "Start by selecting a gene in the list of official gene names"))
       
       Corr_stats()
@@ -480,11 +481,11 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
     data  <- data.frame(t(Gene1), t(Gene2))
     data <- cbind(data, str_split_fixed(rownames(data), "_", 10))
     colnames(data) <- c("Gene1", "Gene2", "Protocol", "Study", "Muscle", "Sex", "Age", "Training", "Obesity", "Disease")
-    active <- ggplot(data, aes(x=Gene1, y=Gene2, color=data[,as.numeric(input$selectgroup)])) +
+    active <- ggplot(data, aes(x=Gene2, y=Gene1, color=data[,as.numeric(input$selectgroup)])) +
       geom_smooth(method=lm, se=F, fullrange=TRUE) +
       geom_point(shape=19) +
-      labs(x=paste(input$gene1, ", log2(fold-change)", sep=""),
-           y=paste(rownames(Gene2), ", log2(fold-change)", sep=""),
+      labs(x=paste(rownames(Gene2), ", log2(fold-change)", sep=""),
+           y=paste(input$gene1, ", log2(fold-change)", sep=""),
            title="") +
       theme(axis.text.x = element_text(color="black", size=10, angle=0, hjust = 1),
             axis.text.y = element_text(color="black", size=10, angle=0, hjust = 1),
@@ -495,7 +496,104 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
     })
   
   output$CorrPlot      <- renderPlot({ plotInputCOR() })
+
+#=======================================================================================
+# Make correlation description
+#=======================================================================================
+  output$Corr_description <- renderText({
+    validate(need(!is.null(Corr_stats()),     " "))
+    validate(need(input$CorrTable_rows_selected!="",  "Select a second gene in the table to display the correlation")) 
+    
+    #find gene selected in the table
+    GENENAME <- Corr_stats()
+    GENENAME <- rownames(GENENAME[input$CorrTable_rows_selected,])
+    
+    #annotate with ENTREZID
+    Annotation <- descriptions
+    ENTREZID <- Annotation[Annotation$GENENAME %in% GENENAME,2]
+    
+    #Find information on NCBI webpage
+    webpage <- read_html(paste("https://www.ncbi.nlm.nih.gov/gene/", ENTREZID, sep=''))
+    data_html <- html_nodes(webpage,'#summaryDl')
+    data_html <- html_text(data_html)
+    data_html <- str_replace_all(data_html, "[\r\n]" , "")
+    data_html <- str_replace_all(data_html, "provided by HGNC" , "")
+    data_html <- gsub('.*Summary', '', data_html)
+    data_html <- gsub('\\].*', ']', data_html)
+    data_html <- gsub('.*all', '', data_html)
+    data_html <- trimws(data_html)
+    return(data_html)
+  })
+
+  output$Corr_link <- renderUI({
+    validate(need(!is.null(Corr_stats()),     " "))
+    validate(need(input$CorrTable_rows_selected!="",  " ")) 
+    
+    #find gene selected in the table
+    GENENAME <- Corr_stats()
+    GENENAME <- rownames(GENENAME[input$CorrTable_rows_selected,])
+
+    #Make link to genecard
+    GeneCards <- paste("https://www.genecards.org/cgi-bin/carddisp.pl?gene=", GENENAME, sep="")
+    GeneCards <- sprintf(paste0('<a href="', paste("https://www.genecards.org/cgi-bin/carddisp.pl?gene=", GENENAME, sep=""),'" target="_blank">',
+                   'Learn more about ', GENENAME, ' on GeneCards' ,'</a>'))
+    GeneCards <- HTML(GeneCards)
+    return(GeneCards)
+  })
   
+#=======================================================================================
+# Make timeline plot
+#=======================================================================================
+  plotInputTimeline <- function() ({
+    validate(need(input$gene_timeline!="",  "Start by selecting a gene in the list of official gene names")) 
+    genename <- toupper(input$gene_timeline)
+    res  <- timeline_acute
+    mydata <- data.frame(cessation=factor(colnames(res), levels=c('pre', '0-1', '2-3', '4-6', '24', '48', '72')),
+                         logFC=as.numeric(res[genename,])) 
+    active <- ggplot(mydata, aes(x=cessation, y=logFC, fill=cessation)) + theme_bw() +
+      geom_hline(yintercept=0, color="gray50", linetype="dashed") +
+      geom_boxplot() +
+      labs(x="Time after exercise (h)",
+           y=paste(genename, ", log2(FC)", sep=""),
+           title="") + 
+      theme(axis.text.x = element_text(color="black", size=10, angle=0, hjust = 1),
+            axis.text.y = element_text(color="black", size=10, angle=0, hjust = 1),
+            axis.title  = element_text(face="bold", color="black", size=12, angle=0),
+            legend.text   = element_text(face="bold", color="black", size=10, angle=0),
+            legend.position="none") +
+      scale_fill_brewer(palette="Reds", direction=-1)
+    return(active)
+  })
+  
+  output$TimelinePlot      <- renderPlot({ plotInputTimeline() })
+
+#=======================================================================================
+# Make timeline table
+#=======================================================================================
+  output$TimeTable <- renderTable(rownames = TRUE, align='c', { 
+    validate(need(input$gene_timeline!="",  "Start by selecting a gene in the list of official gene names")) 
+    genename <- toupper(input$gene_timeline)
+    res  <- timeline_stats[genename,]
+    stats <- data.frame(p.value=t(res[,14:19]),
+                        FDR=t(res[,20:25]))
+    colnames(stats) <- c('p.value', 'FDR')
+    KWANOVA <- res[,12:13]
+    names(KWANOVA) <- c('p.value', 'FDR')
+    stats <- rbind(KWANOVA, stats)
+    stats$significance <- ''
+    stats$significance[stats$FDR < 0.05] <- "*"
+    stats$significance[stats$FDR < 0.01] <- "**"
+    stats$significance[stats$FDR < 0.001] <- "***"
+    stats$p.value <- scientific(stats$p.value, 1)
+    stats$FDR <- scientific(stats$FDR, 1)
+    rownames(stats) <- c('Kruskal-Wallis ANOVA',
+                         'T-test 0-1h vs Pre', 'T-test 2-3h vs Pre',
+                         'T-test 4-6h vs Pre', 'T-test 24h vs Pre',
+                         'T-test 48h vs Pre', 'T-test 72h vs Pre')
+    return(stats)
+    })
+  
+
 #=======================================================================================
 # Make buttons to download data
 #=======================================================================================

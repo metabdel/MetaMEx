@@ -3,6 +3,7 @@ library(stringr)
 
 # Make tables of the studies and annotation
 library(readxl)
+
 #function to make hyperlinks
 createLink <- function(val) {
   sprintf(paste0('<a href="', URLdecode(val),'" target="_blank">', gsub("(.*org/)|(.*=)", "", val) ,'</a>'))

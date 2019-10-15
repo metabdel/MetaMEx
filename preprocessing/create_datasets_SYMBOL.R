@@ -66,3 +66,11 @@ saveRDS(annotdata, file="C:/ownCloud/R/Shiny/MetaMEx/data/Training_Resistance_Me
 #Individual fold-changes
 annotdata <- readRDS("C:/ownCloud/Projects/Meta-Analysis_Exercise/Allindividuals_foldchange.Rds")
 saveRDS(annotdata, file="C:/ownCloud/R/Shiny/MetaMEx/data/Allindividuals_foldchange.Rds")
+
+
+#Timeline
+timeline <- readRDS("C:/ownCloud/Projects/Meta-Analysis_Exercise/Timeline_Acute/data/Data_logFC.TimeCessation.Rds")
+saveRDS(timeline, file="C:/ownCloud/R/Shiny/MetaMEx/data/Data_logFC.TimeCessation.Rds")
+
+timeline <- read.csv("C:/ownCloud/Projects/Meta-Analysis_Exercise/Timeline_Acute/results/PeakTime&Statistics_Cessation.csv")
+saveRDS(timeline, file="C:/ownCloud/R/Shiny/MetaMEx/data/Data_Statistics_TimeCessation.Rds")

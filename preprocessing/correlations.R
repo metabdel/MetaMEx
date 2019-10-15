@@ -28,3 +28,25 @@ AllStats[[i]] <- coeff
 }
 
 saveRDS(AllStats, "../data/AllCorrelations.Rds")
+
+
+
+# gene description
+library(AnnotationDbi)
+library(org.Hs.eg.db)
+library(rvest)
+GENENAME <- rownames(Individual_FC)
+ENTREZID <- as.character(mapIds(org.Hs.eg.db, keys=GENENAME,
+                                  column="ENTREZID",   keytype="SYMBOL", multiVals="first"))
+Annotation <- data.frame(GENENAME, ENTREZID, REFSEQ=NA)
+saveRDS(Annotation, "../data/AllDescriptions.Rds")
+
+
+for (i in 1:nrow(Annotation)){
+webpage <- read_html(paste("https://www.ncbi.nlm.nih.gov/gene/", Annotation$ENTREZID[i], sep=''))
+data_html <- html_nodes(webpage,'dd:nth-child(20)')
+data_html <- gsub('<dd>', '', data_html)
+data_html <- gsub('</dd>', '', data_html)
+Annotation$REFSEQ[i] <- data_html
+print(paste(i, "out of", nrow(Annotation), "done!"))
+}

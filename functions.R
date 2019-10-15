@@ -4,6 +4,8 @@ library(gplots)
 library(ggplot2)
 library(ggfortify)
 library(stringr)
+library(scales)
+library(rvest)
 
 #URLs for sharing buttons
 url_twitter  <- "https://twitter.com/intent/tweet?text=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20@NicoPillon%20@JuleenRZierath%20@AnnaKrook_KI&url=http://www.metamex.eu"
@@ -79,7 +81,10 @@ StudiesInactivity <- readRDS("data/StudiesInactivity.Rds") # Load the table desc
 MissingData <- readRDS("data/MissingData.Rds") # Load the table describing the missing data in the database
 Individual_FC <- readRDS("data/Allindividuals_foldchange.Rds")
 list_genes2 <- rownames(Individual_FC)
-
+timeline_acute <- readRDS("C:/ownCloud/R/Shiny/MetaMEx/data/Data_logFC.TimeCessation.Rds")
+timeline_stats <- readRDS("C:/ownCloud/R/Shiny/MetaMEx/data/Data_Statistics_TimeCessation.Rds")
+descriptions <- readRDS("C:/ownCloud/R/Shiny/MetaMEx/data/AllDescriptions.Rds")
+  
 #function to make hyperlinks
 createLink <- function(val) {
   sprintf(paste0('<a href="', URLdecode(val),'" target="_blank">', gsub("(.*org/)|(.*=)", "", val) ,'</a>'))

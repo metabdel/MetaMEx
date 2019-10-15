@@ -158,11 +158,29 @@ tabPanel("Correlations", value="panelCorr",
          
          
          fluidRow(
-           column(6,  h3("Correlation Table"),
-                  DT::dataTableOutput("CorrTable")),
+           column(6, DT::dataTableOutput("CorrTable")),
            
-           column(6,  h3("Correlation Plot"),
-                  plotOutput("CorrPlot"))
+           column(6, plotOutput("CorrPlot"),
+                     textOutput("Corr_description"),
+                     uiOutput ("Corr_link"))
+         ),
+         
+         tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()
+),
+
+#=======================================================================================================================        
+tabPanel("Timeline", value="panelCorr",
+         fluidRow(style="background-color:#edcdc2;padding:1%",
+                  h3("Timeline"), "Display the behaviour of a gene of interest in muscle biopsies collected at different times after exercise."),
+         
+         fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
+                  column(2, selectizeInput("gene_timeline", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
+                  uiOutput("download_timeline")
+         ),
+         
+         fluidRow(column(4, plotOutput("TimelinePlot")),
+                  column(5,  h3("Statistics"),
+                         tableOutput("TimeTable"))
          ),
          
          tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()
