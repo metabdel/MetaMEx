@@ -8,7 +8,7 @@ library(scales)
 library(rvest)
 
 #URLs for sharing buttons
-url_twitter  <- "https://twitter.com/intent/tweet?text=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20@NicoPillon%20@JuleenRZierath%20@AnnaKrook_KI&url=http://www.metamex.eu"
+url_twitter  <- "https://twitter.com/intent/tweet?text=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20@NicoPillon%20@JuleenRZierath&url=http://www.metamex.eu"
 url_linkedin <- "https://www.linkedin.com/shareArticle?mini=true&url=http://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20&summary=MetaMEx&source=LinkedIn"
 url_facebook <- "https://www.facebook.com/sharer.php?u=https://www.metamex.eu&title=MetaMEx:%20Meta-Analysis%20of%20skeletal%20muscle%20response%20to%20inactivity%20and%20exercise.%20"
 
@@ -27,9 +27,9 @@ options(shiny.sanitize.errors=T)
 library(forestplot)
 own <- fpTxtGp()
 own$ticks$cex <- 0.8 #tick labels
-own$xlab$cex <- 1
-own$label$cex <- 0.9
-own$summary$cex <- 1.2
+own$xlab$cex <- 0.8
+own$label$cex <- 0.8
+own$summary$cex <- 1.1
 
 
 #Function to make data table for selected gene
@@ -46,8 +46,9 @@ DataForGeneName <- function(x){
                      t(x[grepl('size',     colnames(x))])) # number of subjects in the study
   x <- cbind(x, str_split_fixed(rownames(x), "_", 10))
   colnames(x) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
-                      'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                      'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease', 'Biopsy', 'Exercisetype')
+                   'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
+                   'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
+                   'Biopsy', 'Exercisetype')
   x$Studies <- gsub("logFC_","", rownames(x))
   x
 }
@@ -58,32 +59,34 @@ library(metafor)
 MetaAnalysis <- function(x){
   x <- x[order(x$Studies),]
   meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
-              method = "REML", measure = "MD", data = x, control=list(maxiter=1000, stepadj=0.5))
+              method = "REML", measure = "MD", data = x, control=list(maxiter=1000, stepadj=0.5),
+              weighted=T, weights=x$size)
   fdr  <- p.adjust(meta$pval, method='BH')
   x <- rbind(x[,1:10],
              c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(x$size, na.rm=T)))
+  x$Studies <- c(gsub("logFC_", "", x$Studies[1:(nrow(x)-1)]),
+                           "Restricted Maximum Likelihood")
   x
 }
 
 
 # Load the different datasets, each dataset file contains several columns for each study: fold-change, false discovery rate, mean, standard deviation, n size.
-Stats_AA <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
-Stats_AR <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
-Stats_TA <- readRDS("data/Training_Aerobic_Merged_Stats_SYMBOL.Rds")
-Stats_TR <- readRDS("data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
-Stats_TC <- readRDS("data/Training_Combined_Merged_Stats_SYMBOL.Rds")
-Stats_HI <- readRDS("data/Training_HIIT_Merged_Stats_SYMBOL.Rds")
-Stats_IN <- readRDS("data/Inactivity_Merged_Stats_SYMBOL.Rds")
+AA_Stats <- readRDS("data/Acute_Aerobic_Merged_Stats_SYMBOL.Rds")
+AR_Stats <- readRDS("data/Acute_Resistance_Merged_Stats_SYMBOL.Rds")
+TA_Stats <- readRDS("data/Training_Aerobic_Merged_Stats_SYMBOL.Rds")
+TR_Stats <- readRDS("data/Training_Resistance_Merged_Stats_SYMBOL.Rds")
+TC_Stats <- readRDS("data/Training_Combined_Merged_Stats_SYMBOL.Rds")
+TH_Stats <- readRDS("data/Training_HIIT_Merged_Stats_SYMBOL.Rds")
+IN_Stats <- readRDS("data/Inactivity_Merged_Stats_SYMBOL.Rds")
 annotation <- readRDS("data/Datasets_legend.Rds") # Load the table describing the legend of the tables
 StudiesAcute <- readRDS("data/StudiesAcute.Rds") # Load the table describing the legend of the tables
 StudiesTraining <- readRDS("data/StudiesTraining.Rds") # Load the table describing the legend of the tables
 StudiesInactivity <- readRDS("data/StudiesInactivity.Rds") # Load the table describing the legend of the tables
-MissingData <- readRDS("data/MissingData.Rds") # Load the table describing the missing data in the database
 Individual_FC <- readRDS("data/Allindividuals_foldchange.Rds")
 list_genes2 <- rownames(Individual_FC)
-timeline_acute <- readRDS("C:/ownCloud/R/Shiny/MetaMEx/data/Data_logFC.TimeCessation.Rds")
-timeline_stats <- readRDS("C:/ownCloud/R/Shiny/MetaMEx/data/Data_Statistics_TimeCessation.Rds")
-descriptions <- readRDS("C:/ownCloud/R/Shiny/MetaMEx/data/AllDescriptions.Rds")
+timeline_acute <- readRDS("data/Data_logFC.TimeCessation.Rds")
+timeline_stats <- readRDS("data/Data_Statistics_TimeCessation.Rds")
+descriptions <- readRDS("data/AllDescriptions.Rds")
   
 #function to make hyperlinks
 createLink <- function(val) {

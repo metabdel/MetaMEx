@@ -12,22 +12,29 @@ server <- function(input, output, session) {
  #=======================================================================================
  # Make all checkboxes selected by default - necessary for the select all button to work
  #=======================================================================================  
-  observe({ updateCheckboxGroupInput(session, 'muscle',      choices = list_categories[['muscle_choice']],   selected = if (input$bar_muscle) list_categories[['muscle_choice']])})
-  observe({ updateCheckboxGroupInput(session, 'sex',         choices = list_categories[['sex_choice']],      selected = if (input$bar_sex) list_categories[['sex_choice']])})
-  observe({ updateCheckboxGroupInput(session, 'age',         choices = list_categories[['age_choice']],      selected = if (input$bar_age) list_categories[['age_choice']])})
-  observe({ updateCheckboxGroupInput(session, 'training',    choices = list_categories[['training_choice']], selected = if (input$bar_training) list_categories[['training_choice']])})
-  observe({ updateCheckboxGroupInput(session, 'obesity',     choices = list_categories[['obesity_choice']],  selected = if (input$bar_obesity) list_categories[['obesity_choice']])})
-  observe({ updateCheckboxGroupInput(session, 'disease',     choices = list_categories[['disease_choice']],  selected = if (input$bar_disease) list_categories[['disease_choice']])})
-  observe({ updateCheckboxGroupInput(session, 'biopsy',      choices = list_categories[['biopsy_choice']],   selected = if (input$bar_biopsy) list_categories[['biopsy_choice']])})
-  observe({ updateCheckboxGroupInput(session, 'exercisetype',choices = list_categories[['exercise_choice']], selected = if (input$bar_exercisetype) list_categories[['exercise_choice']])})
-  observe({ updateCheckboxGroupInput(session, 'AA_studies',  choices = list_datasets[['AA_names']],        selected = if (input$AA_all) list_datasets[['AA_names']], inline=TRUE)})
-  observe({ updateCheckboxGroupInput(session, 'AR_studies',  choices = list_datasets[['AR_names']],        selected = if (input$AR_all) list_datasets[['AR_names']], inline=TRUE)})
-  observe({ updateCheckboxGroupInput(session, 'TA_studies',  choices = list_datasets[['TA_names']],        selected = if (input$TA_all) list_datasets[['TA_names']], inline=TRUE)})
-  observe({ updateCheckboxGroupInput(session, 'TR_studies',  choices = list_datasets[['TR_names']],        selected = if (input$TR_all) list_datasets[['TR_names']], inline=TRUE)})
-  observe({ updateCheckboxGroupInput(session, 'TC_studies',  choices = list_datasets[['TC_names']],        selected = if (input$TC_all) list_datasets[['TC_names']], inline=TRUE)})
-  observe({ updateCheckboxGroupInput(session, 'HI_studies',  choices = list_datasets[['HI_names']],        selected = if (input$HI_all) list_datasets[['HI_names']], inline=TRUE)})
-  observe({ updateCheckboxGroupInput(session, 'IN_studies',  choices = list_datasets[['IN_names']],        selected = if (input$IN_all) list_datasets[['IN_names']], inline=TRUE)})
-
+  observe({ updateCheckboxGroupInput(session, 'muscle',              choices = list_categories[['muscle_choice']],
+                                     selected = if (input$bar_muscle) list_categories[['muscle_choice']])})
+  observe({ updateCheckboxGroupInput(session, 'sex',                 choices = list_categories[['sex_choice']], 
+                                     selected = if (input$bar_sex) list_categories[['sex_choice']])})
+  observe({ updateCheckboxGroupInput(session, 'age',                 choices = list_categories[['age_choice']], 
+                                     selected = if (input$bar_age) list_categories[['age_choice']])})
+  observe({ updateCheckboxGroupInput(session, 'training',            choices = list_categories[['training_choice']], 
+                                     selected = if (input$bar_training) list_categories[['training_choice']])})
+  observe({ updateCheckboxGroupInput(session, 'obesity',             choices = list_categories[['obesity_choice']], 
+                                     selected = if (input$bar_obesity) list_categories[['obesity_choice']])})
+  observe({ updateCheckboxGroupInput(session, 'disease',             choices = list_categories[['disease_choice']], 
+                                     selected = if (input$bar_disease) list_categories[['disease_choice']])})
+  observe({ updateCheckboxGroupInput(session, 'biopsy',              choices = list_categories[['biopsy_choice']], 
+                                     selected = if (input$bar_biopsy) list_categories[['biopsy_choice']])})
+  observe({ updateCheckboxGroupInput(session, 'exercisetype',        choices = list_categories[['exercise_choice']], 
+                                     selected = if (input$bar_exercisetype) list_categories[['exercise_choice']])})
+  
+  observe({ updateCheckboxGroupInput(session, 'training_duration',        choices = list_categories[['training_duration_choice']], 
+                                     selected = if (input$bar_training_duration) list_categories[['training_duration_choice']])})
+  observe({ updateCheckboxGroupInput(session, 'training_biopsy',        choices = list_categories[['training_biopsy_choice']], 
+                                     selected = if (input$bar_training_biopsy) list_categories[['training_biopsy_choice']])})
+  
+  
   
 #=======================================================================================
 # Make annotation table for legend 
@@ -46,169 +53,52 @@ output$StudiesTraining <- DT::renderDataTable(escape = FALSE, rownames = FALSE, 
 
 output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { StudiesInactivity })
 
-output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { MissingData },
-                                          options = list(paging = FALSE, searching = FALSE))
 
-#=======================================================================================  
-# Make reactive functions to select data
-#=======================================================================================
+
+
+
+
+
+  
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+# Acute Aerobic
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+#  observe({ updateCheckboxGroupInput(session, 'AA_studies', choices = list_datasets[['AA_names']],
+#                                     selected = if (input$AA_all) list_datasets[['AA_names']], inline=TRUE)})
+  
   AA_data <- reactive({
     tryCatch({
       #data for selected gene name
-      selectedata <- Stats_AA[toupper(input$genename),]
+      selectedata <- AA_Stats[toupper(input$genename),]
+      #Don't need to annotate studies with protocol type, remove from colum name
+      colnames(selectedata) <- gsub("AcAe_", "", colnames(selectedata))
       #custom function to make a useable data frame
       selectedata <- DataForGeneName(selectedata) 
-      #filter according to selected categories
+      #name columns specific for the type of exercise/inactivity
+      colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
+                                 'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
+                                 'Studies', 'GEO', 'Exercisetype','Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease', 
+                                 'Biopsy')
+      #Filter table based on selection criteria
       selectedata <- dplyr::filter(selectedata,
-                            GEO %in% input$AA_studies, 
-                            Muscle %in% input$muscle, 
-                            Sex %in% input$sex, 
-                            Age %in% input$age, 
-                            Training %in% input$training,
-                            Obesity %in% input$obesity,
-                            Disease %in% input$disease,
-                            Biopsy %in% input$biopsy)
-      #custom function for meta-analysis
-      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-      #add a column with the names of the studies included
-      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Acute Aerobic score")
-      return(selectedata)
-    }, error=function(e) NULL)
-  })
-
-  AR_data <- reactive({
-    tryCatch({
-      selectedata<- Stats_AR[toupper(input$genename),]
-      selectedata<- DataForGeneName(selectedata) #call the custom function to make data table
-      selectedata <- dplyr::filter(selectedata,
-                     GEO %in% input$AR_studies, 
-                     Muscle %in% input$muscle, 
-                     Sex %in% input$sex, 
-                     Age %in% input$age, 
-                     Training %in% input$training,
-                     Obesity %in% input$obesity,
-                     Disease %in% input$disease,
-                     Biopsy %in% input$biopsy,
-                     Exercisetype %in% input$exercisetype)
-      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Acute Resistance score")
-      return(selectedata)
-    }, error=function(e) NULL)
-  })
-  
-  TA_data <- reactive({
-    tryCatch({
-      selectedata <- Stats_TA[toupper(input$genename),]
-      selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
-      selectedata <- dplyr::filter(selectedata,
-                     GEO %in% input$TA_studies, 
-                     Muscle %in% input$muscle, 
-                     Sex %in% input$sex, 
-                     Age %in% input$age, 
-                     Training %in% input$training,
-                     Obesity %in% input$obesity,
-                     Disease %in% input$disease)
-      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Training Aerobic score")
-      return(selectedata)
-    }, error=function(e) NULL)
-  }) 
-  
-  TR_data <- reactive({
-    tryCatch({
-      selectedata <- Stats_TR[toupper(input$genename),]
-      selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
-      selectedata <- dplyr::filter(selectedata,
-                            GEO %in% input$TR_studies, 
-                            Muscle %in% input$muscle, 
-                            Sex %in% input$sex, 
-                            Age %in% input$age, 
-                            Training %in% input$training,
-                            Obesity %in% input$obesity,
-                            Disease %in% input$disease)
-      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Training Resistance score")
-      return(selectedata)
-    }, error=function(e) NULL)
-  })
-  
-  TC_data <- reactive({
-    tryCatch({
-      selectedata <- Stats_TC[toupper(input$genename),]
-      selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
-      selectedata <- dplyr::filter(selectedata,
-                            GEO %in% input$TC_studies, 
-                            Muscle %in% input$muscle, 
-                            Sex %in% input$sex, 
-                            Age %in% input$age, 
-                            Training %in% input$training,
-                            Obesity %in% input$obesity,
-                            Disease %in% input$disease)
-      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Training Combined score")
-      return(selectedata)
-    }, error=function(e) NULL)
-  })
-  
-  HI_data <- reactive({
-    tryCatch({
-      selectedata <- Stats_HI[toupper(input$genename),]
-      selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
-      selectedata <- dplyr::filter(selectedata,
-                                   GEO %in% input$HI_studies, 
+                                   GEO %in% input$AA_studies, 
                                    Muscle %in% input$muscle, 
                                    Sex %in% input$sex, 
                                    Age %in% input$age, 
                                    Training %in% input$training,
                                    Obesity %in% input$obesity,
-                                   Disease %in% input$disease)
+                                   Disease %in% input$disease,
+                                   Biopsy %in% input$biopsy,
+                                   Exercisetype %in% input$exercisetype)
+      #Function to make meta-analysis table (adds a row with meta-analysis score)
       selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Training HIIT score")
       return(selectedata)
     }, error=function(e) NULL)
   })
   
-  IN_data <- reactive({
-    tryCatch({
-      selectedata <- Stats_IN[toupper(input$genename),]
-      selectedata <- DataForGeneName(selectedata) #call the custom function to make data table
-      selectedata <- dplyr::filter(selectedata,
-                            GEO %in% input$IN_studies, 
-                            Muscle %in% input$muscle, 
-                            Sex %in% input$sex, 
-                            Age %in% input$age, 
-                            Training %in% input$training,
-                            Obesity %in% input$obesity,
-                            Disease %in% input$disease)
-      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
-      selectedata$Studies <- c(gsub("logFC_", "", selectedata$Studies[1:(nrow(selectedata)-1)]),
-                               "Physical Inactivity score")
-      return(selectedata)
-    }, error=function(e) NULL)
-  })
-
-
-#=======================================================================================
-# Make reactive forest plot from selected data
-#=======================================================================================
-
-  plotInputAA <- function() ({
-    #Validate selection criteria:
-    validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
-    validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
-    validate(need(input$age!="",         "Please select at least one group in the age category")) 
-    validate(need(input$training!="",    "Please select at least one group in the fitness category")) 
-    validate(need(input$disease!="",     "Please select at least one group in the health status category")) 
-    validate(need(input$biopsy!="",      "Please select at least one group in the biopsy collection category"))   
-    validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
-    validate(need(input$AA_studies!="",  "Please select at least one group in the study list")) 
-    validate(need(!is.null(AA_data()),   "Dataset not available for the selected criteria"))
+  AA_plotInput <- function() ({
+    #Validate selection criteria
+    validate(need(!is.null(AA_data()),   "No studies found - try different selection criteria"))
     #Plot the forest plot:
     selectedata <- AA_data()
     # make forest plot
@@ -217,7 +107,8 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
                        upper= c(NA , selectedata[,4]))
     tabletext <- cbind(c('Acute Aerobic Studies' , selectedata[,10]),
                        c("logFC" , format(round(selectedata[,1], digits=2))),
-                       c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
+                       c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
+                       c("n" , selectedata[,9]))
     finalplot <- forestplot(tabletext, 
                             tabledata, new_page=TRUE,
                             is.summary=c(TRUE,rep(FALSE,(nrow(selectedata)-1)),TRUE),
@@ -226,18 +117,46 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
     return(finalplot)
   })
   
-  plotInputAR <- function() ({
-  #Validate selection criteria:
-    validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
-    validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
-    validate(need(input$age!="",         "Please select at least one group in the age category")) 
-    validate(need(input$training!="",    "Please select at least one group in the fitness category")) 
-    validate(need(input$disease!="",     "Please select at least one group in the health status category")) 
-    validate(need(input$biopsy!="",      "Please select at least one group in the biopsy collection category"))   
-    validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
-    validate(need(input$AR_studies!="",  "Please select at least one group in the study list"))
-    validate(need(!is.null(AR_data()),   "Dataset not available for the selected criteria"))
-  #Plot the forest plot:
+  output$AA_plot <- renderPlot({ AA_plotInput() })
+
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+# Acute Resistance
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+#  observe({ updateCheckboxGroupInput(session, 'AR_studies',          choices = list_datasets[['AR_names']],       
+#                                     selected = if (input$AR_all) list_datasets[['AR_names']], inline=TRUE)})
+  
+  AR_data <- reactive({
+    tryCatch({
+      selectedata <- AR_Stats[toupper(input$genename),]
+      #Don't need to annotate studies with protocol type, remove from colum name
+      colnames(selectedata) <- gsub("AcRe_", "", colnames(selectedata))
+      #custom function to make a useable data frame
+      selectedata <- DataForGeneName(selectedata) 
+      #name columns specific for the type of exercise/inactivity
+      colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
+                                 'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
+                                 'Studies', 'GEO', 'Exercisetype','Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease', 
+                                 'Biopsy')
+      #Filter table based on selection criteria
+      selectedata <- dplyr::filter(selectedata,
+                                   GEO %in% input$AR_studies, 
+                                   Muscle %in% input$muscle, 
+                                   Sex %in% input$sex, 
+                                   Age %in% input$age, 
+                                   Training %in% input$training,
+                                   Obesity %in% input$obesity,
+                                   Disease %in% input$disease,
+                                   Biopsy %in% input$biopsy,
+                                   Exercisetype %in% input$exercisetype)
+      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
+      return(selectedata)
+    }, error=function(e) NULL)
+  })
+  
+  AR_plotInput <- function() ({ 
+    #Validate selection criteria
+    validate(need(!is.null(AR_data()),   "No studies found - try different selection criteria"))
+    #Plot the forest plot:
     selectedata <- data.frame(AR_data())
     # make forest plot
     tabledata <- cbind(mean = c(NA , selectedata[,1]), 
@@ -245,119 +164,300 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
                        upper= c(NA , selectedata[,4]))
     tabletext <- cbind(c('Acute Resistance Studies' , selectedata[,10]),
                        c("logFC" , format(round(selectedata[,1], digits=2))),
-                       c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
+                       c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
+                       c("n" , selectedata[,9]))
     finalplot <- forestplot(tabletext, 
-               tabledata, new_page=TRUE,
-               is.summary=c(TRUE,rep(FALSE,(nrow(selectedata)-1)),TRUE),
-               xlog=F,  txt_gp = own, xlab="logFC",
-               col=fpColors(box="orangered2",line="orangered3", summary="orangered3"))
+                            tabledata, new_page=TRUE,
+                            is.summary=c(TRUE,rep(FALSE,(nrow(selectedata)-1)),TRUE),
+                            xlog=F,  txt_gp = own, xlab="logFC",
+                            col=fpColors(box="orangered2",line="orangered3", summary="orangered3"))
     return(finalplot)
   })
   
-  plotInputTA <- function() ({
-    #Validate selection criteria:
-      validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
-      validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
-      validate(need(input$age!="",         "Please select at least one group in the age category")) 
-      validate(need(input$training!="",    "Please select at least one group in the fitness category")) 
-      validate(need(input$disease!="",     "Please select at least one group in the health status category")) 
-      validate(need(input$biopsy!="",      "Please select at least one group in the biopsy collection category"))   
-      validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
-      validate(need(input$TA_studies!="",  "Please select at least one group in the study list")) 
-      validate(need(!is.null(TA_data()),   "Dataset not available for the selected criteria"))
-   #Plot the forest plot:
-      selectedata <- data.frame(TA_data())
-      # make forest plot
-      tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
-                              lower= c(NA , selectedata[,3]),
-                              upper= c(NA , selectedata[,4]))
-      tabletext<-cbind(c('Training Aerobic Studies' , selectedata[,10]),
-                       c("logFC" , format(round(selectedata[,1], digits=2))),
-                       c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
-      finalplot <- forestplot(tabletext, 
-                 tabledata, new_page=TRUE,
-                 is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
-                 xlog=F,  txt_gp = own, xlab="logFC",
-                 col=fpColors(box="dodgerblue3",line="dodgerblue4", summary="dodgerblue4"))
-      return(finalplot)
+  output$AR_plot <- renderPlot({ AR_plotInput() })
+  
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+# Inactivity
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+  #make checkboxes selected by default - necessary for the select all button to work
+  observe({ updateCheckboxGroupInput(session, 'inactivity_duration', choices=list_categories[['inactivity_duration_choice']],
+                                     selected = if (input$bar_inactivity_duration) list_categories[['inactivity_duration_choice']])})
+  observe({ updateCheckboxGroupInput(session, 'inactivity_protocol', choices=list_categories[['inactivity_protocol_choice']],
+                                     selected = if (input$bar_inactivity_protocol) list_categories[['inactivity_protocol_choice']])})
+  #observe({ updateCheckboxGroupInput(session, 'IN_studies', choices=list_datasets[['IN_names']],        
+  #                                   selected = if (input$IN_all) list_datasets[['IN_names']], inline=TRUE)})
+  
+  IN_data <- reactive({
+    tryCatch({
+      #data for selected gene name
+      selectedata <- IN_Stats[toupper(input$genename),]
+      #Don't need to annotate studies with protocol type, remove from colum name
+      colnames(selectedata) <- gsub("Inac_", "", colnames(selectedata))
+      #custom function to make a useable data frame
+      selectedata <- DataForGeneName(selectedata)
+      #name columns specific for the type of exercise/inactivity
+      colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
+                                 'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
+                                 'Studies', 'GEO', 'InactivityProtocol','Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
+                                 'Duration')
+      #Filter table based on selection criteria
+      selectedata <- dplyr::filter(selectedata,
+                                   GEO %in% input$IN_studies, 
+                                   InactivityProtocol %in% input$inactivity_protocol, 
+                                   Muscle %in% input$muscle, 
+                                   Sex %in% input$sex, 
+                                   Age %in% input$age, 
+                                   Training %in% input$training,
+                                   Obesity %in% input$obesity,
+                                   Disease %in% input$disease,
+                                   Duration %in% input$inactivity_duration)
+      #Function to make meta-analysis table (adds a row with meta-analysis score)
+      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
+      return(selectedata)
+    }, error=function(e) NULL)
   })
   
-  plotInputTR <- function() ({
-  #Validate selection criteria:
-    validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
-    validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
-    validate(need(input$age!="",         "Please select at least one group in the age category")) 
-    validate(need(input$training!="",    "Please select at least one group in the fitness category")) 
-    validate(need(input$disease!="",     "Please select at least one group in the health status category")) 
-    validate(need(input$biopsy!="",      "Please select at least one group in the biopsy collection category"))   
-    validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
-    validate(need(input$TR_studies!="",  "Please select at least one group in the study list")) 
-    validate(need(!is.null(TR_data()),   "Dataset not available for the selected criteria"))
-  #Plot the forest plot:
-    selectedata <- data.frame(TR_data())
-    # make forest plot
+  IN_plotInput <- function() ({ 
+    #Validate selection criteria
+    validate(need(!is.null(IN_data()),   "No studies found - try different selection criteria"))
+    #collect data frame with selected data and meta-analysis score
+    selectedata <- data.frame(IN_data())
+    #organize data for the forest plot
     tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                             lower= c(NA , selectedata[,3]),
                             upper= c(NA , selectedata[,4]))
-    tabletext<-cbind(c('Training Resistance Studies' , selectedata[,10]),
-                     c("logFC" , format(round(selectedata[,1], digits=2))),
-                     c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
-    finalplot <- forestplot(tabletext, 
-               tabledata, new_page=TRUE,
-               is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
-               xlog=F,  txt_gp = own, xlab="logFC",
-               col=fpColors(box="green3",line="green4", summary="green4"))
+    tabletext <- cbind(c('Physical Inactivity Studies' , selectedata[,10]),
+                       c("logFC" , format(round(selectedata[,1], digits=2))),
+                       c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
+                       c("n" , selectedata[,9]))
+    finalplot <- forestplot(tabletext,
+                 tabledata, new_page=TRUE,
+                 is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
+                 xlog=F,  txt_gp = own, xlab="logFC",
+                 col=fpColors(box="maroon3",line="maroon4", summary="maroon4"))
     return(finalplot)
-})
+  })
+  
+  output$IN_plot <- renderPlot({ IN_plotInput() })
+    
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+# Training Aerobic
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+  #observe({ updateCheckboxGroupInput(session, 'TA_studies',          choices = list_datasets[['TA_names']],        
+  #                                   selected = if (input$TA_all) list_datasets[['TA_names']], inline=TRUE)})
 
-  plotInputTC <- function() ({
-  #Validate selection criteria:
-    validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
-    validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
-    validate(need(input$age!="",         "Please select at least one group in the age category")) 
-    validate(need(input$training!="",    "Please select at least one group in the fitness category")) 
-    validate(need(input$disease!="",     "Please select at least one group in the health status category")) 
-    validate(need(input$biopsy!="",      "Please select at least one group in the biopsy collection category"))   
-    validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
-    validate(need(input$TC_studies!="",  "Please select at least one group in the study list"))
+  TA_data <- reactive({
+    tryCatch({
+      selectedata <- TA_Stats[toupper(input$genename),]
+      #Don't need to annotate studies with protocol type, remove from colum name
+      colnames(selectedata) <- gsub("TrAe_", "", colnames(selectedata))
+      #custom function to make a useable data frame
+      selectedata <- DataForGeneName(selectedata)
+      #name columns specific for the type of exercise/inactivity
+      colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
+                                 'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
+                                 'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
+                                 'Duration', 'Biopsy')
+      #name columns specific for the type of exercise/inactivity
+      selectedata <- dplyr::filter(selectedata,
+                                   GEO %in% input$TA_studies, 
+                                   Muscle %in% input$muscle, 
+                                   Sex %in% input$sex, 
+                                   Age %in% input$age, 
+                                   Training %in% input$training,
+                                   Obesity %in% input$obesity,
+                                   Disease %in% input$disease,
+                                   Duration %in% input$training_duration,
+                                   Biopsy %in% input$training_biopsy)
+      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
+      return(selectedata)
+    }, error=function(e) NULL)
+  }) 
+  
+  TA_plotInput <- function() ({ 
+    #Validate selection criteria:
+    validate(need(!is.null(TA_data()),   "No studies found - try different selection criteria"))
+    #Collect selected data
+    selectedata <- data.frame(TA_data())
+    #Make forest plot
+    tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
+                            lower= c(NA , selectedata[,3]),
+                            upper= c(NA , selectedata[,4]))
+    tabletext<-cbind(c('Aerobic Training Studies' , selectedata[,10]),
+                     c("logFC" , format(round(selectedata[,1], digits=2))),
+                     c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
+                     c("n" , selectedata[,9]))
+    finalplot <- forestplot(tabletext, 
+                            tabledata, new_page=TRUE,
+                            is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
+                            xlog=F,  txt_gp = own, xlab="logFC",
+                            col=fpColors(box="dodgerblue3",line="dodgerblue4", summary="dodgerblue4"))
+    return(finalplot)
+  })
+  
+  output$TA_plot <- renderPlot({ TA_plotInput() })
+  
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+# Training Resistance
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+  #observe({ updateCheckboxGroupInput(session, 'TR_studies',          choices = list_datasets[['TR_names']],        
+  #                                   selected = if (input$TR_all) list_datasets[['TR_names']], inline=TRUE)})
+
+  TR_data <- reactive({
+    tryCatch({
+      selectedata <- TR_Stats[toupper(input$genename),]
+      #Don't need to annotate studies with protocol type, remove from colum name
+      colnames(selectedata) <- gsub("TrRe_", "", colnames(selectedata))
+      #custom function to make a useable data frame
+      selectedata <- DataForGeneName(selectedata)
+      #name columns specific for the type of exercise/inactivity
+      colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
+                                 'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
+                                 'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
+                                 'Duration', 'Biopsy')
+      #name columns specific for the type of exercise/inactivity
+      selectedata <- dplyr::filter(selectedata,
+                                   GEO %in% input$TR_studies, 
+                                   Muscle %in% input$muscle, 
+                                   Sex %in% input$sex, 
+                                   Age %in% input$age, 
+                                   Training %in% input$training,
+                                   Obesity %in% input$obesity,
+                                   Disease %in% input$disease,
+                                   Duration %in% input$training_duration,
+                                   Biopsy %in% input$training_biopsy)
+      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
+      return(selectedata)
+    }, error=function(e) NULL)
+  })
+  
+  TR_plotInput <- function() ({ 
+    #Validate selection criteria
+    validate(need(!is.null(TR_data()),   "No studies found - try different selection criteria"))
+    #Collect selected data
+    selectedata <- data.frame(TR_data())
+    #Make forest plot
+    tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
+                            lower= c(NA , selectedata[,3]),
+                            upper= c(NA , selectedata[,4]))
+    tabletext<-cbind(c('Resistance Training Studies' , selectedata[,10]),
+                     c("logFC" , format(round(selectedata[,1], digits=2))),
+                     c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
+                     c("n" , selectedata[,9]))
+    finalplot <- forestplot(tabletext, 
+                            tabledata, new_page=TRUE,
+                            is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
+                            xlog=F,  txt_gp = own, xlab="logFC",
+                            col=fpColors(box="green3",line="green4", summary="green4"))
+    return(finalplot)
+  })
+  
+  output$TR_plot <- renderPlot({ TR_plotInput() })
+  
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+# Training Combined
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+  #observe({ updateCheckboxGroupInput(session, 'TC_studies',          choices = list_datasets[['TC_names']],        
+  #                                   selected = if (input$TC_all) list_datasets[['TC_names']], inline=TRUE)})
+
+  TC_data <- reactive({
+    tryCatch({
+      selectedata <- TC_Stats[toupper(input$genename),]
+      #Don't need to annotate studies with protocol type, remove from colum name
+      colnames(selectedata) <- gsub("TrCo_", "", colnames(selectedata))
+      #custom function to make a useable data frame
+      selectedata <- DataForGeneName(selectedata)
+      #name columns specific for the type of exercise/inactivity
+      colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
+                                 'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
+                                 'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
+                                 'Duration', 'Biopsy')
+      #name columns specific for the type of exercise/inactivity
+      selectedata <- dplyr::filter(selectedata,
+                                   GEO %in% input$TC_studies, 
+                                   Muscle %in% input$muscle, 
+                                   Sex %in% input$sex, 
+                                   Age %in% input$age, 
+                                   Training %in% input$training,
+                                   Obesity %in% input$obesity,
+                                   Disease %in% input$disease,
+                                   Duration %in% input$training_duration,
+                                   Biopsy %in% input$training_biopsy)
+      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
+      return(selectedata)
+    }, error=function(e) NULL)
+  })
+  
+  TC_plotInput <- function() ({ 
+    #Validate selection criteria:
     validate(need(!is.null(TC_data()),   "Dataset not available for the selected criteria"))
-  #Plot the forest plot:
+    #Plot the forest plot:
     selectedata <- data.frame(TC_data())
     # make forest plot
     tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                             lower= c(NA , selectedata[,3]),
                             upper= c(NA , selectedata[,4]))
-    tabletext<-cbind(c('Training Combined Studies' , selectedata[,10]),
+    tabletext<-cbind(c('Combined Training Studies' , selectedata[,10]),
                      c("logFC" , format(round(selectedata[,1], digits=2))),
-                     c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
+                     c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
+                     c("n" , selectedata[,9]))
     finalplot <- forestplot(tabletext, 
-               tabledata, new_page=TRUE,
-               is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
-               xlog=F,  txt_gp = own, xlab="logFC",
-               col=fpColors(box="aquamarine3",line="aquamarine4", summary="aquamarine4"))
+                            tabledata, new_page=TRUE,
+                            is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
+                            xlog=F,  txt_gp = own, xlab="logFC",
+                            col=fpColors(box="aquamarine3",line="aquamarine4", summary="aquamarine4"))
     return(finalplot)
   })
-
-  plotInputHI <- function() ({
-    #Validate selection criteria:
-    validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
-    validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
-    validate(need(input$age!="",         "Please select at least one group in the age category")) 
-    validate(need(input$training!="",    "Please select at least one group in the fitness category")) 
-    validate(need(input$disease!="",     "Please select at least one group in the health status category")) 
-    validate(need(input$biopsy!="",      "Please select at least one group in the biopsy collection category"))   
-    validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
-    validate(need(input$HI_studies!="",  "Please select at least one group in the study list"))
-    validate(need(!is.null(HI_data()),   "Dataset not available for the selected criteria"))
+  
+  output$TC_plot <- renderPlot({ TC_plotInput() })
+  
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+# Training HIIT
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+  #observe({ updateCheckboxGroupInput(session, 'TH_studies',          choices = list_datasets[['TH_names']],        
+  #                                   selected = if (input$TH_all) list_datasets[['TH_names']], inline=TRUE)})
+  
+  TH_data <- reactive({
+    tryCatch({
+      selectedata <- TH_Stats[toupper(input$genename),]
+      #Don't need to annotate studies with protocol type, remove from colum name
+      colnames(selectedata) <- gsub("TrHi_", "", colnames(selectedata))
+      #custom function to make a useable data frame
+      selectedata <- DataForGeneName(selectedata)
+      #name columns specific for the type of exercise/inactivity
+      colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
+                                 'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
+                                 'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
+                                 'Duration', 'Biopsy')
+      #name columns specific for the type of exercise/inactivity
+      selectedata <- dplyr::filter(selectedata,
+                                   GEO %in% input$TH_studies, 
+                                   Muscle %in% input$muscle, 
+                                   Sex %in% input$sex, 
+                                   Age %in% input$age, 
+                                   Training %in% input$training,
+                                   Obesity %in% input$obesity,
+                                   Disease %in% input$disease,
+                                   Duration %in% input$training_duration,
+                                   Biopsy %in% input$training_biopsy)
+      selectedata <- suppressWarnings(MetaAnalysis(selectedata))
+      return(selectedata)
+    }, error=function(e) NULL)
+  })
+  
+  TH_plotInput <- function() ({ 
+    #Validate selection criteria
+    validate(need(!is.null(TH_data()),   "No studies found - try different selection criteria"))
     #Plot the forest plot:
-    selectedata <- data.frame(HI_data())
+    selectedata <- data.frame(TH_data())
     # make forest plot
     tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                             lower= c(NA , selectedata[,3]),
                             upper= c(NA , selectedata[,4]))
-    tabletext<-cbind(c('Training HIIT Studies' , selectedata[,10]),
+    tabletext<-cbind(c('HIIT Training Studies' , selectedata[,10]),
                      c("logFC" , format(round(selectedata[,1], digits=2))),
-                     c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
+                     c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
+                     c("n" , selectedata[,9]))
     finalplot <- forestplot(tabletext, 
                             tabledata, new_page=TRUE,
                             is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
@@ -366,46 +466,7 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
     return(finalplot)
   })
   
-  plotInputIN <- function() ({
-  #Validate selection criteria:
-    validate(need(input$muscle!="",      "Please select at least one group in the muscle category")) 
-    validate(need(input$sex!="",         "Please select at least one group in the sex category")) 
-    validate(need(input$age!="",         "Please select at least one group in the age category")) 
-    validate(need(input$training!="",    "Please select at least one group in the fitness category")) 
-    validate(need(input$disease!="",     "Please select at least one group in the health status category")) 
-    validate(need(input$biopsy!="",      "Please select at least one group in the biopsy collection category"))   
-    validate(need(input$exercisetype!="","Please select at least one group in the exercise type category"))     
-    validate(need(input$IN_studies!="",  "Please select at least one group in the study list")) 
-    validate(need(!is.null(IN_data()),   "Dataset not available for the selected criteria"))
-  #Plot the forest plot:
-    selectedata <- data.frame(IN_data())
-    # make forest plot
-    tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
-                            lower= c(NA , selectedata[,3]),
-                            upper= c(NA , selectedata[,4]))
-    tabletext <- cbind(c('Physical Inactivity Studies' , selectedata[,10]),
-                       c("logFC" , format(round(selectedata[,1], digits=2))),
-                       c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)))
-    finalplot <- forestplot(tabletext,
-                 tabledata, new_page=TRUE,
-                 is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
-                 xlog=F,  txt_gp = own, xlab="logFC",
-                 col=fpColors(box="maroon3",line="maroon4", summary="maroon4"))
-    return(finalplot)
-  })
-
-
-#=======================================================================================
-# print plots
-#=======================================================================================
-  output$Acute_A    <- renderPlot({ plotInputAA() })
-  output$Acute_R    <- renderPlot({ plotInputAR() })
-  output$Training_A <- renderPlot({ plotInputTA() })
-  output$Training_R <- renderPlot({ plotInputTR() })
-  output$Training_C <- renderPlot({ plotInputTC() })
-  output$Training_H <- renderPlot({ plotInputHI() })
-  output$Inact      <- renderPlot({ plotInputIN() })
-
+  output$TH_plot <- renderPlot({ TH_plotInput() })
   
 #=======================================================================================
 # Make correlation table
@@ -447,11 +508,6 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
         coeff <- data.frame(Spearman.r, Spearman.p, Spearman.FDR)
         colnames(coeff) <- c("Spearman.r", "P.value", "FDR")
         coeff <- coeff[order(coeff$FDR),]
-        
-  #make hyperlinks on gene names
-        #coeff$GeneCards <- paste("https://www.genecards.org/cgi-bin/carddisp.pl?gene=", rownames(coeff), sep="")
-        #coeff$GeneCards  <- sapply(coeff$GeneCards, createLink)
-        #coeff <- coeff[,c(4,1,2,3)]
         
       return(coeff)
     })
@@ -497,6 +553,7 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
   
   output$CorrPlot      <- renderPlot({ plotInputCOR() })
 
+  
 #=======================================================================================
 # Make correlation description
 #=======================================================================================
@@ -518,10 +575,12 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
     data_html <- html_text(data_html)
     data_html <- str_replace_all(data_html, "[\r\n]" , "")
     data_html <- str_replace_all(data_html, "provided by HGNC" , "")
-    data_html <- gsub('.*Summary', '', data_html)
-    data_html <- gsub('\\].*', ']', data_html)
-    data_html <- gsub('.*all', '', data_html)
-    data_html <- trimws(data_html)
+    if(str_detect(data_html, 'Summary')==T){
+      data_html <- gsub('.*Summary', '', data_html)
+      data_html <- gsub('\\].*', ']', data_html)
+      data_html <- trimws(data_html)
+    } else data_html <- "No information available for this gene on NCBI."
+
     return(data_html)
   })
 
@@ -535,20 +594,22 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
 
     #Make link to genecard
     GeneCards <- paste("https://www.genecards.org/cgi-bin/carddisp.pl?gene=", GENENAME, sep="")
-    GeneCards <- sprintf(paste0('<a href="', paste("https://www.genecards.org/cgi-bin/carddisp.pl?gene=", GENENAME, sep=""),'" target="_blank">',
+    GeneCards <- sprintf(paste0('<a href="', paste("https://www.genecards.org/cgi-bin/carddisp.pl?gene=", GENENAME, sep=""),
+                                '" target="_blank">',
                    'Learn more about ', GENENAME, ' on GeneCards' ,'</a>'))
     GeneCards <- HTML(GeneCards)
     return(GeneCards)
   })
   
+  
 #=======================================================================================
-# Make timeline plot
+# Timeline plot
 #=======================================================================================
   plotInputTimeline <- function() ({
     validate(need(input$gene_timeline!="",  "Start by selecting a gene in the list of official gene names")) 
     genename <- toupper(input$gene_timeline)
     res  <- timeline_acute
-    mydata <- data.frame(cessation=factor(colnames(res), levels=c('pre', '0-1', '2-3', '4-6', '24', '48', '72')),
+    mydata <- data.frame(cessation=factor(colnames(res), levels=c('pre', '0-1', '2-3', '4-6', '24', '48')),
                          logFC=as.numeric(res[genename,])) 
     active <- ggplot(mydata, aes(x=cessation, y=logFC, fill=cessation)) + theme_bw() +
       geom_hline(yintercept=0, color="gray50", linetype="dashed") +
@@ -574,10 +635,10 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
     validate(need(input$gene_timeline!="",  "Start by selecting a gene in the list of official gene names")) 
     genename <- toupper(input$gene_timeline)
     res  <- timeline_stats[genename,]
-    stats <- data.frame(p.value=t(res[,14:19]),
-                        FDR=t(res[,20:25]))
+    stats <- data.frame(p.value=t(res[grepl('P.Value', colnames(res))]),
+                        FDR=t(res[grepl('adj.P.Val', colnames(res))]))
     colnames(stats) <- c('p.value', 'FDR')
-    KWANOVA <- res[,12:13]
+    KWANOVA <- res[grepl('Kruskal', colnames(res))]
     names(KWANOVA) <- c('p.value', 'FDR')
     stats <- rbind(KWANOVA, stats)
     stats$significance <- ''
@@ -589,7 +650,7 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
     rownames(stats) <- c('Kruskal-Wallis ANOVA',
                          'T-test 0-1h vs Pre', 'T-test 2-3h vs Pre',
                          'T-test 4-6h vs Pre', 'T-test 24h vs Pre',
-                         'T-test 48h vs Pre', 'T-test 72h vs Pre')
+                         'T-test 48h vs Pre')
     return(stats)
     })
   
@@ -600,37 +661,37 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
   output$downloadData <- downloadHandler(
     filename = function() { paste(input$genename, "_MetaMEx.csv", sep="") },
     content = function(file) {
-      dataset <- rbind(AA_data(), AR_data(), TA_data(), TR_data(), HI_data(), TC_data(), IN_data())[,c(10,1:4,9)]
+      dataset <- rbind(AA_data(), AR_data(), TA_data(), TR_data(), TH_data(), TC_data(), IN_data())[,c(10,1:4,9)]
       write.csv(dataset, file, row.names = F)
     })
 
   output$downloadAA <- downloadHandler(
     filename = function() { "MetaMEx_Acute_Aerobic.csv" },
-    content = function(file) { write.csv(Stats_AA, file) })
+    content = function(file) { write.csv(AA_Stats, file) })
   
   output$downloadAR <- downloadHandler(
     filename = function() { "MetaMEx_Acute_Resistance.csv" },
-    content = function(file) { write.csv(Stats_AR, file) })
+    content = function(file) { write.csv(AR_Stats, file) })
   
   output$downloadTA <- downloadHandler(
     filename = function() { "MetaMEx_Training_Aerobic.csv" },
-    content = function(file) { write.csv(Stats_TA, file) })
+    content = function(file) { write.csv(TA_Stats, file) })
   
   output$downloadTR <- downloadHandler(
     filename = function() { "MetaMEx_Training_Resistance.csv" },
-    content = function(file) { write.csv(Stats_TR, file) })
+    content = function(file) { write.csv(TR_Stats, file) })
   
   output$downloadTC <- downloadHandler(
     filename = function() { "MetaMEx_Training_Combined.csv" },
-    content = function(file) { write.csv(Stats_TC, file) })
+    content = function(file) { write.csv(TC_Stats, file) })
   
   output$downloadHI <- downloadHandler(
-    filename = function() { "MetaMEx_Training_HIIT.csv" },
-    content = function(file) { write.csv(Stats_HI, file) })
+    filename = function() { "MetaMEx_TH_plotIIT.csv" },
+    content = function(file) { write.csv(HI_Stats, file) })
   
   output$downloadIN <- downloadHandler(
     filename = function() { "MetaMEx_Inactivity.csv" },
-    content = function(file) { write.csv(Stats_IN, file) })
+    content = function(file) { write.csv(IN_Stats, file) })
 
 #=======================================================================================
 # Make button to save forrest plots
@@ -638,19 +699,19 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
   output$downloadReport = downloadHandler(
     filename = function() { paste(input$genename, "_MetaMEx.jpeg", sep="") },
     content = function(file) {
-      if(!is.null(AA_data())) { AA <- grid.grabExpr(print(plotInputAA()))} 
+      if(!is.null(AA_data())) { AA <- grid.grabExpr(print(AA_plotInput()))} 
         else {AA <- textGrob("Acute Aerobic:\nNo data available for the selected criteria")}
-      if(!is.null(AR_data())) { AR <- grid.grabExpr(print(plotInputAR()))}
+      if(!is.null(AR_data())) { AR <- grid.grabExpr(print(AR_plotInput()))}
         else {AR <- textGrob("Acute Resistance:\nNo data available for the selected criteria")}
-      if(!is.null(TA_data())) { TA <- grid.grabExpr(print(plotInputTA()))}
+      if(!is.null(TA_data())) { TA <- grid.grabExpr(print(TA_plotInput()))}
         else {TA <- textGrob("Training Aerobic:\nNo data available for the selected criteria")}
-      if(!is.null(TR_data())) { TR <- grid.grabExpr(print(plotInputTR()))}
+      if(!is.null(TR_data())) { TR <- grid.grabExpr(print(TR_plotInput()))}
         else {TR <- textGrob("Training Resistance:\nNo data available for the selected criteria")}
-      if(!is.null(TC_data())) { TC <- grid.grabExpr(print(plotInputTC()))}
+      if(!is.null(TC_data())) { TC <- grid.grabExpr(print(TC_plotInput()))}
         else {TC <- textGrob("Training Combined:\nNo data available for the selected criteria")}
-      if(!is.null(HI_data())) { HI <- grid.grabExpr(print(plotInputHI()))}
+      if(!is.null(TH_data())) { HI <- grid.grabExpr(print(TH_plotInput()))}
         else {HI <- textGrob("Training HIIT:\nNo data available for the selected criteria")}
-      if(!is.null(IN_data())) { IN <- grid.grabExpr(print(plotInputIN()))}
+      if(!is.null(IN_data())) { IN <- grid.grabExpr(print(IN_plotInput()))}
         else {IN <- textGrob("Physical Inactivity:\nNo data available for the selected criteria")}
       if(!is.null(Corr_stats())) { COR <- plotInputCOR()}
         else {COR <- textGrob("Correlation:\nNo data available for the selected criteria")}
@@ -687,16 +748,18 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
       #margin = theme(plot.margin = unit(c(2,2,2,2), "cm"))
       #pdf(file, onefile = TRUE, width=16, height=22.6)
       #grid.arrange(AA, TA, AR, TR, HI, IN, TC, 
-      #             top = textGrob(paste(input$genename, "transcriptional response to physical activity"), gp=gpar(fontsize=30, font=7)),
+      #             top = textGrob(paste(input$genename, "transcriptional response to physical activity"), 
+      #             gp=gpar(fontsize=30, font=7)),
       #             bottom = textGrob("MetaMEx Copyright 2019 Nicolas J. Pillon. For more information, visit www.metamex.eu",
       #                               gp=gpar(fontsize=16)),
       #             layout_matrix=matrix, vp=viewport(width=0.95, height=0.9))
       #dev.off()
     
       #Code for JPEG
-      jpeg(file, unit="cm", width=40, height=46, res=300)
+      jpeg(file, unit="cm", width=45, height=60, res=300)
       grid.arrange(AA, TA, AR, TR, HI, IN, TC, 
-                   top = textGrob(paste(input$genename, "transcriptional response to physical activity"), gp=gpar(fontsize=30, font=7)),
+                   top = textGrob(paste(input$genename, "transcriptional response to physical activity"),
+                                  gp=gpar(fontsize=30, font=7)),
                    bottom = textGrob("MetaMEx Copyright 2019 Nicolas J. Pillon. For more information, visit www.metamex.eu",
                                      gp=gpar(fontsize=16)),
                    layout_matrix=matrix)
@@ -718,7 +781,8 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
   
   
   output$downloadCorrPlot = downloadHandler(
-    filename = function() { paste(input$gene1, "_vs_", rownames(Corr_stats()[input$CorrTable_rows_selected,]), "_MetaMEx.jpeg", sep="") },
+    filename = function() { paste(input$gene1, "_vs_", rownames(Corr_stats()[input$CorrTable_rows_selected,]),
+                                  "_MetaMEx.jpeg", sep="") },
     content = function(file) {
       library(rmarkdown)
       library(ggpubr)
@@ -734,7 +798,8 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
       #margin = theme(plot.margin = unit(c(4,4,4,4), "cm"))
       #grDevices::pdf(file, onefile = TRUE, width=16, height=22.6)
       #grid.arrange(COR, t,
-      #             top = textGrob(paste(input$gene1, "correlation with", rownames(Corr_stats()[input$CorrTable_rows_selected,]), "during exercise and inactivity"), gp=gpar(fontsize=30, font=7)),
+      #             top = textGrob(paste(input$gene1, "correlation with", rownames(Corr_stats()[input$CorrTable_rows_selected,]),
+      #             "during exercise and inactivity"), gp=gpar(fontsize=30, font=7)),
       #             bottom = textGrob("MetaMEx Copyright 2019 Nicolas J. Pillon. For more information, visit www.metamex.eu",
       #                               gp=gpar(fontsize=16)),
       #             layout_matrix=matrix, vp=viewport(width=0.95, height=0.9))
@@ -743,7 +808,8 @@ output$MissingData <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { Mi
       #Code for JPEG
       jpeg(file, unit="cm", width=20, height=18, res=300)
       grid.arrange(COR,
-                   top = textGrob(paste(input$gene1, "correlation with", rownames(Corr_stats()[input$CorrTable_rows_selected,]), "during exercise and inactivity"), gp=gpar(fontsize=18, font=7)),
+                   top = textGrob(paste(input$gene1, "correlation with", rownames(Corr_stats()[input$CorrTable_rows_selected,]),
+                                        "during exercise and inactivity"), gp=gpar(fontsize=18, font=7)),
                    bottom = textGrob("MetaMEx Copyright 2019 Nicolas J. Pillon. For more information, visit www.metamex.eu",
                                      gp=gpar(fontsize=9)))
       dev.off()
