@@ -32,7 +32,7 @@ All studies were annotated with as much information as possible about age, weigh
 
 ## What does a forest plot represent?
 
-![Forest plot](tutorial_forestplot.png)
+![Forest plot](tutorial_forestplot.svg)
 
 The left-hand columns list the names of the studies, followed by the fold-change (log2), false discovery rate (FDR) and sample size (n) for each individual study. The right-hand column is a plot of the fold-change (log2) represented by a square and the 95% confidence intervals represented by horizontal lines. The area of each square is proportional to the study's weight (sample size) in the meta-analysis. The overall meta-analysed score is represented by a diamond on the bottom line, the lateral points of which indicate confidence intervals.
 
@@ -42,7 +42,7 @@ Old arrays, or custom arrays often have a limited number of detected genes. For 
 
 ## Why is FDR different from what is reported in the original publications?
 
-Whenever possible, we downloaded the raw data and re-processed studies using the same pipeline. That means that the normalization methods that we used might differ from the ones used by the original authors. In addition, samples were often sufficiently annotated to allow us to run proper paired-statistics comparing pre/post interventions. We therefore had to used unpaired statistics and lost power in the proccess. Finally, many studies pooled individuals of different age and BMI to have higher sample size. For each of these studies, we analyzed individuals separately, therefore reducing the sample size and statistical power.
+Whenever possible, we downloaded the raw data and re-processed studies using the same pipeline. That means that the normalization methods that we used might differ from the ones used by the original authors. In addition, samples were often insufficiently annotated to allow us to run proper paired-statistics comparing pre/post interventions. We therefore had to used unpaired statistics and lost power in the process. Finally, many studies pooled individuals of different age and BMI to have higher sample size. To allow proper comparison in the meta-analysis, we split these studies into sub groups and analyzed them separately, therefore reducing the sample size and statistical power.
 
 ## What statistical methods were used?
 

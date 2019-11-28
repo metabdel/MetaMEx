@@ -68,8 +68,6 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       colnames(selectedata) <- gsub("AcAe_", "", colnames(selectedata))
       #custom function to make a useable data frame
       selectedata <- DataForGeneName(selectedata) 
-      #find authors
-      #selectedata <- merge(selectedata, authors, by.x=10, by.y=1)
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
@@ -101,8 +99,8 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- cbind(mean = c(NA , selectedata[,1]), 
                        lower= c(NA , selectedata[,3]),
                        upper= c(NA , selectedata[,4]))
-    tabletext <- cbind(c('Acute Aerobic Studies' , selectedata[,10]),
-                       c("logFC" , format(round(selectedata[,1], digits=2))),
+    tabletext <- cbind(c(paste('Acute Aerobic Studies (', input$genename, ')', sep='') , selectedata[,10]),
+                       c("logFC" , format(round(selectedata[,1], digits=2))), 
                        c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                        c("n" , selectedata[,9]))
     finalplot <- forestplot(tabletext, grid=T,
@@ -115,6 +113,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
   })
   
   output$AA_plot <- renderPlot({ AA_plotInput() })
+
 
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 # Acute Resistance
@@ -159,7 +158,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- cbind(mean = c(NA , selectedata[,1]), 
                        lower= c(NA , selectedata[,3]),
                        upper= c(NA , selectedata[,4]))
-    tabletext <- cbind(c('Acute Resistance Studies' , selectedata[,10]),
+    tabletext <- cbind(c(paste('Acute Resistance Studies (', input$genename, ')', sep='')  , selectedata[,10]),
                        c("logFC" , format(round(selectedata[,1], digits=2))),
                        c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                        c("n" , selectedata[,9]))
@@ -224,7 +223,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                             lower= c(NA , selectedata[,3]),
                             upper= c(NA , selectedata[,4]))
-    tabletext <- cbind(c('Physical Inactivity Studies' , selectedata[,10]),
+    tabletext <- cbind(c(paste('Inactivity Studies (', input$genename, ')', sep=''), selectedata[,10]),
                        c("logFC" , format(round(selectedata[,1], digits=2))),
                        c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                        c("n" , selectedata[,9]))
@@ -282,7 +281,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                             lower= c(NA , selectedata[,3]),
                             upper= c(NA , selectedata[,4]))
-    tabletext<-cbind(c('Aerobic Training Studies' , selectedata[,10]),
+    tabletext<-cbind(c(paste('Aerobic Training Studies (', input$genename, ')', sep=''), selectedata[,10]),
                      c("logFC" , format(round(selectedata[,1], digits=2))),
                      c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                      c("n" , selectedata[,9]))
@@ -339,7 +338,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                             lower= c(NA , selectedata[,3]),
                             upper= c(NA , selectedata[,4]))
-    tabletext<-cbind(c('Resistance Training Studies' , selectedata[,10]),
+    tabletext<-cbind(c(paste('Resistance Training Studies (', input$genename, ')', sep=''), selectedata[,10]),
                      c("logFC" , format(round(selectedata[,1], digits=2))),
                      c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                      c("n" , selectedata[,9]))
@@ -397,7 +396,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                             lower= c(NA , selectedata[,3]),
                             upper= c(NA , selectedata[,4]))
-    tabletext<-cbind(c('Combined Training Studies' , selectedata[,10]),
+    tabletext<-cbind(c(paste('Combined Training Studies (', input$genename, ')', sep=''), selectedata[,10]),
                      c("logFC" , format(round(selectedata[,1], digits=2))),
                      c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                      c("n" , selectedata[,9]))
@@ -455,7 +454,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     tabledata <- data.frame(mean = c(NA , selectedata[,1]), 
                             lower= c(NA , selectedata[,3]),
                             upper= c(NA , selectedata[,4]))
-    tabletext<-cbind(c('HIIT Training Studies' , selectedata[,10]),
+    tabletext<-cbind(c(paste('HIIT Training Studies (', input$genename, ')', sep=''), selectedata[,10]),
                      c("logFC" , format(round(selectedata[,1], digits=2))),
                      c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                      c("n" , selectedata[,9]))
@@ -698,7 +697,33 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
 #=======================================================================================
 # Make button to save forrest plots
 #=======================================================================================
-  output$downloadReport = downloadHandler(
+  library(rmarkdown)
+  library(ggpubr)
+  library(readr)
+  library(grid)
+  library(gridExtra)
+  library(grDevices)
+  
+  
+  output$AA_plot_download = downloadHandler(
+    filename = function() { paste(input$genename, "_AcAe_MetaMEx.jpeg", sep="") },
+    content = function(file) {
+      jpeg(file, unit="cm", width=26, height=20, res=600)
+      AA_plotInput()
+      dev.off()
+    })
+      
+  output$AR_plot_download = downloadHandler(
+    filename = function() { paste(input$genename, "_AcRe_MetaMEx.jpeg", sep="") },
+    content = function(file) {
+      jpeg(file, unit="cm", width=26, height=20, res=600)
+      AR_plotInput()
+      dev.off()
+    })
+      
+      
+  
+   output$downloadReport = downloadHandler(
     filename = function() { paste(input$genename, "_MetaMEx.jpeg", sep="") },
     content = function(file) {
       if(!is.null(AA_data())) { AA <- grid.grabExpr(print(AA_plotInput()))} 

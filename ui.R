@@ -81,14 +81,22 @@ navbarPage(title="MetaMEx", id="inTabset",
                           checkboxGroupInput("exercisetype", "Type", list_categories[['exercise_choice']]), #checkbox to select category
                           checkboxInput('bar_exercisetype', 'All/None', value=T), #checkbox to select all
                           checkboxGroupInput("biopsy", "Biopsy collection", list_categories[['biopsy_choice']]), #checkbox to select category
-                          checkboxInput('bar_biopsy', 'All/None', value=T)),
+                          checkboxInput('bar_biopsy', 'All/None', value=T)
+                          #tags$b(" Download"), tags$br(), tags$br(),
+                          #downloadButton("AA_plot_download", "Acute Aerobic"),
+                          #tags$br(), tags$br(),
+                          #downloadButton("AR_plot_download", "Acute Resistance")
+                          ),
                    column(8, align="top", tags$br(),
                           plotOutput("AA_plot", height="500px"),
-                          plotOutput("AR_plot", height="500px")),
+                          plotOutput("AR_plot", height="500px")
+                          ),
                    column(2, tags$br(), tags$br(),
                           checkboxGroupInput("AA_studies", "Acute Aerobic Datasets", selected=list_datasets[['AA_names']], list_datasets[['AA_names']]),
                           tags$br(), tags$br(), tags$br(), tags$br(),
-                          checkboxGroupInput("AR_studies", "Acute Resistance Datasets", selected=list_datasets[['AR_names']], list_datasets[['AR_names']]))),
+                          checkboxGroupInput("AR_studies", "Acute Resistance Datasets", selected=list_datasets[['AR_names']], list_datasets[['AR_names']])
+                          )
+                   ),
                  
                  tags$hr(),
                  

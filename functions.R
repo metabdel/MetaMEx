@@ -26,10 +26,10 @@ options(shiny.sanitize.errors=T)
 # Set up the graphical parameters for the forest plots
 library(forestplot)
 own <- fpTxtGp()
-own$ticks$cex <- 0.8 #tick labels
-own$xlab$cex <- 0.8
-own$label$cex <- 0.8
-own$summary$cex <- 1.1
+own$ticks$cex <- 0.9 #tick labels
+own$xlab$cex <- 0.9
+own$label$cex <- 0.9
+own$summary$cex <- 1.2
 
 
 #Function to make data table for selected gene
