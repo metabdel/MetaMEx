@@ -2,12 +2,12 @@
 # Define server logic ##############################################################################################
 server <- function(input, output, session) {
 
-  updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected='PPARGC1A' , options=NULL)
+  updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected='NR4A3' , options=NULL)
   updateSelectizeInput(session, 'gene1', choices=list_genes2, server=TRUE, selected=NA , options=NULL)
   updateSelectizeInput(session, 'gene2', choices=list_genes2, server=TRUE, selected=NA , options=NULL)
   updateSelectizeInput(session, 'gene_timeline', choices=list_genes, server=TRUE, selected='PPARGC1A' , options=NULL)
   observeEvent(input$jumpToApp, {updateTabsetPanel(session, "inTabset", selected="panelApp") })
-  observeEvent(input$jumpToContribute, {updateTabsetPanel(session, "inTabset", selected="Contribute") })
+  observeEvent(input$jumpToHelp, {updateTabsetPanel(session, "inTabset", selected="Tutorial") })
   
  #=======================================================================================
  # Make all checkboxes selected by default - necessary for the select all button to work
@@ -41,15 +41,9 @@ server <- function(input, output, session) {
 #=======================================================================================
 output$Annotation <- DT::renderDataTable(escape = FALSE, rownames = FALSE, options=list(paging = FALSE), { annotation })
 
-output$StudiesAcute <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { StudiesAcute },
-                                           options=list(autoWidth = TRUE,
-                                                        columnDefs = list(list(targets=c(11), visible=TRUE, width='3000'),
-                                                                     list(targets=c(7,15), visible=TRUE, width='2000'))))
+output$StudiesAcute <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { StudiesAcute } )
 
-output$StudiesTraining <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { StudiesTraining },
-                                              options=list(autoWidth = TRUE,
-                                                           columnDefs = list(list(targets=c(13), visible=TRUE, width='4000'),
-                                                                        list(targets=c(17), visible=TRUE, width='2000'))))
+output$StudiesTraining <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { StudiesTraining })
 
 output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { StudiesInactivity })
 
@@ -74,6 +68,8 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       colnames(selectedata) <- gsub("AcAe_", "", colnames(selectedata))
       #custom function to make a useable data frame
       selectedata <- DataForGeneName(selectedata) 
+      #find authors
+      #selectedata <- merge(selectedata, authors, by.x=10, by.y=1)
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
@@ -101,7 +97,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     validate(need(!is.null(AA_data()),   "No studies found - try different selection criteria"))
     #Plot the forest plot:
     selectedata <- AA_data()
-    # make forest plot
+    #make forest plot
     tabledata <- cbind(mean = c(NA , selectedata[,1]), 
                        lower= c(NA , selectedata[,3]),
                        upper= c(NA , selectedata[,4]))
@@ -109,11 +105,12 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                        c("logFC" , format(round(selectedata[,1], digits=2))),
                        c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                        c("n" , selectedata[,9]))
-    finalplot <- forestplot(tabletext, 
+    finalplot <- forestplot(tabletext, grid=T,
                             tabledata, new_page=TRUE,
                             is.summary=c(TRUE,rep(FALSE,(nrow(selectedata)-1)),TRUE),
                             xlog=F,  txt_gp = own, xlab="logFC",
-                            col=fpColors(box="orange2",line="orange3", summary="orange3"))
+                            col=fpColors(box="orange2",line="orange3", summary="orange3"),
+                            boxsize=c(NA, head(selectedata$size, -1)/20, 1)) #Make the size of the symbols relative to sample size
     return(finalplot)
   })
   
@@ -166,11 +163,12 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                        c("logFC" , format(round(selectedata[,1], digits=2))),
                        c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                        c("n" , selectedata[,9]))
-    finalplot <- forestplot(tabletext, 
+    finalplot <- forestplot(tabletext, grid=T,
                             tabledata, new_page=TRUE,
                             is.summary=c(TRUE,rep(FALSE,(nrow(selectedata)-1)),TRUE),
                             xlog=F,  txt_gp = own, xlab="logFC",
-                            col=fpColors(box="orangered2",line="orangered3", summary="orangered3"))
+                            col=fpColors(box="orangered2",line="orangered3", summary="orangered3"),
+                            boxsize=c(NA, head(selectedata$size, -1)/20, 1))
     return(finalplot)
   })
   
@@ -230,11 +228,12 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                        c("logFC" , format(round(selectedata[,1], digits=2))),
                        c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                        c("n" , selectedata[,9]))
-    finalplot <- forestplot(tabletext,
+    finalplot <- forestplot(tabletext, grid=T,
                  tabledata, new_page=TRUE,
                  is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
                  xlog=F,  txt_gp = own, xlab="logFC",
-                 col=fpColors(box="maroon3",line="maroon4", summary="maroon4"))
+                 col=fpColors(box="maroon3",line="maroon4", summary="maroon4"),
+                 boxsize=c(NA, head(selectedata$size, -1)/20, 1))
     return(finalplot)
   })
   
@@ -287,7 +286,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                      c("logFC" , format(round(selectedata[,1], digits=2))),
                      c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                      c("n" , selectedata[,9]))
-    finalplot <- forestplot(tabletext, 
+    finalplot <- forestplot(tabletext, grid=T,
                             tabledata, new_page=TRUE,
                             is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
                             xlog=F,  txt_gp = own, xlab="logFC",
@@ -344,11 +343,12 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                      c("logFC" , format(round(selectedata[,1], digits=2))),
                      c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                      c("n" , selectedata[,9]))
-    finalplot <- forestplot(tabletext, 
+    finalplot <- forestplot(tabletext, grid=T,
                             tabledata, new_page=TRUE,
                             is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
                             xlog=F,  txt_gp = own, xlab="logFC",
-                            col=fpColors(box="green3",line="green4", summary="green4"))
+                            col=fpColors(box="green3",line="green4", summary="green4"),
+                            boxsize=c(NA, head(selectedata$size, -1)/20, 1))
     return(finalplot)
   })
   
@@ -401,11 +401,12 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                      c("logFC" , format(round(selectedata[,1], digits=2))),
                      c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                      c("n" , selectedata[,9]))
-    finalplot <- forestplot(tabletext, 
+    finalplot <- forestplot(tabletext, grid=T,
                             tabledata, new_page=TRUE,
                             is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
                             xlog=F,  txt_gp = own, xlab="logFC",
-                            col=fpColors(box="aquamarine3",line="aquamarine4", summary="aquamarine4"))
+                            col=fpColors(box="aquamarine3",line="aquamarine4", summary="aquamarine4"),
+                            boxsize=c(NA, head(selectedata$size, -1)/25, 1))
     return(finalplot)
   })
   
@@ -458,11 +459,12 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
                      c("logFC" , format(round(selectedata[,1], digits=2))),
                      c("FDR"   , format(selectedata[,2],   scientific=T, digits=2)),
                      c("n" , selectedata[,9]))
-    finalplot <- forestplot(tabletext, 
+    finalplot <- forestplot(tabletext, grid=T,
                             tabledata, new_page=TRUE,
                             is.summary=c(TRUE,rep(FALSE,(length(selectedata[,10]))-1),TRUE),
                             xlog=F,  txt_gp = own, xlab="logFC",
-                            col=fpColors(box="skyblue3",line="skyblue4", summary="skyblue3"))
+                            col=fpColors(box="skyblue3",line="skyblue4", summary="skyblue3"),
+                            boxsize=c(NA, head(selectedata$size, -1)/20, 1))
     return(finalplot)
   })
   
@@ -756,7 +758,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       #dev.off()
     
       #Code for JPEG
-      jpeg(file, unit="cm", width=45, height=60, res=300)
+      svg(file, unit="cm", width=45, height=60, res=300)
       grid.arrange(AA, TA, AR, TR, HI, IN, TC, 
                    top = textGrob(paste(input$genename, "transcriptional response to physical activity"),
                                   gp=gpar(fontsize=30, font=7)),

@@ -57,7 +57,9 @@ DataForGeneName <- function(x){
 #Function to make meta-analysis table
 library(metafor)
 MetaAnalysis <- function(x){
-  x <- x[order(x$Studies),]
+  #Order by logFC
+  x <- x[order(x$logFC, decreasing=T),]
+  #Calculate metascore
   meta <- rma(m1 = Mean_Ex, m2 = Mean_Ctrl, sd1 = Sd_Ex, sd2 = Sd_Ctrl, n1 = size, n2 = size,
               method = "REML", measure = "MD", data = x, control=list(maxiter=1000, stepadj=0.5),
               weighted=T, weights=x$size)
@@ -87,6 +89,7 @@ list_genes2 <- rownames(Individual_FC)
 timeline_acute <- readRDS("data/Data_logFC.TimeCessation.Rds")
 timeline_stats <- readRDS("data/Data_Statistics_TimeCessation.Rds")
 descriptions <- readRDS("data/AllDescriptions.Rds")
+authors <- readRDS("data/Authors.Rds")
   
 #function to make hyperlinks
 createLink <- function(val) {
