@@ -13,9 +13,9 @@ navbarPage(title="MetaMEx", id="inTabset",
                    #make sticky footer
                    footer=tags$footer(fluidRow(
                                    column(9, style="padding:0.4% 1% 1% 3%;", align="left",
-                                             a("Transcriptomic Meta-Analysis of Skeletal Muscle Responses to Physical Inactivity and Exercise",
-                                               href="https://www.ncbi.nlm.nih.gov/pubmed/", target="_blank", style="color:#D9DADB"), tags$br(),
-                                              "Nicolas J. Pillon, et al. Under review 2018"),
+                                             a("Transcriptomic Profiling of Skeletal Muscle Adaptations to Exercise and Inactivity",
+                                               href="https://doi.org/10.1101/813048", target="_blank", style="color:#D9DADB"), tags$br(),
+                                              "Pillon, et al. Nature Communications, 2019. In press"),
                                    column(3, style="padding:0.4% 3% 1% 1%;", align="right",
                                              tags$b(HTML("Share:&nbsp")),
                                              actionButton("twitter_share", label="", icon=icon("twitter"),
@@ -48,96 +48,96 @@ navbarPage(title="MetaMEx", id="inTabset",
                                  all published exercise and inactivity transcriptomic studies."),
                               tags$br(),
                               actionButton('jumpToApp', 'Get started!', width="200px",
-                                           style="background-color:#E95420;border-color:#C34113;box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);")),
+                                           style="background-color:#E95420;border-color:#C34113;box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);"),
+                              HTML('&nbsp;'), "or", HTML('&nbsp;'),
+                              actionButton('jumpToHelp', 'Get help!', width="200px",
+                                           style="background-color:#808080;border-color:#3c2a26;box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);")),
                     column(5, tags$img(src='Nico-Macrophage-weight-L.png', width="100%", style="padding:0 5% 0 0"))
                    )
         ),
 
 #=======================================================================================================================        
         tabPanel("Meta-analysis", value="panelApp",
-                 fluidRow(style="background-color:#edcdc2;padding:1%",
-                          h3("Meta-analysis"), "Find out how your gene of interest behaves in response to exercise and inactivity.
-                          Type the official gene symbol and select your population of interest."),
-                 
                  fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
-                          column(2, selectizeInput("genename", "Official Gene Name", choices=NULL, selected=NULL, options=NULL),
-                                 downloadButton("downloadReport", "Forest plots (.jpeg)"), tags$br(), tags$br(),
-                                 downloadButton("downloadData", "Statistics (.csv)")), #input official gene name
-                          column(1, checkboxGroupInput("muscle", "Muscle", selected=c("VAL", "BIB", "SOL", "N.A"), list_categories[['muscle_choice']]), #checkbox to select category
+                          column(2, selectizeInput("genename", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)),
+                          column(1, checkboxGroupInput("muscle", "Muscle", list_categories[['muscle_choice']]), #checkbox to select category
                                  checkboxInput('bar_muscle', 'All/None', value=T)), #checkbox to select all
-                          column(1, checkboxGroupInput("sex", "Sex", selected=c("M", "F", "U"), list_categories[['sex_choice']]), #checkbox to select category
+                          column(1, checkboxGroupInput("sex", "Sex", list_categories[['sex_choice']]), #checkbox to select category
                                  checkboxInput('bar_sex', 'All/None', value=T)), #checkbox to select all
-                          column(1, checkboxGroupInput("age", "Age", selected=c("YNG", "MDL", "ELD"), list_categories[['age_choice']]), #checkbox to select category
+                          column(1, checkboxGroupInput("age", "Age", list_categories[['age_choice']]), #checkbox to select category
                                  checkboxInput('bar_age', 'All/None', value=T)), #checkbox to select all
-                          column(1, checkboxGroupInput("training", "Fitness", selected=c("SED", "ACT", "ATH"), list_categories[['training_choice']]), #checkbox to select category
+                          column(1, checkboxGroupInput("training", "Fitness", list_categories[['training_choice']]), #checkbox to select category
                                  checkboxInput('bar_training', 'All/None', value=T)), #checkbox to select all
-                          column(1, checkboxGroupInput("exercisetype", "Type", selected=c("CON", "ECC", "MIX"), list_categories[['exercise_choice']]), #checkbox to select category
-                                 checkboxInput('bar_exercisetype', 'All/None', value=T)), #checkbox to select all
-                          column(1, checkboxGroupInput("obesity", "Obesity", selected=c("LEA", "OWE", "OBE", "MOB"), list_categories[['obesity_choice']]), #checkbox to select category
+                          column(1, checkboxGroupInput("obesity", "Obesity", selected="LEA", list_categories[['obesity_choice']]), #checkbox to select category
                                  checkboxInput('bar_obesity', 'All/None', value=T)), #checkbox to select all
-                          column(2, checkboxGroupInput("disease", "Health status", selected=c("HLY", "T2D", "MTS", "CKD", "COP"), list_categories[['disease_choice']]), #checkbox to select category
-                                 checkboxInput('bar_disease', 'All/None', value=T)), #checkbox to select all
-                          column(2, checkboxGroupInput("biopsy", "Biopsy collection", selected=c("IMM", "REC"), list_categories[['biopsy_choice']]), #checkbox to select category
-                                 checkboxInput('bar_biopsy', 'All/None', value=T)) #checkbox to select all
+                          column(4, checkboxGroupInput("disease", "Health status", selected="HLY", list_categories[['disease_choice']]), #checkbox to select category
+                                 checkboxInput('bar_disease', 'All/None', value=T)) #checkbox to select all
+                          
 
                  ),
 
                  fluidRow(
-                   column(6,  h3("Acute Aerobic Exercise"), 
-                          plotOutput("Acute_A", height="500px"),
-                          checkboxGroupInput("AA_studies", "Acute Aerobic Studies", selected=list_datasets[[1]], list_datasets[[1]], inline=TRUE),
-                          checkboxInput('AA_all', 'Select all/none', value=T), style="padding:0 0 0 3%"),
-                   
-                   column(6,  h3("Acute Resistance Exercise"),
-                          plotOutput("Acute_R", height="450px"),
-                          checkboxGroupInput("AR_studies", "Acute Resistance Studies", selected=list_datasets[[2]], list_datasets[[2]], inline=TRUE),
-                          checkboxInput('AR_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
-                 ),
+                   column(2, h3("Acute Exercise"),
+                          checkboxGroupInput("exercisetype", "Type", list_categories[['exercise_choice']]), #checkbox to select category
+                          checkboxInput('bar_exercisetype', 'All/None', value=T), #checkbox to select all
+                          checkboxGroupInput("biopsy", "Biopsy collection", list_categories[['biopsy_choice']]), #checkbox to select category
+                          checkboxInput('bar_biopsy', 'All/None', value=T)
+                          #tags$b(" Download"), tags$br(), tags$br(),
+                          #downloadButton("AA_plot_download", "Acute Aerobic"),
+                          #tags$br(), tags$br(),
+                          #downloadButton("AR_plot_download", "Acute Resistance")
+                          ),
+                   column(8, align="top", tags$br(),
+                          plotOutput("AA_plot", height="500px"),
+                          plotOutput("AR_plot", height="500px")
+                          ),
+                   column(2, tags$br(), tags$br(),
+                          checkboxGroupInput("AA_studies", "Acute Aerobic Datasets", selected=list_datasets[['AA_names']], list_datasets[['AA_names']]),
+                          tags$br(), tags$br(), tags$br(), tags$br(),
+                          checkboxGroupInput("AR_studies", "Acute Resistance Datasets", selected=list_datasets[['AR_names']], list_datasets[['AR_names']])
+                          )
+                   ),
                  
                  tags$hr(),
                  
-                 fluidRow(align="top",
-                          column(6,  
-                                 h3("Training Aerobic Exercise"),
-                                 plotOutput("Training_A", height="500px"),
-                                 checkboxGroupInput("TA_studies", "Training Aerobic Studies", selected=list_datasets[[3]], list_datasets[[3]], inline=TRUE),
-                                 checkboxInput('TA_all', 'Select all/None', value=T), style="padding:0 0 0 3%"),
-                          column(6,  h3("Training Resistance Exercise"),
-                                 plotOutput("Training_R", height="600px"),
-                                 checkboxGroupInput("TR_studies", "Training Resistance Studies", selected=list_datasets[[4]], list_datasets[[4]], inline=TRUE),
-                                 checkboxInput('TR_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
-                 ),
+                 fluidRow(column(2, h3("Exercise Training"),
+                                 checkboxGroupInput("training_duration", "Duration", list_categories[['training_duration_choice']]), #checkbox to select category
+                                 checkboxInput('bar_training_duration', 'All/None', value=T), #checkbox to select all
+                                 checkboxGroupInput("training_biopsy", "Biopsy time", list_categories[['training_biopsy_choice']]), #checkbox to select category
+                                 checkboxInput('bar_training_biopsy', 'All/None', value=T)),
+                          column(8,  tags$br(),
+                                 plotOutput("TA_plot", height="400px"),
+                                 plotOutput("TR_plot", height="550px"),
+                                 plotOutput("TH_plot", height="150px"),
+                                 plotOutput("TC_plot", height="250px")),
+                          column(2, tags$br(), tags$br(),
+                                 checkboxGroupInput("TA_studies", "Aerobic Training Studies", selected=list_datasets[[3]], list_datasets[[3]]),
+                                 tags$br(),
+                                 checkboxGroupInput("TR_studies", "Resistance Training Studies", selected=list_datasets[[4]], list_datasets[[4]]),
+                                 tags$br(),
+                                 checkboxGroupInput("TH_studies", "HIIT Training studies", selected=list_datasets[[5]], list_datasets[[5]]),
+                                 tags$br(),
+                                 checkboxGroupInput("TC_studies", "Combined Training Studies", selected=list_datasets[[6]], list_datasets[[6]]))),
                  
                  tags$hr(),
                  
-                 fluidRow(
-                   column(6, h3("Training HIIT Exercise"),
-                          plotOutput("Training_H", height="180px"),
-                          checkboxGroupInput("HI_studies", "Training HIIT studies", selected=list_datasets[[5]], list_datasets[[5]], inline=TRUE),
-                          checkboxInput('HI_all', 'Select all/none', value=T), style="padding:0 0 0 3%"),
-                   column(6, h3("Training Combined Exercise"),
-                          plotOutput("Training_C", height="250px"),
-                          checkboxGroupInput("TC_studies", "Training Combined Studies", selected=list_datasets[[6]], list_datasets[[6]], inline=TRUE),
-                          checkboxInput('TC_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
-
-                 ),
-                 
-                 tags$hr(),
-                 
-                 fluidRow(
-                   column(6, h3("Physical Inactivity"),
-                          plotOutput("Inact", height="350px"),
-                          checkboxGroupInput("IN_studies", "Physical Inactivity studies", selected=list_datasets[[7]], list_datasets[[7]], inline=TRUE),
-                          checkboxInput('IN_all', 'Select all/none', value=T), style="padding:0 0 0 3%")
-                 ),
-                 
-                 tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()
+                 fluidRow(style="padding:0 0 10% 0",
+                   column(2,  h3("Inactivity"),
+                          checkboxGroupInput("inactivity_protocol", "Protocol", list_categories[['inactivity_protocol_choice']]), #checkbox to select category
+                          checkboxInput('bar_inactivity_protocol', 'All/None', value=T),
+                          checkboxGroupInput("inactivity_duration", "Duration", list_categories[['inactivity_duration_choice']]), #checkbox to select category
+                          checkboxInput('bar_inactivity_duration', 'All/None', value=T)),
+                   column(8, tags$br(),
+                          plotOutput("IN_plot", height="300px")),
+                   column(2, tags$br(), tags$br(),
+                          checkboxGroupInput("IN_studies", "Physical Inactivity studies", selected=list_datasets[['IN_names']], list_datasets[['IN_names']])))
         ),
+
 
 #=======================================================================================================================        
 tabPanel("Correlations", value="panelCorr",
          fluidRow(style="background-color:#edcdc2;padding:1%",
-                  h3("Correlations"), "Display the correlation between your gene of interest with all other genes in response to exercise and inactivity.
+                  "Display the correlation between your gene of interest with all other genes in response to exercise and inactivity.
                   First select your gene of interest using its official gene symbol (Spearman calculation takes a dozen of seconds). Then click on any gene
                   in the correlation table to display the correlation plot. You can then highlight dots with your criteria of interest."),
          
@@ -156,16 +156,32 @@ tabPanel("Correlations", value="panelCorr",
                   uiOutput("download")
          ),
          
+         tags$br(),
          
-         fluidRow(
-           column(6,  h3("Correlation Table"),
-                  DT::dataTableOutput("CorrTable")),
+         fluidRow(style="padding:0 0 10% 0",
+           column(6, DT::dataTableOutput("CorrTable")),
            
-           column(6,  h3("Correlation Plot"),
-                  plotOutput("CorrPlot"))
+           column(6, plotOutput("CorrPlot"),
+                     textOutput("Corr_description"),
+                     uiOutput ("Corr_link"))
+         )
+),
+
+#=======================================================================================================================        
+tabPanel("Timeline", value="panelCorr",
+         fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
+                  column(2, selectizeInput("gene_timeline", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
+                  column(10, tags$br(), "Using the MetaMEx database, this tool displays the behaviour of a gene of interest
+                  at different times after exercise. This dataset pools data from acute aerobic and resistance studies,
+                  and only includes data in healthy individuals."),
+                         uiOutput("download_timeline")
          ),
          
-         tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()
+         fluidRow(style="padding:0 0 10% 0",
+                  column(5, plotOutput("TimelinePlot")),
+                  column(5,  h3("Statistics"),
+                         tableOutput("TimeTable"))
+         )
 ),
 
 #=======================================================================================================================        
@@ -190,75 +206,57 @@ tabPanel("Correlations", value="panelCorr",
 #=======================================================================================================================        
 navbarMenu("Datasets",
     tabPanel("Annotation", 
-             fluidRow(style="background-color:#edcdc2;padding:1%",
-                      h3("Annotation"), "Summary of the criteria used to categorize the studies.", tags$br(),
-                "Your study is not included? You have information on age, sex, BMI or else for one of the studies? Please",
-                a("contact us!", href="mailto:nicolas.pillon@ki.se"), tags$b("The more data we collect, the stronger MetaMex becomes!")),
-             tags$br(),
-             DT::dataTableOutput("Annotation"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()),         
+             fluidRow(style="font-size: 70%;padding:0% 0% 10% 0%",
+                      h3("Legend for the annotation of studies"),
+             DT::dataTableOutput("Annotation"))
+             ),         
     tabPanel("Acute Studies", 
-             fluidRow(style="background-color:#edcdc2;padding:1%",
-                      h3("Acute Exercise Studies"), "Summarized clinical data and experimental conditions.", tags$br(),
-                "Your study is not included? You have information on age, sex, BMI or else for one of the studies? Please",
-                a("contact us!", href="mailto:nicolas.pillon@ki.se"), tags$b("The more data we collect, the stronger MetaMex becomes!")),
-             tags$br(),
-             DT::dataTableOutput("StudiesAcute"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()),    
+             fluidRow(style="font-size: 70%;padding:0% 0% 10% 0%",
+                      h3("Acute Exercise Studies"),
+             DT::dataTableOutput("StudiesAcute"))
+             ),    
     tabPanel("Training Studies", 
-             fluidRow(style="background-color:#edcdc2;padding:1%",
-                      h3("Training Exercise Studies"), "Summarized clinical data and experimental conditions.", tags$br(),
-                "Your study is not included? You have information on age, sex, BMI or else for one of the studies? Please",
-                a("contact us!", href="mailto:nicolas.pillon@ki.se"), tags$b("The more data we collect, the stronger MetaMex becomes!")),
-             tags$br(),
-             DT::dataTableOutput("StudiesTraining"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()),    
+             fluidRow(style="font-size: 70%;padding:0% 0% 10% 0%",
+                      h3("Exercise Training Studies"),
+             DT::dataTableOutput("StudiesTraining"))
+             ),    
     tabPanel("Inactivity Studies", 
-             fluidRow(style="background-color:#edcdc2;padding:1%",
-                      h3("Inactivity Studies"), "Summarized clinical data and experimental conditions.", tags$br(),
-                "Your study is not included? You have information on age, sex, BMI or else for one of the studies? Please",
-                a("contact us!", href="mailto:nicolas.pillon@ki.se"), tags$b("The more data we collect, the stronger MetaMex becomes!")),
-             tags$br(),
-             DT::dataTableOutput("StudiesInactivity"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br())    
-
-),
+             fluidRow(style="font-size: 70%;padding:0% 0% 10% 0%",
+                      h3("Inactivity Studies"),
+             DT::dataTableOutput("StudiesInactivity"))
+             )
+    ),
 
 #=======================================================================================================================        
-        tabPanel("Contribute", value="Contribute",
-                 fluidRow(style="background-color:#edcdc2;padding:1%",
-                          h3("You have other information or datasets? Please",
-                          a("contact us!", href="mailto:nicolas.pillon@ki.se"))),
-                 fluidRow(style="padding:1%",
-                          DT::dataTableOutput("MissingData"),
-                          tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br())
+        tabPanel("Q&A", value="Tutorial",
+                 fluidRow(style="padding:0% 5% 10% 5%",
+                          includeMarkdown("tutorial/tutorial.md"))
         ),
            
            
 #=======================================================================================================================
-        tabPanel("About", fluidRow(
+        tabPanel("About", 
+                 fluidRow(style="padding:0% 5% 10% 5%",
                  column(8, 
                 h3("Copyrights and Citation"),
-                "If you use data from MetaMEx for publication, teaching or scientific presentations, please cite:",  
-                a("Nicolas J. Pillon, Brendan M. Gabriel, Lucile Dollet, Jonathon A. Smith, Javier Botella, David J. Bishop,
-                  Anna Krook and Juleen R. Zierath, Transcriptomic Profiling of Skeletal Muscle Adaptations to Exercise and Inactivity.",
-                  href="https://www.ncbi.nlm.nih.gov/pubmed/", target="_blank"),
-                tags$br(), tags$br(),
                 "MetaMEx was created by", a("Nicolas J. Pillon", href="https://nicopillon.com/contact",         target="_blank"),
-                "and illustrated by", a("Csil.", href="http://misshue.net", target="_blank"),
-                "All content and code are published under the Creative Commons Attribution-NonCommercial 4.0 International",
-                a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank"), 
-                "Last update: 12/09/2019",
-
-                h3("Method"),
-                 "The meta-analysis was created by collecting publicly available studies on
-                 mRNA expression levels in human skeletal muscle after exercise or inactivity. Statistics were first perfomed
-                 individually for each array. The meta-analysis summary was then calculated using a random effects model (REML).
-                 Forest plots present the log2(fold-change) and 95% confidence intervals for each study as well as the meta-analysis score and adjusted p value.",
+                "and illustrated by", a("Csil.", href="http://misshue.net", target="_blank"), "All content and code are published under the Creative Commons Attribution-NonCommercial 4.0 International",
+                a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank"),
+                "Last update: 28/10/2019",
+                tags$br(), tags$br(),
+                "If you use data from MetaMEx for publication, teaching or scientific presentations, please cite:",  
+                a("Nicolas J. Pillon, Brendan M. Gabriel, Lucile Dollet, Jonathon A. Smith, Laura Sardon Puig, Javier Botella, David J. Bishop,
+                  Anna Krook and Juleen R. Zierath, Transcriptomic Profiling of Skeletal Muscle Adaptations to Exercise and Inactivity.
+                  Nature Communications, 2019. In press",
+                  href="https://doi.org/10.1101/813048", target="_blank"),
 
                 h3("Contribution"),
                  "MetMEx is a live database constantly updated with new data. MetaMEx becomes stronger with every bit of data we add. 
-                 So if you have information about clinical data or want us to add your study to the database, contact us!",
+                 If you have information about clinical data or want us to add your study to the database, contact us!",
                  tags$br(), tags$br(),
-                 actionButton('jumpToContribute', 'I have data!', width="200px",
-                              style="background-color:#E95420;border-color:#C34113;
-                              box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);")),
+                 a(actionButton(inputId = "email1", label = "I have data!", 
+                               icon = icon("envelope", lib = "font-awesome")),
+                  href="mailto:nicolas.pillon@ki.se")),
                  column(4, tags$img(src='Nico-Macrophage-bike-L.png', width = "100%", style="padding:0 5% 0 0"))
         ))
 
