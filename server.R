@@ -71,8 +71,8 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                                 'Studies', 'GEO', 'Exercisetype','Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease', 
-                                 'Biopsy')
+                                 'Studies', 'GEO', 'Exercisetype', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
+                                 'Biopsy', 'Duration')
       #Filter table based on selection criteria
       selectedata <- dplyr::filter(selectedata,
                                    GEO %in% input$AA_studies, 
@@ -131,8 +131,8 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                                 'Studies', 'GEO', 'Exercisetype','Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease', 
-                                 'Biopsy')
+                                 'Studies', 'GEO', 'Exercisetype', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
+                                 'Biopsy', 'Duration')
       #Filter table based on selection criteria
       selectedata <- dplyr::filter(selectedata,
                                    GEO %in% input$AR_studies, 
@@ -196,7 +196,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
                                  'Studies', 'GEO', 'InactivityProtocol','Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
-                                 'Duration')
+                                 'Duration', 'Empty')
       #Filter table based on selection criteria
       selectedata <- dplyr::filter(selectedata,
                                    GEO %in% input$IN_studies, 
@@ -254,8 +254,8 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                                 'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
-                                 'Duration', 'Biopsy')
+                                 'Studies', 'GEO', 'Exercisetype', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
+                                 'Biopsy', 'Duration')
       #name columns specific for the type of exercise/inactivity
       selectedata <- dplyr::filter(selectedata,
                                    GEO %in% input$TA_studies, 
@@ -311,8 +311,8 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                                 'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
-                                 'Duration', 'Biopsy')
+                                 'Studies', 'GEO', 'Exercisetype', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
+                                 'Biopsy', 'Duration')
       #name columns specific for the type of exercise/inactivity
       selectedata <- dplyr::filter(selectedata,
                                    GEO %in% input$TR_studies, 
@@ -369,8 +369,8 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                                 'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
-                                 'Duration', 'Biopsy')
+                                 'Studies', 'GEO', 'Exercisetype', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
+                                 'Biopsy', 'Duration')
       #name columns specific for the type of exercise/inactivity
       selectedata <- dplyr::filter(selectedata,
                                    GEO %in% input$TC_studies, 
@@ -427,8 +427,8 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
-                                 'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
-                                 'Duration', 'Biopsy')
+                                 'Studies', 'GEO', 'Exercisetype', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
+                                 'Biopsy', 'Duration')
       #name columns specific for the type of exercise/inactivity
       selectedata <- dplyr::filter(selectedata,
                                    GEO %in% input$TH_studies, 

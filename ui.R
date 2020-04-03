@@ -14,8 +14,8 @@ navbarPage(title="MetaMEx", id="inTabset",
                    footer=tags$footer(fluidRow(
                                    column(9, style="padding:0.4% 1% 1% 3%;", align="left",
                                              a("Transcriptomic Profiling of Skeletal Muscle Adaptations to Exercise and Inactivity",
-                                               href="https://doi.org/10.1101/813048", target="_blank", style="color:#D9DADB"), tags$br(),
-                                              "Pillon, et al. Nature Communications, 2019. In press"),
+                                               href="https://doi.org/10.1038/s41467-019-13869-w", target="_blank", style="color:#D9DADB"), tags$br(),
+                                              "Pillon, Zierath et al. Nat Commun. 2020; 11: 470."),
                                    column(3, style="padding:0.4% 3% 1% 1%;", align="right",
                                              tags$b(HTML("Share:&nbsp")),
                                              actionButton("twitter_share", label="", icon=icon("twitter"),
@@ -42,16 +42,23 @@ navbarPage(title="MetaMEx", id="inTabset",
                                             var link = dropdownList[i];
                                             if(link.getAttribute("data-value") == tabName) {link.click();};}};'))),
                  fluidRow(
-                    column(7, h1(tags$b("MetaMEx")), 
-                              h4("The app to meta-analyse skeletal muscle transcriptomic response to inactivity and exercise."),
-                              h4("Use MetaMEx to get a complete overview the behavior of a specific gene accross
-                                 all published exercise and inactivity transcriptomic studies."),
+                    column(7, h1(tags$b("MetaMEx")),
+                              h3("Meta-analysis of skeletal Muscle response to Exercise"), 
                               tags$br(),
                               actionButton('jumpToApp', 'Get started!', width="200px",
                                            style="background-color:#E95420;border-color:#C34113;box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);"),
                               HTML('&nbsp;'), "or", HTML('&nbsp;'),
                               actionButton('jumpToHelp', 'Get help!', width="200px",
-                                           style="background-color:#808080;border-color:#3c2a26;box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);")),
+                                           style="background-color:#808080;border-color:#3c2a26;box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);"),
+                           tags$br(), tags$br(),
+                           h5("The app to meta-analyse skeletal muscle transcriptomic response to inactivity and exercise.
+                           Use MetaMEx to get a complete overview the behavior of a specific gene accross
+                                 all published exercise and inactivity transcriptomic studies."),
+                           h5("Please acknowledge MetaMEx in your publications by citing: Pillon, Zierath et al.",  
+                           a("Transcriptomic Profiling of Skeletal Muscle Adaptations to Exercise and Inactivity.",
+                             href="https://doi.org/10.1038/s41467-019-13869-w", target="_blank"), "Nat Commun. 2020; 11: 470."),
+                           
+                           ),
                     column(5, tags$img(src='Nico-Macrophage-weight-L.png', width="100%", style="padding:0 5% 0 0"))
                    )
         ),
@@ -228,33 +235,50 @@ navbarMenu("Datasets",
     ),
 
 #=======================================================================================================================        
-        tabPanel("Q&A", value="Tutorial",
+        tabPanel("Help", value="Tutorial",
                  fluidRow(style="padding:0% 5% 10% 5%",
                           includeMarkdown("tutorial/tutorial.md"))
         ),
            
            
 #=======================================================================================================================
-        tabPanel("About", 
+        tabPanel("Acknowledgment", 
                  fluidRow(style="padding:0% 5% 10% 5%",
-                 column(8, 
+                 column(7, 
                 h3("Copyrights and Citation"),
-                "MetaMEx was created by", a("Nicolas J. Pillon", href="https://nicopillon.com/contact",         target="_blank"),
-                "and illustrated by", a("Csil.", href="http://misshue.net", target="_blank"), "All content and code are published under the Creative Commons Attribution-NonCommercial 4.0 International",
+                "MetaMEx content and code are published under the Creative Commons Attribution-NonCommercial 4.0 International",
                 a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank"),
-                "Last update: 28/10/2019",
-                tags$br(), tags$br(),
                 "If you use data from MetaMEx for publication, teaching or scientific presentations, please cite:",  
-                a("Nicolas J. Pillon, Brendan M. Gabriel, Lucile Dollet, Jonathon A. Smith, Laura Sardon Puig, Javier Botella, David J. Bishop,
-                  Anna Krook and Juleen R. Zierath, Transcriptomic Profiling of Skeletal Muscle Adaptations to Exercise and Inactivity.
-                  Nature Communications, 2019. In press",
-                  href="https://doi.org/10.1101/813048", target="_blank"),
-
+                a("Brendan M. Gabriel, Lucile Dollet, Jonathon A. Smith, Laura Sardon Puig, Javier Botella, David J. Bishop,
+                Anna Krook and Juleen R. Zierath. Transcriptomic Profiling of Skeletal Muscle Adaptations to Exercise and Inactivity.
+                  Nat Commun. 2020; 11: 470.",
+                  href="https://doi.org/10.1038/s41467-019-13869-w", target="_blank"),
+                tags$br(),
+                "Last update: 03/04/2020",
+            
+                h3("Funding"),
+                "This work was supported by grants from the the Marie Skłodowska-Curie Actions
+                (European Commission) , the Novo Nordisk Foundation, the Swedish Diabetes 
+                Foundation, the Swedish Research Council, the Strategic Research Program 
+                in Diabetes at Karolinska Institutet, the Stockholm County Council, the Swedish 
+                Research Council for Sport Science and the EFSD European Research Programme on 
+                New Targets for Type 2 Diabetes supported by an educational research grant from MSD.",
+                
                 h3("Contribution"),
-                 "MetMEx is a live database constantly updated with new data. MetaMEx becomes stronger with every bit of data we add. 
-                 If you have information about clinical data or want us to add your study to the database, contact us!",
-                 tags$br(), tags$br(),
-                 a(actionButton(inputId = "email1", label = "I have data!", 
+                tags$b("Programming:"), a("Nicolas J. Pillon", href="https://nicopillon.com/contact", target="_blank"),
+                tags$br(),
+                tags$b("Beta testing and scientific feedback:"), "Brendan M. Gabriel, Lucile Dollet, Jonathon A. Smith, Laura Sardon Puig,
+                Anna Krook and", a("Juleen R. Zierath", href="https://staff.ki.se/people/julzie", target="_blank"),
+                tags$br(),
+                tags$b("Web server:"), a("Nanjiang Shu", href="https://www.nbis.se/about/staff/nanjiang-shu/", target="_blank"), "from National Bioinformatics Infrastructure Sweden (NBIS) ",
+                tags$br(),
+                tags$b("Illustration and design:"), a("Csil", href="http://misshue.net", target="_blank"),
+                tags$br(),
+                tags$b("Published datasets:"), "from all our colleagues acknowledged in the publication and dataset tables. 
+                MetaMEx is a live database constantly updated with new data. MetaMEx becomes stronger with every bit of data we add. 
+                If you have information about clinical data or want us to add your study to the database, contact us!",
+                tags$br(), tags$br(),
+                a(actionButton(inputId = "email1", label = "I have data!", 
                                icon = icon("envelope", lib = "font-awesome")),
                   href="mailto:nicolas.pillon@ki.se")),
                  column(4, tags$img(src='Nico-Macrophage-bike-L.png', width = "100%", style="padding:0 5% 0 0"))

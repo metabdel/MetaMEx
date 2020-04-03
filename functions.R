@@ -20,7 +20,7 @@ list_categories <- readRDS("data/Names_categories.Rds")
 
 
 ## sanitize errors
-options(shiny.sanitize.errors=T)
+options(shiny.sanitize.errors=F)
 
 
 # Set up the graphical parameters for the forest plots
@@ -44,7 +44,7 @@ DataForGeneName <- function(x){
                      t(x[grepl('Sd.pre',   colnames(x))]), # standard deviation of control condition
                      t(x[grepl('Sd.post',   colnames(x))]), # standard deviation of exercise condition
                      t(x[grepl('size',     colnames(x))])) # number of subjects in the study
-  x <- cbind(x, str_split_fixed(rownames(x), "_", 10))
+  x <- cbind(x, str_split_fixed(rownames(x), "_", 11))
   colnames(x) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                    'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
                    'Studies', 'GEO', 'Muscle', 'Sex', 'Age', 'Training', 'Obesity', 'Disease',
@@ -95,3 +95,4 @@ authors <- readRDS("data/Authors.Rds")
 createLink <- function(val) {
   sprintf(paste0('<a href="', URLdecode(val),'" target="_blank">', gsub("(.*org/)|(.*=)", "", val) ,'</a>'))
 }
+colnames(TA_Stats)
