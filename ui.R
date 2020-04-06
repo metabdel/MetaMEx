@@ -57,7 +57,7 @@ navbarPage(title="MetaMEx", id="inTabset",
                            h5("Please acknowledge MetaMEx in your publications by citing: Pillon, Zierath et al.",  
                            a("Transcriptomic Profiling of Skeletal Muscle Adaptations to Exercise and Inactivity.",
                              href="https://doi.org/10.1038/s41467-019-13869-w", target="_blank"), "Nat Commun. 2020; 11: 470."),
-                           
+                           h5("Last update of the database: 03/04/2020"),
                            ),
                     column(5, tags$img(src='Nico-Macrophage-weight-L.png', width="100%", style="padding:0 5% 0 0"))
                    )
@@ -140,6 +140,23 @@ navbarPage(title="MetaMEx", id="inTabset",
                           checkboxGroupInput("IN_studies", "Physical Inactivity studies", selected=list_datasets[['IN_names']], list_datasets[['IN_names']])))
         ),
 
+#=======================================================================================================================        
+tabPanel("Timeline", value="panelCorr",
+         fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
+                  column(2, selectizeInput("gene_timeline", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
+                  column(10, tags$br(), "Using the MetaMEx database, this tool displays the behaviour of a gene of interest
+                  at different times after exercise. This dataset pools data from acute aerobic and resistance studies,
+                  and only includes data in healthy individuals."),
+                  uiOutput("download_timeline")
+         ),
+         
+         fluidRow(style="padding:0 0 10% 0",
+                  column(5, plotOutput("TimelinePlot")),
+                  column(5,  h3("Statistics"),
+                         tableOutput("TimeTable"))
+         )
+),
+
 
 #=======================================================================================================================        
 tabPanel("Correlations", value="panelCorr",
@@ -152,13 +169,13 @@ tabPanel("Correlations", value="panelCorr",
                   column(2, selectizeInput("gene1", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
                   column(4,   selectInput("selectgroup", label="Highlight", 
                                           choices = list("All"=1,
-                                                         "Protocol"=3, 
-                                                         "Muscle"=5, 
-                                                         "Sex"=6,
-                                                         "Age"=7,
-                                                         "Training"=8,
-                                                         "Obesity"=9,
-                                                         "Disease"=10),
+                                                         "Protocol"=5, 
+                                                         "Muscle"=7, 
+                                                         "Sex"=8,
+                                                         "Age"=9,
+                                                         "Training"=10,
+                                                         "Obesity"=11,
+                                                         "Disease"=12),
                                           selected = "All")),
                   uiOutput("download")
          ),
@@ -175,41 +192,24 @@ tabPanel("Correlations", value="panelCorr",
 ),
 
 #=======================================================================================================================        
-tabPanel("Timeline", value="panelCorr",
-         fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
-                  column(2, selectizeInput("gene_timeline", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
-                  column(10, tags$br(), "Using the MetaMEx database, this tool displays the behaviour of a gene of interest
-                  at different times after exercise. This dataset pools data from acute aerobic and resistance studies,
-                  and only includes data in healthy individuals."),
-                         uiOutput("download_timeline")
-         ),
-         
-         fluidRow(style="padding:0 0 10% 0",
-                  column(5, plotOutput("TimelinePlot")),
-                  column(5,  h3("Statistics"),
-                         tableOutput("TimeTable"))
-         )
-),
-
-#=======================================================================================================================        
-        tabPanel("Downloads", 
-                 fluidRow(style="background-color:#edcdc2;padding:1%",
-                          h3("Downloads"),
-                          "All the data used in MetMEx is freely available.",
-                          "For more advanced subsetting or analysis of the data, please", a("contact us!", href="mailto:nicolas.pillon@ki.se")),
-                  tags$br(),
-                 fluidRow(
-                column(4, downloadButton("downloadAA", "Acute Aerobic (.csv, 66MB)"),tags$br(),tags$br(),
-                          downloadButton("downloadAR", "Acute Resistance (.csv, 45MB)"),tags$br(),tags$br(), 
-                          downloadButton("downloadTA", "Training Aerobic (.csv, 76MB)"),tags$br(),tags$br(),
-                          downloadButton("downloadTR", "Training Resistance (.csv, 76MB)"),tags$br(),tags$br(),
-                          downloadButton("downloadTC", "Training Combined (.csv, 17MB)"),tags$br(),tags$br(),
-                          downloadButton("downloadHI", "Training HIIT (.csv, 17MB)"),tags$br(),tags$br(),
-                          downloadButton("downloadIN", "Inactivity (.csv, 18MB)"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()),
-                column(6, tags$img(src='Nico-Macrophage-weight-R.png', width="60%", align="left"))
-                
-        )),
-
+#        tabPanel("Downloads", 
+#                 fluidRow(style="background-color:#edcdc2;padding:1%",
+#                          h3("Downloads"),
+#                          "All the data used in MetMEx is freely available.",
+#                          "For more advanced subsetting or analysis of the data, please", a("contact us!", href="mailto:nicolas.pillon@ki.se")),
+#                  tags$br(),
+#                 fluidRow(
+#                column(4, downloadButton("downloadAA", "Acute Aerobic (.csv, 66MB)"),tags$br(),tags$br(),
+#                          downloadButton("downloadAR", "Acute Resistance (.csv, 45MB)"),tags$br(),tags$br(), 
+#                          downloadButton("downloadTA", "Training Aerobic (.csv, 76MB)"),tags$br(),tags$br(),
+#                          downloadButton("downloadTR", "Training Resistance (.csv, 76MB)"),tags$br(),tags$br(),
+#                          downloadButton("downloadTC", "Training Combined (.csv, 17MB)"),tags$br(),tags$br(),
+#                          downloadButton("downloadHI", "Training HIIT (.csv, 17MB)"),tags$br(),tags$br(),
+#                          downloadButton("downloadIN", "Inactivity (.csv, 18MB)"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br()),
+#                column(6, tags$img(src='Nico-Macrophage-weight-R.png', width="60%", align="left"))
+#                
+#        )),
+#
 #=======================================================================================================================        
 navbarMenu("Datasets",
     tabPanel("Annotation", 
@@ -238,51 +238,22 @@ navbarMenu("Datasets",
         tabPanel("Help", value="Tutorial",
                  fluidRow(style="padding:0% 5% 10% 5%",
                           includeMarkdown("tutorial/tutorial.md"))
-        ),
-           
+                 ),
            
 #=======================================================================================================================
-        tabPanel("Acknowledgment", 
+        tabPanel("Citations", 
+                 fluidRow(style="padding:0% 5% 10% 5%",
+                  includeMarkdown("tutorial/citations.md"))
+                 ),
+
+#=======================================================================================================================
+        tabPanel("Acknowledgments", 
                  fluidRow(style="padding:0% 5% 10% 5%",
                  column(7, 
-                h3("Copyrights and Citation"),
-                "MetaMEx content and code are published under the Creative Commons Attribution-NonCommercial 4.0 International",
-                a("(CC BY-NC 4.0).", href="https://creativecommons.org/licenses/by-nc/4.0/", target="_blank"),
-                "If you use data from MetaMEx for publication, teaching or scientific presentations, please cite:",  
-                a("Brendan M. Gabriel, Lucile Dollet, Jonathon A. Smith, Laura Sardon Puig, Javier Botella, David J. Bishop,
-                Anna Krook and Juleen R. Zierath. Transcriptomic Profiling of Skeletal Muscle Adaptations to Exercise and Inactivity.
-                  Nat Commun. 2020; 11: 470.",
-                  href="https://doi.org/10.1038/s41467-019-13869-w", target="_blank"),
-                tags$br(),
-                "Last update: 03/04/2020",
-            
-                h3("Funding"),
-                "This work was supported by grants from the the Marie Skłodowska-Curie Actions
-                (European Commission) , the Novo Nordisk Foundation, the Swedish Diabetes 
-                Foundation, the Swedish Research Council, the Strategic Research Program 
-                in Diabetes at Karolinska Institutet, the Stockholm County Council, the Swedish 
-                Research Council for Sport Science and the EFSD European Research Programme on 
-                New Targets for Type 2 Diabetes supported by an educational research grant from MSD.",
-                
-                h3("Contribution"),
-                tags$b("Programming:"), a("Nicolas J. Pillon", href="https://nicopillon.com/contact", target="_blank"),
-                tags$br(),
-                tags$b("Beta testing and scientific feedback:"), "Brendan M. Gabriel, Lucile Dollet, Jonathon A. Smith, Laura Sardon Puig,
-                Anna Krook and", a("Juleen R. Zierath", href="https://staff.ki.se/people/julzie", target="_blank"),
-                tags$br(),
-                tags$b("Web server:"), a("Nanjiang Shu", href="https://www.nbis.se/about/staff/nanjiang-shu/", target="_blank"), "from National Bioinformatics Infrastructure Sweden (NBIS) ",
-                tags$br(),
-                tags$b("Illustration and design:"), a("Csil", href="http://misshue.net", target="_blank"),
-                tags$br(),
-                tags$b("Published datasets:"), "from all our colleagues acknowledged in the publication and dataset tables. 
-                MetaMEx is a live database constantly updated with new data. MetaMEx becomes stronger with every bit of data we add. 
-                If you have information about clinical data or want us to add your study to the database, contact us!",
-                tags$br(), tags$br(),
-                a(actionButton(inputId = "email1", label = "I have data!", 
-                               icon = icon("envelope", lib = "font-awesome")),
-                  href="mailto:nicolas.pillon@ki.se")),
+                        includeMarkdown("tutorial/acknowledgments.md")),
                  column(4, tags$img(src='Nico-Macrophage-bike-L.png', width = "100%", style="padding:0 5% 0 0"))
-        ))
+                 )
+                 )
 
 )
 

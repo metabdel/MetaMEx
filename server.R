@@ -3,8 +3,8 @@
 server <- function(input, output, session) {
 
   updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected='NR4A3' , options=NULL)
-  updateSelectizeInput(session, 'gene1', choices=list_genes2, server=TRUE, selected=NA , options=NULL)
-  updateSelectizeInput(session, 'gene2', choices=list_genes2, server=TRUE, selected=NA , options=NULL)
+  updateSelectizeInput(session, 'gene1', choices=correlations_genes, server=TRUE, selected=NA , options=NULL)
+  updateSelectizeInput(session, 'gene2', choices=correlations_genes, server=TRUE, selected=NA , options=NULL)
   updateSelectizeInput(session, 'gene_timeline', choices=list_genes, server=TRUE, selected='PPARGC1A' , options=NULL)
   observeEvent(input$jumpToApp, {updateTabsetPanel(session, "inTabset", selected="panelApp") })
   observeEvent(input$jumpToHelp, {updateTabsetPanel(session, "inTabset", selected="Tutorial") })
@@ -476,32 +476,68 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
   Corr_stats <- reactive({
     tryCatch({
     withProgress(message = 'Calculating', value = 0, max=10, {
-        selectedata <- Individual_FC
+        selectedata <- correlations_data
         geneofinterest <- as.numeric(selectedata[toupper(input$gene1),])
         estimate <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$estimate
         p.value  <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$p.value
       
-      incProgress(1, detail="Spearman coefficients")
-        Spearman.r1 <- apply(selectedata[1:3000,], 1, estimate)
-      incProgress(1, detail="Spearman coefficients")
-        Spearman.r2 <- apply(selectedata[3001:6000,], 1, estimate)
-      incProgress(1, detail="Spearman coefficients")
-        Spearman.r3 <- apply(selectedata[6001:9000,], 1, estimate)
-      incProgress(1, detail="Spearman coefficients")
-        Spearman.r4 <- apply(selectedata[9001:nrow(selectedata),], 1, estimate)
-        Spearman.r <- c(Spearman.r1, Spearman.r2, Spearman.r3, Spearman.r4)
+      incProgress(0.4, detail="Spearman coefficients")
+        Spearman.r1 <- apply(selectedata[1:1000,], 1, estimate)
+      incProgress(0.4, detail="Spearman coefficients")
+        Spearman.r2 <- apply(selectedata[1001:2000,], 1, estimate)
+      incProgress(0.4, detail="Spearman coefficients")
+        Spearman.r3 <- apply(selectedata[2001:3000,], 1, estimate)
+      incProgress(0.4, detail="Spearman coefficients")
+        Spearman.r4 <- apply(selectedata[3001:4000,], 1, estimate)
+      incProgress(0.4, detail="Spearman coefficients")
+        Spearman.r5 <- apply(selectedata[4001:5000,], 1, estimate)
+      incProgress(0.4, detail="Spearman coefficients")
+        Spearman.r6 <- apply(selectedata[5001:6000,], 1, estimate)
+      incProgress(0.4, detail="Spearman coefficients")
+        Spearman.r7 <- apply(selectedata[6001:7000,], 1, estimate)
+      incProgress(0.4, detail="Spearman coefficients")
+        Spearman.r8 <- apply(selectedata[7001:8000,], 1, estimate)
+      incProgress(0.4, detail="Spearman coefficients")
+        Spearman.r9 <- apply(selectedata[8001:9000,], 1, estimate)
+      incProgress(0.4, detail="Spearman coefficients")
+        Spearman.r10 <- apply(selectedata[9001:10000,], 1, estimate)
+      incProgress(0.4, detail="Spearman coefficients")
+        Spearman.r11 <- apply(selectedata[10001:11000,], 1, estimate)
+      incProgress(0.4, detail="Spearman coefficients")
+        Spearman.r12 <- apply(selectedata[11001:nrow(selectedata),], 1, estimate)
+        Spearman.r <- c(Spearman.r1, Spearman.r2, Spearman.r3, Spearman.r4,
+                        Spearman.r5, Spearman.r6, Spearman.r7, Spearman.r8,
+                        Spearman.r9, Spearman.r10, Spearman.r11, Spearman.r12)
         
-      incProgress(1, detail="Spearman statistics")
-        Spearman.p1 <- apply(selectedata[1:3000,], 1, p.value)
-      incProgress(1, detail="Spearman statistics")
-        Spearman.p2 <- apply(selectedata[3001:6000,], 1, p.value)
-      incProgress(1, detail="Spearman statistics")
-        Spearman.p3 <- apply(selectedata[6001:9000,], 1, p.value)
-      incProgress(1, detail="Spearman statistics")
-        Spearman.p4 <- apply(selectedata[9001:nrow(selectedata),], 1, p.value)
-        Spearman.p <- c(Spearman.p1, Spearman.p2, Spearman.p3, Spearman.p4)
+      incProgress(0.4, detail="Spearman statistics")
+        Spearman.p1 <- apply(selectedata[1:1000,], 1, p.value)
+      incProgress(0.4, detail="Spearman statistics")
+        Spearman.p2 <- apply(selectedata[1001:2000,], 1, p.value)
+      incProgress(0.4, detail="Spearman statistics")
+        Spearman.p3 <- apply(selectedata[2001:3000,], 1, p.value)
+      incProgress(0.4, detail="Spearman statistics")
+        Spearman.p4 <- apply(selectedata[3001:4000,], 1, p.value)
+      incProgress(0.4, detail="Spearman statistics")
+        Spearman.p5 <- apply(selectedata[4001:5000,], 1, p.value)
+      incProgress(0.4, detail="Spearman statistics")
+        Spearman.p6 <- apply(selectedata[5001:6000,], 1, p.value)
+      incProgress(0.4, detail="Spearman statistics")
+        Spearman.p7 <- apply(selectedata[6001:7000,], 1, p.value)
+      incProgress(0.4, detail="Spearman statistics")
+        Spearman.p8 <- apply(selectedata[7001:8000,], 1, p.value)
+      incProgress(0.4, detail="Spearman statistics")
+        Spearman.p9 <- apply(selectedata[8001:9000,], 1, p.value)
+      incProgress(0.4, detail="Spearman statistics")
+        Spearman.p10 <- apply(selectedata[9001:10000,], 1, p.value)
+      incProgress(0.4, detail="Spearman statistics")
+        Spearman.p11 <- apply(selectedata[10001:11000,], 1, p.value)
+      incProgress(0.4, detail="Spearman statistics")
+        Spearman.p12 <- apply(selectedata[11001:nrow(selectedata),], 1, p.value)
+        Spearman.p <- c(Spearman.p1, Spearman.p2, Spearman.p3, Spearman.p4,
+                        Spearman.p5, Spearman.p6, Spearman.p7, Spearman.p8,
+                        Spearman.p9, Spearman.p10, Spearman.p11, Spearman.p12)
         
-      incProgress(2, detail="Making table")
+      incProgress(0.4, detail="Making table")
         Spearman.FDR <- p.adjust(Spearman.p, method="bonferroni")
         Spearman.r <- round(Spearman.r, digits=3)
         Spearman.p <- signif(Spearman.p, digits=2)
@@ -515,7 +551,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     }, error=function(e) NULL)
   })
   
-    output$CorrTable <- DT::renderDataTable(escape = FALSE, rownames = T, selection = "single", {
+      output$CorrTable <- DT::renderDataTable(escape = FALSE, rownames = T, selection = "single", {
       validate(need(!is.null(Corr_stats()),   "Start by selecting a gene in the list of official gene names"))
       
       Corr_stats()
@@ -531,13 +567,15 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     validate(need(!is.null(Corr_stats()),     " "))
     validate(need(input$CorrTable_rows_selected!="",  "Select a second gene in the table to display the correlation")) 
     
-    Gene1 <- Individual_FC[toupper(input$gene1),]
+    Gene1 <- correlations_data[toupper(input$gene1),]
     Gene2 <- Corr_stats()
     Gene2 <- rownames(Gene2[input$CorrTable_rows_selected,])
-    Gene2 <- Individual_FC[Gene2,]
+    Gene2 <- correlations_data[Gene2,]
     data  <- data.frame(t(Gene1), t(Gene2))
-    data <- cbind(data, str_split_fixed(rownames(data), "_", 10))
-    colnames(data) <- c("Gene1", "Gene2", "Protocol", "Study", "Muscle", "Sex", "Age", "Training", "Obesity", "Disease")
+    data <- cbind(data, str_split_fixed(rownames(data), "_", 12))
+    colnames(data) <- c("Gene1", "Gene2", "logFC", "GEO",
+                        "Protocol", "Exercise type", "Muscle", 
+                        "Sex", "Age", "Training", "Obesity", "Disease", "Biopsy time", "Training duration")
     active <- ggplot(data, aes(x=Gene2, y=Gene1, color=data[,as.numeric(input$selectgroup)])) +
       geom_smooth(method=lm, se=F, fullrange=TRUE) +
       geom_point(shape=19) +
@@ -609,8 +647,8 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
   plotInputTimeline <- function() ({
     validate(need(input$gene_timeline!="",  "Start by selecting a gene in the list of official gene names")) 
     genename <- toupper(input$gene_timeline)
-    res  <- timeline_acute
-    mydata <- data.frame(cessation=factor(colnames(res), levels=c('pre', '0-1', '2-3', '4-6', '24', '48')),
+    res  <- timeline_data
+    mydata <- data.frame(cessation=factor(colnames(res), levels=c('pre', '0_1', '2_3', '4_6', '24', '48', '72')),
                          logFC=as.numeric(res[genename,])) 
     active <- ggplot(mydata, aes(x=cessation, y=logFC, fill=cessation)) + theme_bw() +
       geom_hline(yintercept=0, color="gray50", linetype="dashed") +
@@ -639,19 +677,19 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     stats <- data.frame(p.value=t(res[grepl('P.Value', colnames(res))]),
                         FDR=t(res[grepl('adj.P.Val', colnames(res))]))
     colnames(stats) <- c('p.value', 'FDR')
-    KWANOVA <- res[grepl('Kruskal', colnames(res))]
-    names(KWANOVA) <- c('p.value', 'FDR')
-    stats <- rbind(KWANOVA, stats)
+    ANOVA <- res[grepl('F_', colnames(res))]
+    names(ANOVA) <- c('p.value', 'FDR')
+    stats <- rbind(ANOVA, stats)
     stats$significance <- ''
     stats$significance[stats$FDR < 0.05] <- "*"
     stats$significance[stats$FDR < 0.01] <- "**"
     stats$significance[stats$FDR < 0.001] <- "***"
     stats$p.value <- scientific(stats$p.value, 1)
     stats$FDR <- scientific(stats$FDR, 1)
-    rownames(stats) <- c('Kruskal-Wallis ANOVA',
+    rownames(stats) <- c('ANOVA',
                          'T-test 0-1h vs Pre', 'T-test 2-3h vs Pre',
                          'T-test 4-6h vs Pre', 'T-test 24h vs Pre',
-                         'T-test 48h vs Pre')
+                         'T-test 48h vs Pre', 'T-test 72h vs Pre')
     return(stats)
     })
   
@@ -695,7 +733,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     content = function(file) { write.csv(IN_Stats, file) })
 
 #=======================================================================================
-# Make button to save forrest plots
+# Make button to save forest plots
 #=======================================================================================
   library(rmarkdown)
   library(ggpubr)
