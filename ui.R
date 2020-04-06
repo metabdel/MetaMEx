@@ -143,7 +143,7 @@ navbarPage(title="MetaMEx", id="inTabset",
 #=======================================================================================================================        
 tabPanel("Timeline", value="panelCorr",
          fluidRow(style="background-color:#edcdc2;padding:1% 0 0 0",
-                  column(2, selectizeInput("gene_timeline", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
+                  column(2, selectizeInput("timeline_gene", "Official Gene Name", choices=NULL, selected=NULL, options=NULL)), #input official gene name
                   column(10, tags$br(), "Using the MetaMEx database, this tool displays the behaviour of a gene of interest
                   at different times after exercise. This dataset pools data from acute aerobic and resistance studies,
                   and only includes data in healthy individuals."),

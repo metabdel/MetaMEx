@@ -117,9 +117,10 @@ StudiesInactivity <- readRDS("data/annotation/reftable_inactivity.Rds") # Load t
 # Data for timeline
 timeline_data <- readRDS("data/timeline/timeline_data.Rds")
 timeline_stats <- readRDS("data/timeline/timeline_statistics.Rds")
-
+timeline_genes <- rownames(timeline_data)
+  
 # Data for correlations
 correlations_data <- readRDS("data/correlations/correlations_data.Rds")
 correlations_genes <- rownames(correlations_data)
-descriptions <- readRDS("data/correlations/correlations_refseq.Rds")
+correlations_refseq <- readRDS("data/correlations/correlations_refseq.Rds")
 

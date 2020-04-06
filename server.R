@@ -5,7 +5,7 @@ server <- function(input, output, session) {
   updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected='NR4A3' , options=NULL)
   updateSelectizeInput(session, 'gene1', choices=correlations_genes, server=TRUE, selected=NA , options=NULL)
   updateSelectizeInput(session, 'gene2', choices=correlations_genes, server=TRUE, selected=NA , options=NULL)
-  updateSelectizeInput(session, 'gene_timeline', choices=list_genes, server=TRUE, selected='PPARGC1A' , options=NULL)
+  updateSelectizeInput(session, 'timeline_gene', choices=timeline_genes, server=TRUE, selected='PPARGC1A' , options=NULL)
   observeEvent(input$jumpToApp, {updateTabsetPanel(session, "inTabset", selected="panelApp") })
   observeEvent(input$jumpToHelp, {updateTabsetPanel(session, "inTabset", selected="Tutorial") })
   
@@ -605,7 +605,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     GENENAME <- rownames(GENENAME[input$CorrTable_rows_selected,])
     
     #annotate with ENTREZID
-    Annotation <- descriptions
+    Annotation <- correlations_refseq
     ENTREZID <- Annotation[Annotation$GENENAME %in% GENENAME,2]
     
     #Find information on NCBI webpage
@@ -645,8 +645,8 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
 # Timeline plot
 #=======================================================================================
   plotInputTimeline <- function() ({
-    validate(need(input$gene_timeline!="",  "Start by selecting a gene in the list of official gene names")) 
-    genename <- toupper(input$gene_timeline)
+    validate(need(input$timeline_gene!="",  "Start by selecting a gene in the list of official gene names")) 
+    genename <- toupper(input$timeline_gene)
     res  <- timeline_data
     mydata <- data.frame(cessation=factor(colnames(res), levels=c('pre', '0_1', '2_3', '4_6', '24', '48', '72')),
                          logFC=as.numeric(res[genename,])) 
@@ -667,12 +667,13 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
   
   output$TimelinePlot      <- renderPlot({ plotInputTimeline() })
 
+  
 #=======================================================================================
 # Make timeline table
 #=======================================================================================
   output$TimeTable <- renderTable(rownames = TRUE, align='c', { 
-    validate(need(input$gene_timeline!="",  "Start by selecting a gene in the list of official gene names")) 
-    genename <- toupper(input$gene_timeline)
+    validate(need(input$timeline_gene!="",  "Start by selecting a gene in the list of official gene names")) 
+    genename <- toupper(input$timeline_gene)
     res  <- timeline_stats[genename,]
     stats <- data.frame(p.value=t(res[grepl('P.Value', colnames(res))]),
                         FDR=t(res[grepl('adj.P.Val', colnames(res))]))
@@ -732,6 +733,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     filename = function() { "MetaMEx_Inactivity.csv" },
     content = function(file) { write.csv(IN_Stats, file) })
 
+  
 #=======================================================================================
 # Make button to save forest plots
 #=======================================================================================
@@ -825,7 +827,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
       grid.arrange(AA, TA, AR, TR, HI, IN, TC, 
                    top = textGrob(paste(input$genename, "transcriptional response to physical activity"),
                                   gp=gpar(fontsize=30, font=7)),
-                   bottom = textGrob("MetaMEx Copyright 2019 Nicolas J. Pillon. For more information, visit www.metamex.eu",
+                   bottom = textGrob("MetaMEx Copyright 2020 Nicolas J. Pillon. For more information, visit www.metamex.eu",
                                      gp=gpar(fontsize=16)),
                    layout_matrix=matrix)
       dev.off()
@@ -886,7 +888,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     content = function(file) {
       dataset <- Corr_stats()
       dataset$SYMBOL <- rownames(dataset)
-      dataset <- dataset[,c(5,2,3,4)]
+      dataset <- dataset[,c(4,1,2,3)]
       write.csv(dataset, file, row.names = F)
     })
   
