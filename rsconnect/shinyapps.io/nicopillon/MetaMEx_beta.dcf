@@ -5,6 +5,6 @@ account: nicopillon
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1347769
-bundleId: 2624490
+bundleId: 2975343
 url: https://nicopillon.shinyapps.io/MetaMEx_beta/
-when: 1574955084.53367
+when: 1586174432.02562
