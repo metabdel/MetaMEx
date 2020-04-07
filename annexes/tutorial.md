@@ -10,7 +10,7 @@ The online database of skeletal muscle transcriptomic response to exercise and i
 
 MetaMEx works with official gene symbols, for instance here, the official gene name of PGC1α is PPARGC1A. MetaMEx compiles more than 90 studies performed under slighlty different conditions. So first, have a look at the following lists:
 
-![](tutorial1.png)
+![](tutorial/tutorial_Selection.png)
 
 *	**Muscle.** Most studies do cycling exercise and therefore collect vastus lateralis (quadriceps) biopsies. However, a handful of studies used soleus or biceps biosies. Sometimes the muscle biopsy is unknow and is therefore annotated as N.A. 
 *	**Sex.** Choose whether you want males (M) or females (F). Some studies have pooled males and females or did not provide sex information and are labelled as undefined (U).
@@ -24,7 +24,7 @@ MetaMEx works with official gene symbols, for instance here, the official gene n
 
 ## Why do studies have such a complicated name?
 
-![](tutorial_annotation.svg)
+![](tutorial/tutorial_annotation.svg)
 
 All studies were annotated with as much information as possible about age, weight, health, biopsy, muscle, etc. The title of the studies reflect the clinical data and protocol used for a specific study. See Datasets>Annotation for a detailled description of the labels.
 
@@ -32,7 +32,7 @@ All studies were annotated with as much information as possible about age, weigh
 
 ## What does a forest plot represent?
 
-![](tutorial_forestplot.svg)
+![](tutorial/tutorial_forestplot.svg)
 
 The left-hand columns list the names of the studies, followed by the fold-change (log2), false discovery rate (FDR) and sample size (n) for each individual study. The right-hand column is a plot of the fold-change (log2) represented by a square and the 95% confidence intervals represented by horizontal lines. The area of each square is proportional to the study's weight (sample size) in the meta-analysis. The overall meta-analysed score is represented by a diamond on the bottom line, the lateral points of which indicate confidence intervals.
 
