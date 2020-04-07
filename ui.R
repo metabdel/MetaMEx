@@ -237,20 +237,20 @@ navbarMenu("Datasets",
 #=======================================================================================================================        
         tabPanel("Help", value="Tutorial",
                  fluidRow(style="padding:0% 5% 10% 5%",
-                          includeMarkdown("tutorial/tutorial.md"))
+                          includeMarkdown("annexes/tutorial.md"))
                  ),
            
 #=======================================================================================================================
         tabPanel("Citations", 
                  fluidRow(style="padding:0% 5% 10% 5%",
-                  includeMarkdown("tutorial/citations.md"))
+                  includeMarkdown("annexes/citations.md"))
                  ),
 
 #=======================================================================================================================
         tabPanel("Acknowledgments", 
                  fluidRow(style="padding:0% 5% 10% 5%",
                  column(7, 
-                        includeMarkdown("tutorial/acknowledgments.md")),
+                        includeMarkdown("annexes/acknowledgments.md")),
                  column(4, tags$img(src='Nico-Macrophage-bike-L.png', width = "100%", style="padding:0 5% 0 0"))
                  )
                  )
