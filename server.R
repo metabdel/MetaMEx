@@ -2,7 +2,7 @@
 # Define server logic ##############################################################################################
 server <- function(input, output, session) {
 
-  updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected='NR4A3' , options=NULL)
+  updateSelectizeInput(session, 'genename', choices=list_genes, server=TRUE, selected=NA, options=NULL)
   updateSelectizeInput(session, 'gene1', choices=correlations_genes, server=TRUE, selected=NA , options=NULL)
   updateSelectizeInput(session, 'gene2', choices=correlations_genes, server=TRUE, selected=NA , options=NULL)
   updateSelectizeInput(session, 'timeline_gene', choices=timeline_genes, server=TRUE, selected='PPARGC1A' , options=NULL)
@@ -48,18 +48,13 @@ output$StudiesTraining <- DT::renderDataTable(escape = FALSE, rownames = FALSE, 
 output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE, { StudiesInactivity })
 
 
-
-
-
-
-
   
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 # Acute Aerobic
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 #  observe({ updateCheckboxGroupInput(session, 'AA_studies', choices = list_datasets[['AA_names']],
 #                                     selected = if (input$AA_all) list_datasets[['AA_names']], inline=TRUE)})
-  
+
   AA_data <- reactive({
     tryCatch({
       #data for selected gene name
@@ -112,10 +107,16 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     return(finalplot)
   })
   
-  output$AA_plot <- renderPlot({ AA_plotInput() })
+  output$AA_plot <- renderPlot({ 
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Calculating - Acute Aerobic", value = 1)
+    AA_plotInput() 
+    })
+  
 
 
-#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+  #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 # Acute Resistance
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 #  observe({ updateCheckboxGroupInput(session, 'AR_studies',          choices = list_datasets[['AR_names']],       
@@ -171,7 +172,12 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     return(finalplot)
   })
   
-  output$AR_plot <- renderPlot({ AR_plotInput() })
+  output$AR_plot <- renderPlot({
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Calculating - Acute Resistance", value = 1)
+    AR_plotInput() })
+  
   
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 # Inactivity
@@ -236,8 +242,13 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     return(finalplot)
   })
   
-  output$IN_plot <- renderPlot({ IN_plotInput() })
+  output$IN_plot <- renderPlot({ 
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Calculating - Inactivity", value = 1)
+    IN_plotInput() })
     
+  
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 # Training Aerobic
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
@@ -293,7 +304,12 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     return(finalplot)
   })
   
-  output$TA_plot <- renderPlot({ TA_plotInput() })
+  output$TA_plot <- renderPlot({ 
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Calculating - Training Aerobic", value = 1)
+    TA_plotInput() })
+  
   
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 # Training Resistance
@@ -351,7 +367,12 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     return(finalplot)
   })
   
-  output$TR_plot <- renderPlot({ TR_plotInput() })
+  output$TR_plot <- renderPlot({ 
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Calculating - Training Resistance", value = 1)
+    TR_plotInput() })
+  
   
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 # Training Combined
@@ -409,14 +430,19 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     return(finalplot)
   })
   
-  output$TC_plot <- renderPlot({ TC_plotInput() })
+  output$TC_plot <- renderPlot({ 
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Calculating - Training Combined", value = 1)
+    TC_plotInput() })
+
   
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 # Training HIIT
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
   #observe({ updateCheckboxGroupInput(session, 'TH_studies',          choices = list_datasets[['TH_names']],        
   #                                   selected = if (input$TH_all) list_datasets[['TH_names']], inline=TRUE)})
-  
+    
   TH_data <- reactive({
     tryCatch({
       selectedata <- TH_Stats[toupper(input$genename),]
@@ -467,15 +493,20 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     return(finalplot)
   })
   
-  output$TH_plot <- renderPlot({ TH_plotInput() })
-  
+  output$TH_plot <- renderPlot({ 
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Calculating - Training HIIT", value = 1)
+    TH_plotInput() })
+
+
 #=======================================================================================
 # Make correlation table
 #=======================================================================================
 
   Corr_stats <- reactive({
     tryCatch({
-    withProgress(message = 'Calculating', value = 0, max=10, {
+    withProgress(message = 'Calculating', value = 1, max=10, {
         selectedata <- correlations_data
         geneofinterest <- as.numeric(selectedata[toupper(input$gene1),])
         estimate <- function(x) cor.test(x, geneofinterest, method="spearman", exact=F)$estimate

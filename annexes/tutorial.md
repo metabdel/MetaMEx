@@ -10,7 +10,7 @@ The online database of skeletal muscle transcriptomic response to exercise and i
 
 MetaMEx works with official gene symbols, for instance here, the official gene name of PGC1α is PPARGC1A. MetaMEx compiles more than 90 studies performed under slighlty different conditions. So first, have a look at the following lists:
 
-![](tutorial/tutorial_Selection.png)
+![](tutorial/tutorial_selection.png)
 
 *	**Muscle.** Most studies do cycling exercise and therefore collect vastus lateralis (quadriceps) biopsies. However, a handful of studies used soleus or biceps biosies. Sometimes the muscle biopsy is unknow and is therefore annotated as N.A. 
 *	**Sex.** Choose whether you want males (M) or females (F). Some studies have pooled males and females or did not provide sex information and are labelled as undefined (U).

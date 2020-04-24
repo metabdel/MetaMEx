@@ -151,7 +151,7 @@ tabPanel("Timeline", value="panelCorr",
          ),
          
          fluidRow(style="padding:0 0 10% 0",
-                  column(5, plotOutput("TimelinePlot")),
+                  column(5, plotOutput("TimelinePlot", height="320px")),
                   column(5,  h3("Statistics"),
                          tableOutput("TimeTable"))
          )
