@@ -58,11 +58,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
   AA_data <- reactive({
     tryCatch({
       #data for selected gene name
-      selectedata <- AA_Stats[toupper(input$genename),]
-      #Don't need to annotate studies with protocol type, remove from colum name
-      colnames(selectedata) <- gsub("AcAe_", "", colnames(selectedata))
-      #custom function to make a useable data frame
-      selectedata <- DataForGeneName(selectedata) 
+      selectedata <- AA_Stats[[toupper(input$genename)]]
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
@@ -116,7 +112,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
   
 
 
-  #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 # Acute Resistance
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 #  observe({ updateCheckboxGroupInput(session, 'AR_studies',          choices = list_datasets[['AR_names']],       
@@ -124,11 +120,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
   
   AR_data <- reactive({
     tryCatch({
-      selectedata <- AR_Stats[toupper(input$genename),]
-      #Don't need to annotate studies with protocol type, remove from colum name
-      colnames(selectedata) <- gsub("AcRe_", "", colnames(selectedata))
-      #custom function to make a useable data frame
-      selectedata <- DataForGeneName(selectedata) 
+      selectedata <- AR_Stats[[toupper(input$genename)]]
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
@@ -193,11 +185,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
   IN_data <- reactive({
     tryCatch({
       #data for selected gene name
-      selectedata <- IN_Stats[toupper(input$genename),]
-      #Don't need to annotate studies with protocol type, remove from colum name
-      colnames(selectedata) <- gsub("Inac_", "", colnames(selectedata))
-      #custom function to make a useable data frame
-      selectedata <- DataForGeneName(selectedata)
+      selectedata <- IN_Stats[[toupper(input$genename)]]
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
@@ -257,11 +245,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
 
   TA_data <- reactive({
     tryCatch({
-      selectedata <- TA_Stats[toupper(input$genename),]
-      #Don't need to annotate studies with protocol type, remove from colum name
-      colnames(selectedata) <- gsub("TrAe_", "", colnames(selectedata))
-      #custom function to make a useable data frame
-      selectedata <- DataForGeneName(selectedata)
+      selectedata <- TA_Stats[[toupper(input$genename)]]
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
@@ -319,11 +303,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
 
   TR_data <- reactive({
     tryCatch({
-      selectedata <- TR_Stats[toupper(input$genename),]
-      #Don't need to annotate studies with protocol type, remove from colum name
-      colnames(selectedata) <- gsub("TrRe_", "", colnames(selectedata))
-      #custom function to make a useable data frame
-      selectedata <- DataForGeneName(selectedata)
+      selectedata <- TR_Stats[[toupper(input$genename)]]
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
@@ -382,11 +362,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
 
   TC_data <- reactive({
     tryCatch({
-      selectedata <- TC_Stats[toupper(input$genename),]
-      #Don't need to annotate studies with protocol type, remove from colum name
-      colnames(selectedata) <- gsub("TrCo_", "", colnames(selectedata))
-      #custom function to make a useable data frame
-      selectedata <- DataForGeneName(selectedata)
+      selectedata <- TC_Stats[[toupper(input$genename)]]
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',
@@ -445,11 +421,7 @@ output$StudiesInactivity <- DT::renderDataTable(escape = FALSE, rownames = FALSE
     
   TH_data <- reactive({
     tryCatch({
-      selectedata <- TH_Stats[toupper(input$genename),]
-      #Don't need to annotate studies with protocol type, remove from colum name
-      colnames(selectedata) <- gsub("TrHi_", "", colnames(selectedata))
-      #custom function to make a useable data frame
-      selectedata <- DataForGeneName(selectedata)
+      selectedata <- TH_Stats[[toupper(input$genename)]]
       #name columns specific for the type of exercise/inactivity
       colnames(selectedata) <- c('logFC', 'adj.P.Val', 'CI.L', 'CI.R',
                                  'Mean_Ctrl', 'Mean_Ex', 'Sd_Ctrl', 'Sd_Ex', 'size',

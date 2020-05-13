@@ -12,6 +12,8 @@ library(stringr)
 library(scales)
 library(rvest)
 
+#new packages
+library(gridExtra)
 
 #===========================================================================================
 # URLs for sharing buttons
@@ -33,11 +35,18 @@ own$xlab$cex <- 0.9
 own$label$cex <- 0.9
 own$summary$cex <- 1.2
 
+theme <- theme(plot.title  = element_text(face="bold", color="black", size=11, angle=0),
+               axis.text.x = element_text(color="black", size=10, angle=0, hjust = 0.5),
+               axis.text.y = element_text(color="black", size=10, angle=0, hjust = 1),
+               axis.title  = element_text(face="bold", color="black", size=11, angle=0),
+               legend.text   = element_text(color="black", size=10, angle=0),
+               legend.title  = element_text(face="bold", color="black", size=11, angle=0),
+               legend.position="none")
+
 
 #===========================================================================================
 # Functions
 #===========================================================================================
-
 # Function to make data table for selected gene
 DataForGeneName <- function(x){
   x <- data.frame(t(x[grepl('logFC',    colnames(x))]), # M-value (M) is the log2-fold change
@@ -76,7 +85,7 @@ MetaAnalysis <- function(x){
   x <- rbind(x[,1:10],
              c(meta$beta, fdr, meta$ci.lb, meta$ci.ub, rep(NA, 4), sum(x$size, na.rm=T)))
   x$Studies <- c(gsub("logFC_", "", x$Studies[1:(nrow(x)-1)]),
-                           "Restricted Maximum Likelihood")
+                           "Meta-analysis score")
   return(x)
   }
 

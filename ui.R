@@ -95,8 +95,8 @@ navbarPage(title="MetaMEx", id="inTabset",
                           #downloadButton("AR_plot_download", "Acute Resistance")
                           ),
                    column(8, align="top", tags$br(),
-                          plotOutput("AA_plot", height="500px"),
-                          plotOutput("AR_plot", height="500px")
+                          plotOutput("AA_plot", height="600px"),
+                          plotOutput("AR_plot", height="550px")
                           ),
                    column(2, tags$br(), tags$br(),
                           checkboxGroupInput("AA_studies", "Acute Aerobic Datasets", selected=list_datasets[['AA_names']], list_datasets[['AA_names']]),
